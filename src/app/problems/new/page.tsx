@@ -774,7 +774,7 @@ export default function NewProblemPage() {
                   Step 4: Urgency & Failure Analysis of Past Interventions
                 </h2>
                 <p className="text-sm text-slate-400 mt-1">
-                  Why haven't previous solutions worked? Understanding failure modes is essential for student innovators.
+                  Why haven&apos;t previous solutions worked? Understanding failure modes is essential for student innovators.
                 </p>
               </div>
 

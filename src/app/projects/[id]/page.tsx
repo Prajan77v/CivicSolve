@@ -2125,8 +2125,10 @@ Timestamp: ${new Date().toISOString()}
             <div>
               <label className="block text-slate-300 mb-1 font-medium">Task Title *</label>
               <input
+                id="taskTitle"
+                name="taskTitle"
                 type="text"
-                placeholder="e.g. Fabricate waterproof sensor enclosure"
+                placeholder="Task title, e.g. Fabricate waterproof sensor enclosure"
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
                 required

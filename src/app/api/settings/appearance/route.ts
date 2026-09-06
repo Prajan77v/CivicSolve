@@ -90,7 +90,7 @@ export async function PUT(req: NextRequest) {
       data: {
         userId: user.id,
         action: 'APPEARANCE_UPDATE',
-        entityType: 'UserAppearance',
+        entity: 'UserAppearance',
         entityId: updated.id,
         details: JSON.stringify({ theme, accentKey, density, motion }),
       },

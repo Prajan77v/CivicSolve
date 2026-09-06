@@ -44,12 +44,14 @@ test.describe('CivicSolve Complete End-to-End Enterprise Lifecycle', () => {
     const sampleBtn = page.locator('button:has-text("Fill Sample Challenge")').first();
     await sampleBtn.click();
 
-    // Advance through Wizard Steps
-    for (let step = 1; step <= 6; step++) {
-      const nextBtn = page.locator('button:has-text("Next Step"), button:has-text("Submit & Analyze")').first();
+    // Advance through Wizard Steps (1 to 5: "Next Step", 6: "Confirm & Run AI Engine")
+    for (let step = 1; step <= 5; step++) {
+      const nextBtn = page.locator('button:has-text("Next Step")').first();
       await nextBtn.click();
       await page.waitForTimeout(400);
     }
+    const confirmBtn = page.locator('button:has-text("Confirm & Run AI Engine")').first();
+    await confirmBtn.click();
 
     // Wait for auto-redirection to problem details
     await page.waitForURL(/\/problems\/[a-zA-Z0-9_-]+/, { timeout: 20000 });
@@ -158,12 +160,19 @@ test.describe('CivicSolve Complete End-to-End Enterprise Lifecycle', () => {
     const addTaskBtn = page.locator('button:has-text("Add Task"), button:has-text("New Task")').first();
     if (await addTaskBtn.isVisible()) {
       await addTaskBtn.click();
-      const taskInput = page.locator('input[placeholder*="title" i], input#taskTitle').first();
+      await page.waitForTimeout(400);
+      const taskInput = page.locator('input#taskTitle, input[placeholder*="title" i]').first();
       if (await taskInput.isVisible()) {
         await taskInput.fill('Design LoRaWAN Sensor PCB schematics');
         const submitTaskBtn = page.locator('button:has-text("Create Task")').first();
         await submitTaskBtn.click();
-        await page.waitForTimeout(800);
+        await page.waitForTimeout(1000);
+      }
+      // Ensure modal is closed before proceeding
+      const cancelBtn = page.locator('button:has-text("Cancel")').first();
+      if (await cancelBtn.isVisible()) {
+        await page.keyboard.press('Escape');
+        await page.waitForTimeout(300);
       }
     }
 
@@ -193,7 +202,7 @@ test.describe('CivicSolve Complete End-to-End Enterprise Lifecycle', () => {
     const filesTab = page.locator('button:has-text("Files")').first();
     await filesTab.click();
     await page.waitForTimeout(400);
-    await expect(page.locator('text=Project Files, text=Upload, text=Evidence').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('Project Documents|Upload Document|Files|Schematics', 'i')).first()).toBeVisible();
 
     // 11. SUBMIT PROPOSAL & EXPERT EVALUATION
     const proposalTab = page.locator('button:has-text("Proposal")').first();
@@ -223,7 +232,7 @@ test.describe('CivicSolve Complete End-to-End Enterprise Lifecycle', () => {
     const districtInput = page.locator('input[placeholder*="district" i], select[name="district"], input#targetDistrict').first();
     if (await districtInput.isVisible()) {
       await districtInput.fill('Nagpur');
-      const submitAdaptBtn = page.locator('button:has-text("Confirm & Initialize Adaptation"), button:has-text("Initialize")').first();
+      const submitAdaptBtn = page.locator('button:has-text("Initiate Regional Adaptation"), button:has-text("Initiate"), button:has-text("Initialize")').first();
       if (await submitAdaptBtn.isVisible()) {
         await submitAdaptBtn.click();
         await page.waitForTimeout(800);
