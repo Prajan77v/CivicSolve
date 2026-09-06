@@ -266,12 +266,28 @@ html.light .hover\:bg-slate-700:hover,
 
 /* ── Text ────────────────────────────────────────────────────────── */
 
-/* H1 / page title level */
-html.light .text-white,
-html.light .text-slate-100,
-[data-resolved-theme="light"] .text-white,
-[data-resolved-theme="light"] .text-slate-100 {
+/* H1 / page title level (exempt buttons, pills, tags, and colored backgrounds) */
+html.light .text-white:not(button):not(button *):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-rose"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-cyan"]):not([class*="bg-violet"]):not([style*="background"]):not([class*="rounded-full"]):not([class*="badge"]),
+html.light .text-slate-100:not(button):not(button *):not([style*="background"]):not([data-accent-bg]),
+[data-resolved-theme="light"] .text-white:not(button):not(button *):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-rose"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-cyan"]):not([class*="bg-violet"]):not([style*="background"]):not([class*="rounded-full"]):not([class*="badge"]),
+[data-resolved-theme="light"] .text-slate-100:not(button):not(button *):not([style*="background"]):not([data-accent-bg]) {
   color: #0f172a !important;
+}
+
+/* Ensure buttons and colored pills always preserve accessible contrasting text */
+html.light button.bg-blue-600,
+html.light button.bg-blue-600 *,
+html.light button[style*="background-color"],
+html.light button[style*="background-color"] *,
+html.light a.bg-blue-600,
+html.light a.bg-blue-600 *,
+html.light a[style*="background-color"],
+html.light a[style*="background-color"] *,
+[data-resolved-theme="light"] button.bg-blue-600,
+[data-resolved-theme="light"] button.bg-blue-600 *,
+[data-resolved-theme="light"] button[style*="background-color"],
+[data-resolved-theme="light"] button[style*="background-color"] * {
+  color: var(--accent-foreground, #ffffff) !important;
 }
 
 /* Secondary heading level */
@@ -371,9 +387,13 @@ html.light .shadow-2xl,
 }
 
 /* ── Badge / Tag Pills ────────────────────────────────────────────── */
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/70,
 html.light .bg-slate-900\/60,
 html.light .bg-slate-900\/50,
 html.light .bg-slate-800\/50,
+[data-resolved-theme="light"] .bg-slate-900\/80,
+[data-resolved-theme="light"] .bg-slate-900\/70,
 [data-resolved-theme="light"] .bg-slate-900\/60 {
   background-color: #f1f5f9 !important;
   border-color: rgba(15, 23, 42, 0.09) !important;

@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAppearance } from '@/components/providers/appearance-provider'
 import { cn } from '@/lib/utils'
 
 interface MilestoneSummary {
@@ -118,6 +119,7 @@ function formatCurrency(num?: number | null): string {
 }
 
 export default function ProjectsPage() {
+  const { computedAccent } = useAppearance()
   const [projects, setProjects] = useState<ProjectItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeStage, setActiveStage] = useState<StageFilterId>('ALL')
@@ -309,16 +311,39 @@ export default function ProjectsPage() {
                   className={cn(
                     'px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-2 border',
                     isActive
-                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/25'
-                      : 'bg-slate-900/70 border-white/5 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                      ? 'font-bold shadow-md border-transparent'
+                      : 'bg-white dark:bg-slate-900/70 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/80 shadow-sm'
                   )}
+                  style={
+                    isActive
+                      ? {
+                          backgroundColor: computedAccent.accent,
+                          borderColor: computedAccent.accent,
+                          color: computedAccent.foreground,
+                          boxShadow: `0 4px 14px ${computedAccent.glow}`,
+                        }
+                      : undefined
+                  }
                 >
-                  <span>{filter.label}</span>
+                  <span style={isActive ? { color: computedAccent.foreground } : undefined}>
+                    {filter.label}
+                  </span>
                   <span
                     className={cn(
-                      'px-1.5 py-0.5 rounded-full text-[10px]',
-                      isActive ? 'bg-blue-700/80 text-white' : 'bg-slate-800 text-slate-500'
+                      'px-1.5 py-0.5 rounded-full text-[10px] font-bold transition-colors',
+                      !isActive && 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                     )}
+                    style={
+                      isActive
+                        ? {
+                            backgroundColor:
+                              computedAccent.foreground === '#ffffff'
+                                ? 'rgba(255, 255, 255, 0.25)'
+                                : 'rgba(0, 0, 0, 0.15)',
+                            color: computedAccent.foreground,
+                          }
+                        : undefined
+                    }
                   >
                     {count}
                   </span>
@@ -335,12 +360,15 @@ export default function ProjectsPage() {
               placeholder="Search by project, problem, team, or partner..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900/80 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 shadow-sm transition-colors"
+              style={{
+                outlineColor: computedAccent.accent,
+              }}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white"
               >
                 Clear
               </button>

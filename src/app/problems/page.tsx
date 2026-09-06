@@ -12,6 +12,7 @@ import {
   Compass,
 } from 'lucide-react'
 import AppShell from '@/components/layout/app-shell'
+import { useAppearance } from '@/components/providers/appearance-provider'
 import { cn } from '@/lib/utils'
 
 interface ProblemItem {
@@ -73,6 +74,7 @@ function parseJsonArray(val: string | string[] | undefined | null): string[] {
 }
 
 export default function ProblemsPage() {
+  const { computedAccent } = useAppearance()
   const [problems, setProblems] = useState<ProblemItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -165,40 +167,64 @@ export default function ProblemsPage() {
 
           <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
             {/* Domain Tabs */}
-            <div className="flex flex-wrap items-center gap-1">
-              {DOMAINS.map((d) => (
-                <button
-                  key={d.value}
-                  onClick={() => setSelectedDomain(d.value)}
-                  className={cn(
-                    'rounded px-2.5 py-1 text-xs font-medium transition-colors',
-                    selectedDomain === d.value
-                      ? 'bg-blue-600 text-white font-semibold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-                  )}
-                >
-                  {d.label}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {DOMAINS.map((d) => {
+                const isSelected = selectedDomain === d.value
+                return (
+                  <button
+                    key={d.value}
+                    onClick={() => setSelectedDomain(d.value)}
+                    className={cn(
+                      'rounded-lg px-3 py-1.5 text-xs font-semibold transition-all border',
+                      isSelected
+                        ? 'font-bold shadow-md border-transparent'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/80 shadow-sm'
+                    )}
+                    style={
+                      isSelected
+                        ? {
+                            backgroundColor: computedAccent.accent,
+                            color: computedAccent.foreground,
+                            boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                          }
+                        : undefined
+                    }
+                  >
+                    {d.label}
+                  </button>
+                )
+              })}
             </div>
 
             {/* Priority Filter */}
             <div className="flex items-center gap-1 text-xs">
               <span className="text-slate-500 font-mono text-[11px] mr-1">Priority:</span>
-              {PRIORITIES.map((p) => (
-                <button
-                  key={p.value}
-                  onClick={() => setSelectedPriority(p.value)}
-                  className={cn(
-                    'rounded px-2 py-0.5 text-[11px] font-medium transition-colors',
-                    selectedPriority === p.value
-                      ? 'bg-slate-700 text-white font-semibold'
-                      : 'text-slate-400 hover:text-slate-200'
-                  )}
-                >
-                  {p.label}
-                </button>
-              ))}
+              {PRIORITIES.map((p) => {
+                const isSelected = selectedPriority === p.value
+                return (
+                  <button
+                    key={p.value}
+                    onClick={() => setSelectedPriority(p.value)}
+                    className={cn(
+                      'rounded-md px-2.5 py-1 text-[11px] font-semibold transition-colors border',
+                      isSelected
+                        ? 'font-bold shadow-sm'
+                        : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                    )}
+                    style={
+                      isSelected
+                        ? {
+                            backgroundColor: computedAccent.accent,
+                            borderColor: computedAccent.accent,
+                            color: computedAccent.foreground,
+                          }
+                        : undefined
+                    }
+                  >
+                    {p.label}
+                  </button>
+                )
+              })}
 
               {(selectedDomain !== 'ALL' || selectedPriority !== 'ALL' || searchQuery) && (
                 <button
