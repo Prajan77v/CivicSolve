@@ -142,27 +142,58 @@ html.light .sidebar-container {
 
 /* ── Cards & Surfaces ─────────────────────────────────────────────── */
 html.light .bg-\[\#111726\],
+html.light .bg-\[\#0f131a\],
 html.light .bg-slate-900,
 html.light .bg-slate-900\/80,
 html.light .bg-slate-900\/90,
 html.light .bg-slate-950,
+html.light .bg-slate-950\/50,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950\/80,
 html.light .editorial-surface,
 html.light .glass,
 html.light .glass-card,
 html.light .glass-dark,
 html.light .surface-card,
 [data-resolved-theme="light"] .bg-\[\#111726\],
+[data-resolved-theme="light"] .bg-\[\#0f131a\],
 [data-resolved-theme="light"] .bg-slate-900,
 [data-resolved-theme="light"] .bg-slate-900\/80,
 [data-resolved-theme="light"] .bg-slate-950,
 [data-resolved-theme="light"] .editorial-surface,
 [data-resolved-theme="light"] .glass-card {
   background-color: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.09) !important;
+  border-color: rgba(15, 23, 42, 0.10) !important;
   box-shadow:
-    0 1px 3px 0 rgba(15, 23, 42, 0.06),
-    0 1px 2px -1px rgba(15, 23, 42, 0.04) !important;
+    0 1px 3px 0 rgba(15, 23, 42, 0.05),
+    0 1px 2px -1px rgba(15, 23, 42, 0.03) !important;
 }
+
+/* Specific light banner override for gradient headers like universities */
+html.light .bg-gradient-to-r.from-\[\#0d172e\],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] {
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 50%, #f0fdf4 100%) !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.08) !important;
+}
+
+html.light .bg-gradient-to-r.from-\[\#0d172e\] h1,
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] h1 {
+  color: #0f172a !important;
+}
+
+html.light .bg-gradient-to-r.from-\[\#0d172e\] p,
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] p {
+  color: #334155 !important;
+}
+
+html.light .bg-gradient-to-r.from-\[\#0d172e\] div[class*="border-blue-400"],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] div[class*="border-blue-400"] {
+  background-color: #ffffff !important;
+  color: #1d4ed8 !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
 
 html.light .bg-slate-800,
 html.light .bg-slate-800\/80,
@@ -310,29 +341,54 @@ html.light .bg-slate-800\/50,
 }
 
 /* ── Specialization / Category Tag Pills (University cards) ───────── */
-html.light [class*="bg-"][class*="500/10"],
-html.light [class*="bg-"][class*="500/15"],
-html.light [class*="bg-"][class*="600/10"],
-html.light [class*="bg-"][class*="600/15"] {
-  filter: saturate(0.7) !important;
+html.light .bg-slate-800\/90,
+html.light .bg-slate-800,
+html.light span[class*="bg-slate-800"],
+[data-resolved-theme="light"] .bg-slate-800\/90 {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
 /* ── Stat Metric Boxes in Cards ───────────────────────────────────── */
+html.light .bg-slate-950\/50,
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950,
 html.light .bg-slate-800\/30,
 html.light .bg-slate-800\/40,
 html.light .bg-slate-800\/50,
+[data-resolved-theme="light"] .bg-slate-950\/50,
 [data-resolved-theme="light"] .bg-slate-800\/30 {
   background-color: #f8fafc !important;
-  border-color: rgba(15, 23, 42, 0.08) !important;
-  color: #1e293b !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
 }
 
-/* ── Flagship / Highlight Box ─────────────────────────────────────── */
-html.light .bg-blue-500\/5,
-html.light .bg-blue-600\/5,
-html.light .bg-indigo-500\/5,
-[data-resolved-theme="light"] .bg-blue-500\/5 {
-  background-color: rgba(37, 99, 235, 0.05) !important;
+html.light .bg-slate-950\/50 div,
+[data-resolved-theme="light"] .bg-slate-950\/50 div {
+  color: #0f172a !important;
+}
+
+html.light .bg-slate-950\/50 div.text-\[10px\],
+[data-resolved-theme="light"] .bg-slate-950\/50 div.text-\[10px\] {
+  color: #64748b !important;
+}
+
+/* Flagship card box */
+html.light .bg-blue-950\/20,
+[data-resolved-theme="light"] .bg-blue-950\/20 {
+  background-color: #eff6ff !important;
+  border-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+html.light .bg-blue-950\/20 span,
+[data-resolved-theme="light"] .bg-blue-950\/20 span {
+  color: #1e3a8a !important;
+}
+
+html.light .bg-blue-950\/20 span.text-\[10px\],
+[data-resolved-theme="light"] .bg-blue-950\/20 span.text-\[10px\] {
+  color: #2563eb !important;
 }
 
 /* ── Sidebar Nav Items (unselected) ───────────────────────────────── */
