@@ -29,6 +29,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLayout } from './layout-context'
+import { useAppearance } from '@/components/providers/appearance-provider'
 
 interface NavSection {
   title: string
@@ -102,6 +103,7 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
   const { isMobileSidebarOpen, setMobileSidebarOpen } = useLayout()
+  const { computedAccent } = useAppearance()
 
   const userRole = (session?.user as any)?.role || 'CITIZEN'
   const userName = session?.user?.name || 'Priya Sharma'
@@ -127,13 +129,20 @@ export default function Sidebar() {
             className="flex items-center gap-2.5 group"
             onClick={() => setMobileSidebarOpen(false)}
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-white font-bold shadow-md shadow-blue-600/30">
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-md font-bold shadow-md transition-colors"
+              style={{
+                backgroundColor: computedAccent.accent,
+                color: computedAccent.foreground,
+                boxShadow: `0 2px 10px ${computedAccent.glow}`,
+              }}
+            >
               <Layers className="h-4 w-4" />
             </div>
 
             <div className="flex items-baseline gap-1.5">
               <span className="text-sm font-bold tracking-tight text-white">
-                Civic<span className="text-blue-500">Solve</span>
+                Civic<span style={{ color: computedAccent.accent }}>Solve</span>
               </span>
               <span className="text-[10px] font-mono text-slate-400">SIH26043</span>
             </div>
@@ -169,11 +178,20 @@ export default function Sidebar() {
                       className={cn(
                         'group flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all',
                         active
-                          ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/30 border-l-4 border-white pl-2'
+                          ? 'font-bold shadow-md border-l-4 border-white pl-2'
                           : isCertificates
                           ? 'text-amber-900 dark:text-slate-100 hover:bg-amber-50 dark:hover:bg-slate-800/80 bg-amber-500/10 dark:bg-slate-900/40 border border-amber-500/30'
                           : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-950 dark:hover:text-white'
                       )}
+                      style={
+                        active
+                          ? {
+                              backgroundColor: computedAccent.accent,
+                              color: computedAccent.foreground,
+                              boxShadow: `0 4px 14px ${computedAccent.glow}`,
+                            }
+                          : undefined
+                      }
                     >
                       <div className="flex items-center gap-2.5">
                         <Icon

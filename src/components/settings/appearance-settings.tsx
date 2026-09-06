@@ -83,7 +83,7 @@ export default function AppearanceSettings() {
         <div className="flex items-center justify-between">
           <div>
             <h2 id="theme-heading" className="text-base font-bold text-white flex items-center gap-2">
-              <Sun className="h-4 w-4 text-blue-400" />
+              <Sun className="h-4 w-4" style={{ color: computedAccent.accent }} />
               Interface Theme
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -91,7 +91,7 @@ export default function AppearanceSettings() {
             </p>
           </div>
           <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-slate-700 bg-slate-800/80 text-slate-300">
-            Active: <span className="font-bold text-white uppercase">{theme}</span> ({resolvedTheme})
+            Active: <span className="font-bold uppercase" style={{ color: computedAccent.accent }}>{theme}</span> ({resolvedTheme})
           </span>
         </div>
 
@@ -106,12 +106,29 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               theme === 'light'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              theme === 'light'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 25px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {theme === 'light' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
@@ -140,14 +157,30 @@ export default function AppearanceSettings() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className={cn(
-                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                  theme === 'light' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-                )}>
+                <div
+                  className={cn(
+                    'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                    theme === 'light' ? 'text-white shadow-sm' : 'border-slate-600 bg-slate-800'
+                  )}
+                  style={
+                    theme === 'light'
+                      ? {
+                          backgroundColor: computedAccent.accent,
+                          borderColor: computedAccent.accent,
+                          color: computedAccent.foreground,
+                        }
+                      : undefined
+                  }
+                >
                   {theme === 'light' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
                 </div>
                 <div>
-                  <span className={cn('text-xs block', theme === 'light' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Light</span>
+                  <span
+                    className={cn('text-xs block', theme === 'light' ? 'font-bold' : 'font-semibold text-white')}
+                    style={theme === 'light' ? { color: computedAccent.accent } : undefined}
+                  >
+                    Light
+                  </span>
                   <span className="text-[10px] text-slate-400">Clean professional day mode</span>
                 </div>
               </div>
@@ -164,12 +197,29 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               theme === 'dark'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              theme === 'dark'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 25px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {theme === 'dark' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
@@ -198,14 +248,30 @@ export default function AppearanceSettings() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className={cn(
-                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                  theme === 'dark' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-                )}>
+                <div
+                  className={cn(
+                    'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                    theme === 'dark' ? 'text-white shadow-sm' : 'border-slate-600 bg-slate-800'
+                  )}
+                  style={
+                    theme === 'dark'
+                      ? {
+                          backgroundColor: computedAccent.accent,
+                          borderColor: computedAccent.accent,
+                          color: computedAccent.foreground,
+                        }
+                      : undefined
+                  }
+                >
                   {theme === 'dark' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
                 </div>
                 <div>
-                  <span className={cn('text-xs block', theme === 'dark' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Dark</span>
+                  <span
+                    className={cn('text-xs block', theme === 'dark' ? 'font-bold' : 'font-semibold text-white')}
+                    style={theme === 'dark' ? { color: computedAccent.accent } : undefined}
+                  >
+                    Dark
+                  </span>
                   <span className="text-[10px] text-slate-400">Deep obsidian night workspace</span>
                 </div>
               </div>
@@ -222,12 +288,29 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               theme === 'system'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              theme === 'system'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 25px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {theme === 'system' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
@@ -253,14 +336,30 @@ export default function AppearanceSettings() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className={cn(
-                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                  theme === 'system' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-                )}>
+                <div
+                  className={cn(
+                    'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                    theme === 'system' ? 'text-white shadow-sm' : 'border-slate-600 bg-slate-800'
+                  )}
+                  style={
+                    theme === 'system'
+                      ? {
+                          backgroundColor: computedAccent.accent,
+                          borderColor: computedAccent.accent,
+                          color: computedAccent.foreground,
+                        }
+                      : undefined
+                  }
+                >
                   {theme === 'system' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
                 </div>
                 <div>
-                  <span className={cn('text-xs block', theme === 'system' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>System</span>
+                  <span
+                    className={cn('text-xs block', theme === 'system' ? 'font-bold' : 'font-semibold text-white')}
+                    style={theme === 'system' ? { color: computedAccent.accent } : undefined}
+                  >
+                    System
+                  </span>
                   <span className="text-[10px] text-slate-400">Match operating system preference</span>
                 </div>
               </div>
@@ -273,7 +372,7 @@ export default function AppearanceSettings() {
       <section aria-labelledby="accent-heading" className="space-y-4">
         <div>
           <h2 id="accent-heading" className="text-base font-bold text-white flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-blue-400" />
+            <Sparkles className="h-4 w-4" style={{ color: computedAccent.accent }} />
             Accent Palette
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -415,7 +514,7 @@ export default function AppearanceSettings() {
       <section aria-labelledby="density-heading" className="space-y-4">
         <div>
           <h2 id="density-heading" className="text-base font-bold text-white flex items-center gap-2">
-            <Minimize2 className="h-4 w-4 text-blue-400" />
+            <Minimize2 className="h-4 w-4" style={{ color: computedAccent.accent }} />
             Interface Density
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -434,12 +533,29 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               density === 'compact'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              density === 'compact'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 20px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {density === 'compact' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
@@ -454,14 +570,30 @@ export default function AppearanceSettings() {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className={cn(
-                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                density === 'compact' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-              )}>
+              <div
+                className={cn(
+                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                  density === 'compact' ? 'shadow-sm' : 'border-slate-600 bg-slate-800'
+                )}
+                style={
+                  density === 'compact'
+                    ? {
+                        backgroundColor: computedAccent.accent,
+                        borderColor: computedAccent.accent,
+                        color: computedAccent.foreground,
+                      }
+                    : undefined
+                }
+              >
                 {density === 'compact' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className={cn('text-xs block', density === 'compact' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Compact</span>
+                <span
+                  className={cn('text-xs block', density === 'compact' ? 'font-bold' : 'font-semibold text-white')}
+                  style={density === 'compact' ? { color: computedAccent.accent } : undefined}
+                >
+                  Compact
+                </span>
                 <span className="text-[10px] text-slate-400">High information density, condensed tables</span>
               </div>
             </div>
@@ -477,12 +609,29 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               density === 'comfortable'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              density === 'comfortable'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 20px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {density === 'comfortable' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
@@ -496,14 +645,30 @@ export default function AppearanceSettings() {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className={cn(
-                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                density === 'comfortable' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-              )}>
+              <div
+                className={cn(
+                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                  density === 'comfortable' ? 'shadow-sm' : 'border-slate-600 bg-slate-800'
+                )}
+                style={
+                  density === 'comfortable'
+                    ? {
+                        backgroundColor: computedAccent.accent,
+                        borderColor: computedAccent.accent,
+                        color: computedAccent.foreground,
+                      }
+                    : undefined
+                }
+              >
                 {density === 'comfortable' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className={cn('text-xs block', density === 'comfortable' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Comfortable (Default)</span>
+                <span
+                  className={cn('text-xs block', density === 'comfortable' ? 'font-bold' : 'font-semibold text-white')}
+                  style={density === 'comfortable' ? { color: computedAccent.accent } : undefined}
+                >
+                  Comfortable (Default)
+                </span>
                 <span className="text-[10px] text-slate-400">Balanced padding and optimal readability</span>
               </div>
             </div>
@@ -519,12 +684,29 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               density === 'spacious'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              density === 'spacious'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 20px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {density === 'spacious' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
@@ -537,14 +719,30 @@ export default function AppearanceSettings() {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className={cn(
-                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                density === 'spacious' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-              )}>
+              <div
+                className={cn(
+                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                  density === 'spacious' ? 'shadow-sm' : 'border-slate-600 bg-slate-800'
+                )}
+                style={
+                  density === 'spacious'
+                    ? {
+                        backgroundColor: computedAccent.accent,
+                        borderColor: computedAccent.accent,
+                        color: computedAccent.foreground,
+                      }
+                    : undefined
+                }
+              >
                 {density === 'spacious' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className={cn('text-xs block', density === 'spacious' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Spacious</span>
+                <span
+                  className={cn('text-xs block', density === 'spacious' ? 'font-bold' : 'font-semibold text-white')}
+                  style={density === 'spacious' ? { color: computedAccent.accent } : undefined}
+                >
+                  Spacious
+                </span>
                 <span className="text-[10px] text-slate-400">Generous whitespace for presentations</span>
               </div>
             </div>
@@ -556,7 +754,7 @@ export default function AppearanceSettings() {
       <section aria-labelledby="motion-heading" className="space-y-4">
         <div>
           <h2 id="motion-heading" className="text-base font-bold text-white flex items-center gap-2">
-            <Zap className="h-4 w-4 text-blue-400" />
+            <Zap className="h-4 w-4" style={{ color: computedAccent.accent }} />
             Motion & Transitions
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -575,26 +773,59 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               motion === 'full'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              motion === 'full'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 20px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {motion === 'full' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
             )}
 
             <div className="flex items-center gap-2">
-              <div className={cn(
-                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                motion === 'full' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-              )}>
+              <div
+                className={cn(
+                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                  motion === 'full' ? 'shadow-sm' : 'border-slate-600 bg-slate-800'
+                )}
+                style={
+                  motion === 'full'
+                    ? {
+                        backgroundColor: computedAccent.accent,
+                        borderColor: computedAccent.accent,
+                        color: computedAccent.foreground,
+                      }
+                    : undefined
+                }
+              >
                 {motion === 'full' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className={cn('text-xs block', motion === 'full' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Full Motion</span>
+                <span
+                  className={cn('text-xs block', motion === 'full' ? 'font-bold' : 'font-semibold text-white')}
+                  style={motion === 'full' ? { color: computedAccent.accent } : undefined}
+                >
+                  Full Motion
+                </span>
                 <span className="text-[10px] text-slate-400">Micro-interactions and fluid animations</span>
               </div>
             </div>
@@ -610,26 +841,59 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               motion === 'reduced'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              motion === 'reduced'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 20px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {motion === 'reduced' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
             )}
 
             <div className="flex items-center gap-2">
-              <div className={cn(
-                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                motion === 'reduced' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-              )}>
+              <div
+                className={cn(
+                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                  motion === 'reduced' ? 'shadow-sm' : 'border-slate-600 bg-slate-800'
+                )}
+                style={
+                  motion === 'reduced'
+                    ? {
+                        backgroundColor: computedAccent.accent,
+                        borderColor: computedAccent.accent,
+                        color: computedAccent.foreground,
+                      }
+                    : undefined
+                }
+              >
                 {motion === 'reduced' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className={cn('text-xs block', motion === 'reduced' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Reduced Motion</span>
+                <span
+                  className={cn('text-xs block', motion === 'reduced' ? 'font-bold' : 'font-semibold text-white')}
+                  style={motion === 'reduced' ? { color: computedAccent.accent } : undefined}
+                >
+                  Reduced Motion
+                </span>
                 <span className="text-[10px] text-slate-400">Minimal animations, snappy transitions</span>
               </div>
             </div>
@@ -645,26 +909,59 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               motion === 'off'
-                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
+                ? 'border-2 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
+            style={
+              motion === 'off'
+                ? {
+                    borderColor: computedAccent.accent,
+                    backgroundColor: computedAccent.light,
+                    boxShadow: `0 0 20px ${computedAccent.glow}`,
+                    outline: `2px solid ${computedAccent.accent}`,
+                  }
+                : undefined
+            }
           >
             {motion === 'off' && (
-              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+              <span
+                className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md"
+                style={{
+                  backgroundColor: computedAccent.accent,
+                  color: computedAccent.foreground,
+                  boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                }}
+              >
                 <Check className="h-3 w-3 stroke-[3]" />
                 Active
               </span>
             )}
 
             <div className="flex items-center gap-2">
-              <div className={cn(
-                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                motion === 'off' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
-              )}>
+              <div
+                className={cn(
+                  'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
+                  motion === 'off' ? 'shadow-sm' : 'border-slate-600 bg-slate-800'
+                )}
+                style={
+                  motion === 'off'
+                    ? {
+                        backgroundColor: computedAccent.accent,
+                        borderColor: computedAccent.accent,
+                        color: computedAccent.foreground,
+                      }
+                    : undefined
+                }
+              >
                 {motion === 'off' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className={cn('text-xs block', motion === 'off' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Off</span>
+                <span
+                  className={cn('text-xs block', motion === 'off' ? 'font-bold' : 'font-semibold text-white')}
+                  style={motion === 'off' ? { color: computedAccent.accent } : undefined}
+                >
+                  Off
+                </span>
                 <span className="text-[10px] text-slate-400">Zero transitions, instant rendering</span>
               </div>
             </div>
@@ -677,7 +974,7 @@ export default function AppearanceSettings() {
         <div className="flex items-center justify-between">
           <div>
             <h2 id="preview-heading" className="text-base font-bold text-white flex items-center gap-2">
-              <Eye className="h-4 w-4 text-blue-400" />
+              <Eye className="h-4 w-4" style={{ color: computedAccent.accent }} />
               Live Workspace Preview
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">

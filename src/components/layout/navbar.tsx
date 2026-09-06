@@ -40,6 +40,7 @@ export default function Navbar() {
     theme,
     resolvedTheme,
     accentKey,
+    computedAccent,
     setTheme,
     setAccentKey,
   } = useAppearance()
@@ -118,7 +119,11 @@ export default function Navbar() {
         {/* Submit Problem Button */}
         <Link
           href="/problems/new"
-          className="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-500 active:scale-[0.98]"
+          className="hidden sm:inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90 active:scale-[0.98]"
+          style={{
+            backgroundColor: computedAccent.accent,
+            color: computedAccent.foreground,
+          }}
         >
           <Plus className="h-3.5 w-3.5" />
           <span>Submit Problem</span>
@@ -144,7 +149,7 @@ export default function Navbar() {
             title="Appearance & Theme"
           >
             {resolvedTheme === 'dark' ? (
-              <Moon className="h-3.5 w-3.5 text-blue-400" />
+              <Moon className="h-3.5 w-3.5" style={{ color: computedAccent.accent }} />
             ) : (
               <Sun className="h-3.5 w-3.5 text-amber-500" />
             )}
@@ -157,10 +162,10 @@ export default function Navbar() {
             >
               <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                 <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Palette className="h-3.5 w-3.5 text-blue-400" />
+                  <Palette className="h-3.5 w-3.5" style={{ color: computedAccent.accent }} />
                   Appearance Quick Menu
                 </span>
-                <span className="text-[10px] font-mono text-slate-400 uppercase">{theme}</span>
+                <span className="text-[10px] font-mono uppercase" style={{ color: computedAccent.accent }}>{theme}</span>
               </div>
 
               {/* Theme choices */}
@@ -183,9 +188,19 @@ export default function Navbar() {
                         className={cn(
                           'flex flex-col items-center justify-center py-1.5 rounded-lg border text-[11px] font-medium transition-all relative',
                           isSelected
-                            ? 'border-2 border-blue-500 bg-blue-600 text-white font-bold shadow-md shadow-blue-500/30'
+                            ? 'border-2 text-white font-bold shadow-md'
                             : 'border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800'
                         )}
+                        style={
+                          isSelected
+                            ? {
+                                backgroundColor: computedAccent.accent,
+                                borderColor: computedAccent.accent,
+                                color: computedAccent.foreground,
+                                boxShadow: `0 2px 10px ${computedAccent.glow}`,
+                              }
+                            : undefined
+                        }
                       >
                         <Icon className="h-3.5 w-3.5 mb-1" />
                         <span>{t.label}</span>
@@ -228,7 +243,8 @@ export default function Navbar() {
                 <Link
                   href="/settings?tab=appearance"
                   onClick={() => setAppearanceOpen(false)}
-                  className="flex items-center justify-between text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+                  className="flex items-center justify-between text-[11px] font-semibold transition-colors hover:opacity-80"
+                  style={{ color: computedAccent.accent }}
                 >
                   <span>All Appearance Settings</span>
                   <span>→</span>
@@ -259,7 +275,10 @@ export default function Navbar() {
           >
             <Bell className="h-3.5 w-3.5" />
             {unreadNotificationsCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-blue-600 px-1 text-[8px] font-bold text-white">
+              <span
+                className="absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-1 text-[8px] font-bold text-white shadow-sm"
+                style={{ backgroundColor: computedAccent.accent, color: computedAccent.foreground }}
+              >
                 {unreadNotificationsCount}
               </span>
             )}
@@ -281,7 +300,10 @@ export default function Navbar() {
             className="flex items-center gap-1.5 rounded-lg p-1 transition-colors hover:bg-slate-800/80"
             aria-label="User menu"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-xs font-semibold text-white shadow-sm overflow-hidden">
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold text-white shadow-sm overflow-hidden"
+              style={{ backgroundColor: computedAccent.accent, color: computedAccent.foreground }}
+            >
               {userAvatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -310,7 +332,14 @@ export default function Navbar() {
               <div className="px-3 py-2 border-b border-slate-800">
                 <p className="text-xs font-semibold text-white truncate">{userName}</p>
                 <p className="text-[11px] text-slate-400 truncate">{userEmail}</p>
-                <div className="mt-1.5 inline-flex items-center rounded border border-blue-500/20 bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-blue-400">
+                <div
+                  className="mt-1.5 inline-flex items-center rounded border px-1.5 py-0.5 text-[9px] font-semibold tracking-wider"
+                  style={{
+                    backgroundColor: computedAccent.light,
+                    borderColor: computedAccent.border,
+                    color: computedAccent.accent,
+                  }}
+                >
                   {userRole}
                 </div>
               </div>

@@ -25,6 +25,7 @@ import {
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import AppearanceSettings from '@/components/settings/appearance-settings'
+import { useAppearance } from '@/components/providers/appearance-provider'
 import { cn } from '@/lib/utils'
 
 export type SettingsSection =
@@ -83,6 +84,7 @@ export default function SettingsPage() {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { computedAccent } = useAppearance()
 
   const initialTab = (searchParams.get('tab') as SettingsSection) || 'appearance'
   const [activeSection, setActiveSection] = useState<SettingsSection>(initialTab)
@@ -146,7 +148,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
             <span>CivicSolve Workspace</span>
             <span>/</span>
-            <span className="text-blue-400 font-medium">Settings & Preferences</span>
+            <span className="font-medium" style={{ color: computedAccent.accent }}>Settings & Preferences</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Settings
@@ -180,11 +182,20 @@ export default function SettingsPage() {
                     className={cn(
                       'w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-left transition-all',
                       isActive
-                        ? 'bg-blue-600 text-white shadow-md'
+                        ? 'font-bold shadow-md'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                     )}
+                    style={
+                      isActive
+                        ? {
+                            backgroundColor: computedAccent.accent,
+                            color: computedAccent.foreground,
+                            boxShadow: `0 4px 14px ${computedAccent.glow}`,
+                          }
+                        : undefined
+                    }
                   >
-                    <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-white' : 'text-slate-400')} />
+                    <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-inherit' : 'text-slate-400')} />
                     <span className="truncate">{item.label}</span>
                   </button>
                 )
@@ -199,7 +210,7 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Palette className="h-5 w-5 text-blue-400" />
+                    <Palette className="h-5 w-5" style={{ color: computedAccent.accent }} />
                     Appearance & Display Customization
                   </h2>
                   <p className="text-xs text-slate-400 mt-0.5">
@@ -221,13 +232,23 @@ export default function SettingsPage() {
                 className="space-y-6"
               >
                 <div className="flex items-center gap-4 pb-6 border-b border-slate-800">
-                  <div className="h-16 w-16 rounded-2xl bg-blue-600 flex items-center justify-center font-bold text-xl text-white shadow-md">
+                  <div
+                    className="h-16 w-16 rounded-2xl flex items-center justify-center font-bold text-xl shadow-md"
+                    style={{ backgroundColor: computedAccent.accent, color: computedAccent.foreground }}
+                  >
                     PS
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-white">{name}</h3>
                     <p className="text-xs text-slate-400">{email}</p>
-                    <span className="inline-block mt-1 text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <span
+                      className="inline-block mt-1 text-[10px] font-mono px-2 py-0.5 rounded border"
+                      style={{
+                        backgroundColor: computedAccent.light,
+                        color: computedAccent.accent,
+                        borderColor: computedAccent.border,
+                      }}
+                    >
                       Verified Municipal Solver
                     </span>
                   </div>
@@ -279,7 +300,8 @@ export default function SettingsPage() {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-500"
+                    className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: computedAccent.accent, color: computedAccent.foreground }}
                   >
                     <Save className="h-3.5 w-3.5" />
                     Save Profile
@@ -326,7 +348,8 @@ export default function SettingsPage() {
                 <div className="pt-4 border-t border-slate-800 flex justify-end">
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-500"
+                    className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: computedAccent.accent, color: computedAccent.foreground }}
                   >
                     <Save className="h-3.5 w-3.5" />
                     Save Notifications
@@ -373,7 +396,8 @@ export default function SettingsPage() {
                 <div className="pt-4 border-t border-slate-800 flex justify-end">
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-500"
+                    className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: computedAccent.accent, color: computedAccent.foreground }}
                   >
                     <Save className="h-3.5 w-3.5" />
                     Save Privacy Settings
@@ -438,7 +462,8 @@ export default function SettingsPage() {
                 <div className="pt-4 border-t border-slate-800 flex justify-end">
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-500"
+                    className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: computedAccent.accent, color: computedAccent.foreground }}
                   >
                     <Save className="h-3.5 w-3.5" />
                     Update Password
@@ -466,7 +491,14 @@ export default function SettingsPage() {
                   <p className="text-xs text-slate-400">{department}</p>
                 </div>
 
-                <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/10 text-xs text-blue-200">
+                <div
+                  className="p-4 rounded-xl border text-xs"
+                  style={{
+                    backgroundColor: computedAccent.light,
+                    borderColor: computedAccent.border,
+                    color: computedAccent.accent,
+                  }}
+                >
                   <div className="font-semibold text-white mb-1">Academic Open Access</div>
                   Your account is registered under SIH26043 educational consortium licensing. Verification records are permanently anchored on the public certificate ledger.
                 </div>
