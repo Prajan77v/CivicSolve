@@ -1,0 +1,536 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("CITIZEN")
+  avatar    String?
+  bio       String?
+  phone     String?
+  verified  Boolean  @default(false)
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentProfile    Student?
+  facultyProfile    Faculty?
+  teamMemberships   TeamMember[]
+  submittedProblems Problem[]          @relation("SubmittedBy")
+  communityFeedback CommunityFeedback[]
+  leaderboardScore  LeaderboardScore?
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  messages          Message[]
+  projectUpdates    ProjectUpdate[]
+  certificates      Certificate[]
+  teamJoinRequests  TeamJoinRequest[]
+}
+
+model Student {
+  id               String      @id @default(cuid())
+  userId           String      @unique
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  universityId     String?
+  university       University? @relation(fields: [universityId], references: [id])
+  departmentId     String?
+  department       Department? @relation(fields: [departmentId], references: [id])
+  skills           String
+  yearOfStudy      Int?
+  impactScore      Float       @default(0)
+  problemsSolved   Int         @default(0)
+  deploymentsCount Int         @default(0)
+  peopleImpacted   Int         @default(0)
+  createdAt        DateTime    @default(now())
+}
+
+model Faculty {
+  id              String      @id @default(cuid())
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  universityId    String?
+  university      University? @relation(fields: [universityId], references: [id])
+  departmentId    String?
+  department      Department? @relation(fields: [departmentId], references: [id])
+  specializations String
+  designation     String?
+  createdAt       DateTime    @default(now())
+  mentorships     Mentorship[]
+}
+
+model University {
+  id          String       @id @default(cuid())
+  name        String
+  shortName   String
+  city        String
+  state       String
+  expertise   String
+  ranking     Int?
+  verified    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  departments Department[]
+  students    Student[]
+  faculty     Faculty[]
+  projects    Project[]
+  teams       Team[]
+}
+
+model Department {
+  id           String     @id @default(cuid())
+  name         String
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  expertise    String
+  createdAt    DateTime   @default(now())
+  students     Student[]
+  faculty      Faculty[]
+  teams        Team[]
+}
+
+model Team {
+  id           String      @id @default(cuid())
+  name         String
+  universityId String?
+  university   University? @relation(fields: [universityId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  skills       String
+  size         Int         @default(0)
+  verified     Boolean     @default(false)
+  matchScore   Float?
+  createdAt    DateTime    @default(now())
+  members            TeamMember[]
+  projects           Project[]
+  joinRequests       TeamJoinRequest[]
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     String   @default("MEMBER")
+  joinedAt DateTime @default(now())
+}
+
+model Organization {
+  id             String           @id @default(cuid())
+  name           String
+  type           String
+  sector         String
+  expertise      String
+  city           String
+  state          String
+  verified       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  projects       Project[]        @relation("IndustryPartner")
+  fundingSupport FundingSupport[]
+}
+
+model Problem {
+  id            String              @id @default(cuid())
+  title         String
+  description   String
+  category      String
+  subcategory   String?
+  priority      String              @default("MEDIUM")
+  status        String              @default("SUBMITTED")
+  submittedById String
+  submittedBy   User                @relation("SubmittedBy", fields: [submittedById], references: [id])
+  affectedCount Int?
+  urgencyNote   String?
+  tags          String
+  sdgGoals      String
+  isPublic          Boolean             @default(true)
+  reviewStatus      String              @default("SUBMITTED") // SUBMITTED | UNDER_REVIEW | VERIFIED | PUBLISHED | REJECTED
+  adminFeedback     String?
+  priorityBreakdown String?
+  challengeGroupId  String?
+  challengeGroup    ChallengeGroup?     @relation(fields: [challengeGroupId], references: [id])
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  location          ProblemLocation?
+  evidence          ProblemEvidence[]
+  aiAnalysis        ProblemAIAnalysis?
+  projects          Project[]
+  feedback          CommunityFeedback[]
+  similarTo         ProblemSimilarity[] @relation("SourceProblem")
+  similarFrom       ProblemSimilarity[] @relation("SimilarProblem")
+}
+
+model ProblemLocation {
+  id        String  @id @default(cuid())
+  problemId String  @unique
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  address   String?
+  district  String?
+  state     String?
+  pincode   String?
+  lat       Float?
+  lng       Float?
+}
+
+model ProblemEvidence {
+  id        String  @id @default(cuid())
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  type      String
+  url       String
+  caption   String?
+}
+
+model ProblemAIAnalysis {
+  id                  String   @id @default(cuid())
+  problemId           String   @unique
+  problem             Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  domain              String
+  subdomain           String?
+  confidence          Float
+  priorityScore       Float
+  priorityReason      String
+  affectedEstimate    Int?
+  duplicateRisk       Float
+  detectedTech        String
+  recommendedSkills   String
+  sdgAlignment        String
+  matchedUniversities String
+  matchedTeams        String
+  matchedIndustry     String
+  nextSteps           String
+  processedAt         DateTime @default(now())
+}
+
+model ProblemSimilarity {
+  id               String  @id @default(cuid())
+  sourceProblemId  String
+  sourceProblem    Problem @relation("SourceProblem", fields: [sourceProblemId], references: [id], onDelete: Cascade)
+  similarProblemId String
+  similarProblem   Problem @relation("SimilarProblem", fields: [similarProblemId], references: [id], onDelete: Cascade)
+  similarity       Float
+}
+
+model Project {
+  id                String        @id @default(cuid())
+  problemId         String
+  problem           Problem       @relation(fields: [problemId], references: [id])
+  title             String
+  teamId            String?
+  team              Team?         @relation(fields: [teamId], references: [id])
+  universityId      String?
+  university        University?   @relation(fields: [universityId], references: [id])
+  industryPartnerId String?
+  industryPartner   Organization? @relation("IndustryPartner", fields: [industryPartnerId], references: [id])
+  status            String        @default("ACTIVE")
+  startDate         DateTime      @default(now())
+  targetDate        DateTime?
+  completedAt       DateTime?
+  progressPercent   Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  milestones        Milestone[]
+  tasks             Task[]
+  proposals         Proposal[]
+  mentorships       Mentorship[]
+  fundingSupport    FundingSupport[]
+  deployments       Deployment[]
+  updates           ProjectUpdate[]
+  messages          Message[]
+  certificates      Certificate[]
+  evaluations       Evaluation[]
+  files             ProjectFile[]
+  solution          Solution?
+}
+
+model Milestone {
+  id            String    @id @default(cuid())
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  type          String
+  status        String    @default("PENDING")
+  completionPct Int       @default(0)
+  dueDate       DateTime?
+  completedAt   DateTime?
+  evidence      String?
+  reviewNotes   String?
+  order         Int       @default(0)
+  createdAt     DateTime  @default(now())
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      String    @default("TODO")
+  priority    String    @default("MEDIUM")
+  assigneeId  String?
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Proposal {
+  id                 String    @id @default(cuid())
+  projectId          String
+  project            Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title              String
+  understanding      String
+  solution           String
+  technology         String
+  implementationPlan String
+  estimatedCost      Float?
+  expectedImpact     String
+  timeline           String
+  teamMembers        String
+  status             String    @default("DRAFT")
+  reviewNotes        String?
+  reviewedById       String?
+  reviewedAt         DateTime?
+  createdAt          DateTime  @default(now())
+}
+
+model Mentorship {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  facultyId String
+  faculty   Faculty  @relation(fields: [facultyId], references: [id])
+  status    String   @default("ACTIVE")
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model FundingSupport {
+  id             String       @id @default(cuid())
+  projectId      String
+  project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  type           String
+  amount         Float?
+  description    String?
+  status         String       @default("CONFIRMED")
+  createdAt      DateTime     @default(now())
+}
+
+model Deployment {
+  id            String         @id @default(cuid())
+  projectId     String
+  project       Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  deployedAt    DateTime       @default(now())
+  location      String?
+  description   String?
+  status        String         @default("ACTIVE")
+  impactMetrics ImpactMetric[]
+}
+
+model ImpactMetric {
+  id           String     @id @default(cuid())
+  deploymentId String
+  deployment   Deployment @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+  metricName   String
+  beforeValue  String
+  afterValue   String
+  unit         String?
+  measuredAt   DateTime   @default(now())
+  verified     Boolean    @default(false)
+}
+
+model CommunityFeedback {
+  id        String   @id @default(cuid())
+  problemId String
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+model ProjectUpdate {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  content   String
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  type      String   @default("UPDATE")
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Certificate {
+  id              String                    @id @default(cuid())
+  certificateId   String                    @unique @default(cuid())
+  userId          String
+  user            User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String
+  problemTitle    String
+  role            String
+  projectId       String?
+  project         Project?                  @relation(fields: [projectId], references: [id])
+  impactSummary   String?
+  issuedBy        String                    @default("CivicSolve Platform")
+  issuedAt        DateTime                  @default(now())
+  verified        Boolean                   @default(true)
+  verifications   CertificateVerification[]
+}
+
+model CertificateVerification {
+  id            String      @id @default(cuid())
+  certificateId String
+  certificate   Certificate @relation(fields: [certificateId], references: [id])
+  verifiedAt    DateTime    @default(now())
+  verifierIp    String?
+}
+
+model LeaderboardScore {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalScore      Int      @default(0)
+  problemsSolved  Int      @default(0)
+  prototypesBuilt Int      @default(0)
+  deployments     Int      @default(0)
+  peopleImpacted  Int      @default(0)
+  badges          String
+  updatedAt       DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("INFO")
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model ChallengeGroup {
+  id                 String    @id @default(cuid())
+  title              String
+  description        String
+  domain             String
+  combinedPopulation Int       @default(0)
+  combinedPriority   String    @default("CRITICAL")
+  commonRequirements String
+  region             String
+  status             String    @default("ACTIVE")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  problems           Problem[]
+}
+
+model Evaluation {
+  id             String   @id @default(cuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evaluatorId    String?
+  evaluatorName  String
+  evaluatorRole  String
+  innovation     Float    @default(8.0) // 0-10
+  feasibility    Float    @default(8.0) // 0-10
+  cost           Float    @default(8.0) // 0-10
+  scalability    Float    @default(8.0) // 0-10
+  socialImpact   Float    @default(9.0) // 0-10
+  overallScore   Float    @default(82.0) // 0-100
+  recommendation String   @default("RECOMMENDED_FOR_PILOT") // RECOMMENDED_FOR_PILOT | APPROVED | CHANGES_NEEDED
+  comments       String?
+  createdAt      DateTime @default(now())
+}
+
+model Solution {
+  id                         String               @id @default(cuid())
+  title                      String
+  summary                    String
+  domain                     String
+  projectId                  String?              @unique
+  project                    Project?             @relation(fields: [projectId], references: [id])
+  originalProblemTitle       String
+  originalProblemId          String?
+  universityName             String
+  teamName                   String
+  technologies               String
+  implementationRequirements String
+  deploymentRequirements     String
+  cost                       Float?
+  measuredImpact             String
+  primaryRegion              String
+  regionsDeployed            String
+  isPublished                Boolean              @default(true)
+  createdAt                  DateTime             @default(now())
+  adaptations                SolutionAdaptation[]
+}
+
+model SolutionAdaptation {
+  id               String   @id @default(cuid())
+  solutionId       String
+  solution         Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  adaptedRegion    String
+  adaptedByTeam    String
+  targetState      String
+  targetDistrict   String
+  adaptationStage  String   @default("ADAPTATION") // ADAPTATION | PILOT | DEPLOYMENT
+  adaptedProjectId String?
+  status           String   @default("ACTIVE")
+  createdAt        DateTime @default(now())
+}
+
+model TeamJoinRequest {
+  id        String   @id @default(cuid())
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("DEVELOPER") // TEAM_LEAD | DEVELOPER | RESEARCHER | DESIGNER | DOMAIN_EXPERT | OPERATIONS
+  type      String   @default("JOIN_REQUEST") // JOIN_REQUEST | INVITATION
+  status    String   @default("PENDING") // PENDING | ACCEPTED | REJECTED
+  message   String?
+  createdAt DateTime @default(now())
+}
+
+model ProjectFile {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name       String
+  url        String
+  fileType   String   @default("DOCUMENT") // DOCUMENT | CAD_MODEL | DATASET | CODE | REPORT
+  sizeBytes  Int?
+  uploadedBy String?
+  createdAt  DateTime @default(now())
+}
