@@ -106,10 +106,17 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               theme === 'light'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {theme === 'light' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             {/* Visual Mini Mockup */}
             <div className="w-full h-24 rounded-lg bg-[#ffffff] border border-slate-200 p-2.5 flex flex-col justify-between overflow-hidden shadow-inner mb-3">
               <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
@@ -135,12 +142,12 @@ export default function AppearanceSettings() {
               <div className="flex items-center gap-2">
                 <div className={cn(
                   'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                  theme === 'light' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                  theme === 'light' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
                 )}>
                   {theme === 'light' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
                 </div>
                 <div>
-                  <span className="text-xs font-semibold text-white block">Light</span>
+                  <span className={cn('text-xs block', theme === 'light' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Light</span>
                   <span className="text-[10px] text-slate-400">Clean professional day mode</span>
                 </div>
               </div>
@@ -157,10 +164,17 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               theme === 'dark'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {theme === 'dark' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             {/* Visual Mini Mockup */}
             <div className="w-full h-24 rounded-lg bg-[#08090c] border border-slate-800 p-2.5 flex flex-col justify-between overflow-hidden shadow-inner mb-3">
               <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
@@ -186,12 +200,12 @@ export default function AppearanceSettings() {
               <div className="flex items-center gap-2">
                 <div className={cn(
                   'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                  theme === 'dark' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                  theme === 'dark' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
                 )}>
                   {theme === 'dark' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
                 </div>
                 <div>
-                  <span className="text-xs font-semibold text-white block">Dark</span>
+                  <span className={cn('text-xs block', theme === 'dark' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Dark</span>
                   <span className="text-[10px] text-slate-400">Deep obsidian night workspace</span>
                 </div>
               </div>
@@ -208,10 +222,17 @@ export default function AppearanceSettings() {
             className={cn(
               'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               theme === 'system'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {theme === 'system' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             {/* Visual Mini Mockup: Split Light/Dark */}
             <div className="w-full h-24 rounded-lg border border-slate-800 flex overflow-hidden shadow-inner mb-3">
               <div className="w-1/2 h-full bg-white p-2 flex flex-col justify-between border-r border-slate-200">
@@ -234,12 +255,12 @@ export default function AppearanceSettings() {
               <div className="flex items-center gap-2">
                 <div className={cn(
                   'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                  theme === 'system' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                  theme === 'system' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
                 )}>
                   {theme === 'system' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
                 </div>
                 <div>
-                  <span className="text-xs font-semibold text-white block">System</span>
+                  <span className={cn('text-xs block', theme === 'system' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>System</span>
                   <span className="text-[10px] text-slate-400">Match operating system preference</span>
                 </div>
               </div>
@@ -260,7 +281,7 @@ export default function AppearanceSettings() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {ACCENT_PRESETS.map((preset) => {
             const isSelected = accentKey === preset.key
             return (
@@ -272,21 +293,51 @@ export default function AppearanceSettings() {
                 data-testid={`accent-${preset.key}-btn`}
                 onClick={() => setAccentKey(preset.key)}
                 className={cn(
-                  'flex flex-col items-center p-3 rounded-xl border text-center transition-all group',
+                  'relative flex flex-col items-center p-3 rounded-xl border text-center transition-all group',
                   isSelected
-                    ? 'border-white/30 bg-slate-850 shadow-md ring-2 ring-offset-2 ring-offset-[#08090c]'
+                    ? 'border-2 bg-slate-800/90 shadow-xl ring-2 ring-offset-2 ring-offset-[#08090c]'
                     : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
                 )}
-                style={isSelected ? { borderColor: preset.hex, outlineColor: preset.hex } : undefined}
+                style={
+                  isSelected
+                    ? {
+                        borderColor: preset.hex,
+                        outlineColor: preset.hex,
+                        boxShadow: `0 0 20px ${preset.hex}45`,
+                      }
+                    : undefined
+                }
               >
+                {isSelected && (
+                  <span
+                    className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-white shadow-md ring-2 ring-[#08090c]"
+                    style={{ backgroundColor: preset.hex }}
+                  >
+                    <Check className="h-2.5 w-2.5 stroke-[3]" />
+                  </span>
+                )}
                 <div
-                  className="h-9 w-9 rounded-xl flex items-center justify-center shadow-md mb-2 transition-transform group-hover:scale-105"
+                  className={cn(
+                    'h-9 w-9 rounded-xl flex items-center justify-center shadow-md mb-2 transition-transform group-hover:scale-105',
+                    isSelected && 'scale-110 ring-2 ring-white/60'
+                  )}
                   style={{ backgroundColor: preset.hex }}
                 >
                   {isSelected && <Check className="h-4 w-4 stroke-[3]" style={{ color: '#ffffff' }} />}
                 </div>
-                <span className="text-xs font-semibold text-white truncate w-full">{preset.label}</span>
-                <span className="text-[10px] font-mono text-slate-400 mt-0.5">{preset.hex}</span>
+                <span className={cn('text-xs truncate w-full', isSelected ? 'font-bold text-white' : 'font-semibold text-slate-200')}>
+                  {preset.label}
+                </span>
+                {isSelected ? (
+                  <span
+                    className="mt-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-sm"
+                    style={{ backgroundColor: preset.hex }}
+                  >
+                    Active
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono text-slate-400 mt-0.5">{preset.hex}</span>
+                )}
               </button>
             )
           })}
@@ -381,12 +432,19 @@ export default function AppearanceSettings() {
             data-testid="density-compact-btn"
             onClick={() => setDensity('compact')}
             className={cn(
-              'flex flex-col p-3 rounded-xl border text-left transition-all',
+              'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               density === 'compact'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {density === 'compact' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             {/* Visual Miniature lines */}
             <div className="w-full h-16 rounded-lg bg-slate-950 border border-slate-800 p-2 space-y-1 mb-2.5">
               <div className="h-1.5 w-full rounded bg-slate-700" />
@@ -398,12 +456,12 @@ export default function AppearanceSettings() {
             <div className="flex items-center gap-2">
               <div className={cn(
                 'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                density === 'compact' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                density === 'compact' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
               )}>
                 {density === 'compact' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className="text-xs font-semibold text-white block">Compact</span>
+                <span className={cn('text-xs block', density === 'compact' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Compact</span>
                 <span className="text-[10px] text-slate-400">High information density, condensed tables</span>
               </div>
             </div>
@@ -417,12 +475,19 @@ export default function AppearanceSettings() {
             data-testid="density-comfortable-btn"
             onClick={() => setDensity('comfortable')}
             className={cn(
-              'flex flex-col p-3 rounded-xl border text-left transition-all',
+              'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               density === 'comfortable'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {density === 'comfortable' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             {/* Visual Miniature lines */}
             <div className="w-full h-16 rounded-lg bg-slate-950 border border-slate-800 p-2 space-y-2 mb-2.5">
               <div className="h-2 w-full rounded bg-slate-700" />
@@ -433,12 +498,12 @@ export default function AppearanceSettings() {
             <div className="flex items-center gap-2">
               <div className={cn(
                 'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                density === 'comfortable' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                density === 'comfortable' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
               )}>
                 {density === 'comfortable' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className="text-xs font-semibold text-white block">Comfortable (Default)</span>
+                <span className={cn('text-xs block', density === 'comfortable' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Comfortable (Default)</span>
                 <span className="text-[10px] text-slate-400">Balanced padding and optimal readability</span>
               </div>
             </div>
@@ -452,12 +517,19 @@ export default function AppearanceSettings() {
             data-testid="density-spacious-btn"
             onClick={() => setDensity('spacious')}
             className={cn(
-              'flex flex-col p-3 rounded-xl border text-left transition-all',
+              'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               density === 'spacious'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {density === 'spacious' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             {/* Visual Miniature lines */}
             <div className="w-full h-16 rounded-lg bg-slate-950 border border-slate-800 p-2.5 space-y-3 mb-2.5">
               <div className="h-2.5 w-full rounded bg-slate-700" />
@@ -467,12 +539,12 @@ export default function AppearanceSettings() {
             <div className="flex items-center gap-2">
               <div className={cn(
                 'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                density === 'spacious' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                density === 'spacious' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
               )}>
                 {density === 'spacious' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className="text-xs font-semibold text-white block">Spacious</span>
+                <span className={cn('text-xs block', density === 'spacious' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Spacious</span>
                 <span className="text-[10px] text-slate-400">Generous whitespace for presentations</span>
               </div>
             </div>
@@ -501,21 +573,28 @@ export default function AppearanceSettings() {
             data-testid="motion-full-btn"
             onClick={() => setMotion('full')}
             className={cn(
-              'flex flex-col p-3 rounded-xl border text-left transition-all',
+              'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               motion === 'full'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {motion === 'full' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             <div className="flex items-center gap-2">
               <div className={cn(
                 'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                motion === 'full' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                motion === 'full' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
               )}>
                 {motion === 'full' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className="text-xs font-semibold text-white block">Full Motion</span>
+                <span className={cn('text-xs block', motion === 'full' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Full Motion</span>
                 <span className="text-[10px] text-slate-400">Micro-interactions and fluid animations</span>
               </div>
             </div>
@@ -529,21 +608,28 @@ export default function AppearanceSettings() {
             data-testid="motion-reduced-btn"
             onClick={() => setMotion('reduced')}
             className={cn(
-              'flex flex-col p-3 rounded-xl border text-left transition-all',
+              'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               motion === 'reduced'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {motion === 'reduced' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             <div className="flex items-center gap-2">
               <div className={cn(
                 'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                motion === 'reduced' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                motion === 'reduced' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
               )}>
                 {motion === 'reduced' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className="text-xs font-semibold text-white block">Reduced Motion</span>
+                <span className={cn('text-xs block', motion === 'reduced' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Reduced Motion</span>
                 <span className="text-[10px] text-slate-400">Minimal animations, snappy transitions</span>
               </div>
             </div>
@@ -557,21 +643,28 @@ export default function AppearanceSettings() {
             data-testid="motion-off-btn"
             onClick={() => setMotion('off')}
             className={cn(
-              'flex flex-col p-3 rounded-xl border text-left transition-all',
+              'group relative flex flex-col p-3 rounded-xl border text-left transition-all',
               motion === 'off'
-                ? 'border-blue-500 bg-blue-500/10 shadow-md ring-1 ring-blue-500/50'
+                ? 'border-2 border-blue-500 bg-blue-600/15 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500 ring-offset-2 ring-offset-[#08090c]'
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-850'
             )}
           >
+            {motion === 'off' && (
+              <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md shadow-blue-500/50">
+                <Check className="h-3 w-3 stroke-[3]" />
+                Active
+              </span>
+            )}
+
             <div className="flex items-center gap-2">
               <div className={cn(
                 'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                motion === 'off' ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-600 bg-slate-800'
+                motion === 'off' ? 'border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/50' : 'border-slate-600 bg-slate-800'
               )}>
                 {motion === 'off' && <Check className="h-2.5 w-2.5 stroke-[3]" />}
               </div>
               <div>
-                <span className="text-xs font-semibold text-white block">Off</span>
+                <span className={cn('text-xs block', motion === 'off' ? 'font-bold text-blue-400' : 'font-semibold text-white')}>Off</span>
                 <span className="text-[10px] text-slate-400">Zero transitions, instant rendering</span>
               </div>
             </div>

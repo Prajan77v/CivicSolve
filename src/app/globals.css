@@ -431,11 +431,133 @@ html.light .bg-blue-950\/20 span.text-\[10px\],
   color: #2563eb !important;
 }
 
-/* ── Sidebar Nav Items (unselected) ───────────────────────────────── */
-html.light .hover\:bg-slate-800\/60:hover,
-html.light .hover\:bg-white\/5:hover,
-[data-resolved-theme="light"] .hover\:bg-slate-800\/60:hover {
-  background-color: rgba(15, 23, 42, 0.05) !important;
+/* ── Sidebar Nav Items (unselected & active) ──────────────────────── */
+html.light aside nav a:not(.bg-blue-600),
+[data-resolved-theme="light"] aside nav a:not(.bg-blue-600) {
+  color: #334155 !important;
+}
+html.light aside nav a:not(.bg-blue-600):hover,
+[data-resolved-theme="light"] aside nav a:not(.bg-blue-600):hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+html.light aside nav a:not(.bg-blue-600) svg,
+[data-resolved-theme="light"] aside nav a:not(.bg-blue-600) svg {
+  color: #64748b !important;
+}
+html.light aside nav a:not(.bg-blue-600):hover svg,
+[data-resolved-theme="light"] aside nav a:not(.bg-blue-600):hover svg {
+  color: #0f172a !important;
+}
+
+/* Active navigation link in sidebar */
+aside nav a.bg-blue-600,
+[data-resolved-theme="light"] aside nav a.bg-blue-600,
+html.light aside nav a.bg-blue-600 {
+  background-color: var(--accent-color, #2563eb) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.35) !important;
+}
+aside nav a.bg-blue-600 svg,
+[data-resolved-theme="light"] aside nav a.bg-blue-600 svg,
+html.light aside nav a.bg-blue-600 svg {
+  color: #ffffff !important;
+}
+
+/* ── Certificates Page & Registry in Light Mode ─────────────────── */
+html.light .glass-card.group,
+[data-resolved-theme="light"] .glass-card.group,
+html.light .bg-gradient-to-b.from-\[\#131724\],
+[data-resolved-theme="light"] .bg-gradient-to-b.from-\[\#131724\] {
+  background: #ffffff !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+}
+
+html.light .glass-card.group:hover,
+[data-resolved-theme="light"] .glass-card.group:hover {
+  border-color: rgba(245, 158, 11, 0.7) !important;
+  box-shadow: 0 10px 25px -3px rgba(245, 158, 11, 0.15), 0 4px 10px -2px rgba(15, 23, 42, 0.06) !important;
+}
+
+html.light .glass-card.group h3,
+[data-resolved-theme="light"] .glass-card.group h3 {
+  color: #0f172a !important;
+}
+
+html.light .glass-card.group p,
+[data-resolved-theme="light"] .glass-card.group p {
+  color: #334155 !important;
+}
+
+html.light .glass-card.group .text-cyan-300,
+[data-resolved-theme="light"] .glass-card.group .text-cyan-300 {
+  color: #0284c7 !important;
+}
+
+html.light .glass-card.group .bg-slate-900\/80,
+[data-resolved-theme="light"] .glass-card.group .bg-slate-900\/80 {
+  background-color: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light .glass-card.group .bg-slate-900\/80 div,
+[data-resolved-theme="light"] .glass-card.group .bg-slate-900\/80 div {
+  color: #0f172a !important;
+}
+
+html.light .glass-card.group .bg-slate-900\/80 div.uppercase,
+[data-resolved-theme="light"] .glass-card.group .bg-slate-900\/80 div.uppercase {
+  color: #64748b !important;
+}
+
+/* Official Certificate Presentation Canvas in Light Mode */
+html.light .max-w-5xl .bg-\[\#0b0f19\],
+[data-resolved-theme="light"] .max-w-5xl .bg-\[\#0b0f19\] {
+  background-color: #ffffff !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.15) !important;
+}
+
+html.light .max-w-5xl .bg-\[\#0b0f19\] h1,
+[data-resolved-theme="light"] .max-w-5xl .bg-\[\#0b0f19\] h1 {
+  color: #92400e !important;
+  background: none !important;
+  -webkit-text-fill-color: #92400e !important;
+}
+
+html.light .max-w-5xl .bg-\[\#0b0f19\] .text-white,
+[data-resolved-theme="light"] .max-w-5xl .bg-\[\#0b0f19\] .text-white {
+  color: #0f172a !important;
+}
+
+html.light .max-w-5xl .bg-\[\#0b0f19\] .bg-amber-950\/10,
+[data-resolved-theme="light"] .max-w-5xl .bg-\[\#0b0f19\] .bg-amber-950\/10 {
+  background-color: #fffbeb !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+html.light .max-w-5xl .bg-\[\#0b0f19\] .bg-amber-950\/10 p,
+[data-resolved-theme="light"] .max-w-5xl .bg-\[\#0b0f19\] .bg-amber-950\/10 p {
+  color: #334155 !important;
+}
+
+/* Public Verification Portal in Light Mode */
+html.light .bg-\[\#111726\],
+[data-resolved-theme="light"] .bg-\[\#111726\] {
+  background-color: #ffffff !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+html.light .bg-\[\#111726\] .text-white,
+[data-resolved-theme="light"] .bg-\[\#111726\] .text-white {
+  color: #0f172a !important;
+}
+
+html.light .bg-\[\#111726\] .bg-slate-950\/70,
+[data-resolved-theme="light"] .bg-\[\#111726\] .bg-slate-950\/70 {
+  background-color: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
 }
 
 /* ── Inactive / Muted backgrounds ────────────────────────────────── */

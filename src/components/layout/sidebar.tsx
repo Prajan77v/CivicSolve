@@ -72,7 +72,7 @@ const navSections: NavSection[] = [
     items: [
       { name: 'Review Queue', href: '/review-queue', icon: ShieldCheck },
       { name: 'Command Center', href: '/command-center', icon: ShieldAlert, badge: 'Gov' },
-      { name: 'Certificates', href: '/certificates', icon: Award },
+      { name: 'Certificates', href: '/certificates', icon: Award, badge: 'Registry' },
     ],
   },
   {
@@ -118,7 +118,7 @@ export default function Sidebar() {
   }
 
   const sidebarContent = (
-    <div className="flex h-full flex-col justify-between overflow-y-auto scrollbar-thin px-3 py-4 bg-[#08090c] border-r border-slate-800/60">
+    <div className="sidebar-container flex h-full flex-col justify-between overflow-y-auto scrollbar-thin px-3 py-4 bg-[#08090c] border-r border-slate-800/80">
       <div className="space-y-6">
         {/* Brand Header */}
         <div className="flex items-center justify-between px-2 pt-1">
@@ -127,7 +127,7 @@ export default function Sidebar() {
             className="flex items-center gap-2.5 group"
             onClick={() => setMobileSidebarOpen(false)}
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-white font-bold">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-white font-bold shadow-md shadow-blue-600/30">
               <Layers className="h-4 w-4" />
             </div>
 
@@ -135,7 +135,7 @@ export default function Sidebar() {
               <span className="text-sm font-bold tracking-tight text-white">
                 Civic<span className="text-blue-500">Solve</span>
               </span>
-              <span className="text-[10px] font-mono text-slate-500">SIH26043</span>
+              <span className="text-[10px] font-mono text-slate-400">SIH26043</span>
             </div>
           </Link>
 
@@ -152,13 +152,14 @@ export default function Sidebar() {
         <nav className="space-y-5">
           {navSections.map((section) => (
             <div key={section.title} className="space-y-1">
-              <div className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <div className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 {section.title}
               </div>
               <div className="space-y-0.5">
                 {section.items.map((item) => {
                   const active = isItemActive(item.href)
                   const Icon = item.icon
+                  const isCertificates = item.name === 'Certificates'
 
                   return (
                     <Link
@@ -166,19 +167,41 @@ export default function Sidebar() {
                       href={item.href}
                       onClick={() => setMobileSidebarOpen(false)}
                       className={cn(
-                        'flex items-center justify-between rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
+                        'group flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all',
                         active
-                          ? 'bg-slate-800/80 text-white font-semibold'
-                          : 'text-slate-400 hover:bg-slate-850 hover:text-slate-200'
+                          ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/30 border-l-4 border-white pl-2'
+                          : isCertificates
+                          ? 'text-amber-900 dark:text-slate-100 hover:bg-amber-50 dark:hover:bg-slate-800/80 bg-amber-500/10 dark:bg-slate-900/40 border border-amber-500/30'
+                          : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-950 dark:hover:text-white'
                       )}
                     >
                       <div className="flex items-center gap-2.5">
-                        <Icon className={cn('h-3.5 w-3.5 shrink-0', active ? 'text-blue-400' : 'text-slate-500')} />
-                        <span>{item.name}</span>
+                        <Icon
+                          className={cn(
+                            'h-4 w-4 shrink-0 transition-colors',
+                            active
+                              ? 'text-white'
+                              : isCertificates
+                              ? 'text-amber-600 dark:text-amber-400 group-hover:text-amber-500 dark:group-hover:text-amber-300'
+                              : 'text-slate-500 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'
+                          )}
+                        />
+                        <span className={cn(isCertificates && !active && 'text-amber-800 dark:text-amber-300 font-bold')}>
+                          {item.name}
+                        </span>
                       </div>
 
                       {item.badge && (
-                        <span className="rounded bg-slate-800 px-1.5 py-0.2 text-[9px] font-mono text-slate-400 border border-slate-700/50">
+                        <span
+                          className={cn(
+                            'rounded px-1.5 py-0.5 text-[9px] font-mono border transition-colors',
+                            active
+                              ? 'bg-white/20 text-white border-white/40 font-bold'
+                              : isCertificates
+                              ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/40 font-bold'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700/80'
+                          )}
+                        >
                           {item.badge}
                         </span>
                       )}

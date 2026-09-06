@@ -251,7 +251,7 @@ export default function CertificatesPage() {
           {filtered.map((cert) => (
             <div
               key={cert.id}
-              className="group relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-b from-[#131724] to-[#0a0f1d] p-6 transition-all hover:border-amber-500/50 hover:shadow-[0_0_35px_rgba(245,158,11,0.15)] flex flex-col justify-between"
+              className="glass-card group relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-[#131724] to-[#0a0f1d] p-6 transition-all hover:border-amber-500/60 hover:shadow-lg dark:hover:shadow-[0_0_35px_rgba(245,158,11,0.2)] flex flex-col justify-between"
             >
               {/* Gold decorative top border */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600" />

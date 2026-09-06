@@ -1,5 +1,16 @@
 export type ThemeMode = 'light' | 'dark' | 'system'
-export type AccentKey = 'ocean-blue' | 'civic-green' | 'indigo' | 'amber' | 'rose' | 'slate' | 'custom'
+export type AccentKey =
+  | 'ocean-blue'
+  | 'civic-green'
+  | 'indigo'
+  | 'amber'
+  | 'rose'
+  | 'slate'
+  | 'neon-cyan'
+  | 'royal-purple'
+  | 'sunset-orange'
+  | 'emerald-mint'
+  | 'custom'
 export type DensityMode = 'compact' | 'comfortable' | 'spacious'
 export type MotionMode = 'full' | 'reduced' | 'off'
 
@@ -53,6 +64,34 @@ export const ACCENT_PRESETS: AccentPreset[] = [
     label: 'Slate',
     description: 'Minimalist editorial monochrome',
     hex: '#475569',
+  },
+  {
+    key: 'neon-cyan',
+    name: 'Electric Cyan',
+    label: 'Electric Cyan',
+    description: 'High-contrast vibrant tech azure',
+    hex: '#06b6d4',
+  },
+  {
+    key: 'royal-purple',
+    name: 'Royal Purple',
+    label: 'Royal Purple',
+    description: 'Prestigious national governance',
+    hex: '#8b5cf6',
+  },
+  {
+    key: 'sunset-orange',
+    name: 'Sunset Orange',
+    label: 'Sunset Orange',
+    description: 'Dynamic civic problem urgency',
+    hex: '#f97316',
+  },
+  {
+    key: 'emerald-mint',
+    name: 'Emerald Mint',
+    label: 'Emerald Mint',
+    description: 'Luminous sustainability green',
+    hex: '#10b981',
   },
 ]
 

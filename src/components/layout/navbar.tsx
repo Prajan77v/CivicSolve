@@ -181,10 +181,10 @@ export default function Navbar() {
                         data-testid={`quick-theme-${t.id}`}
                         onClick={() => setTheme(t.id as any)}
                         className={cn(
-                          'flex flex-col items-center justify-center py-1.5 rounded-lg border text-[11px] font-medium transition-all',
+                          'flex flex-col items-center justify-center py-1.5 rounded-lg border text-[11px] font-medium transition-all relative',
                           isSelected
-                            ? 'border-blue-500 bg-blue-600/20 text-blue-400 font-bold'
-                            : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                            ? 'border-2 border-blue-500 bg-blue-600 text-white font-bold shadow-md shadow-blue-500/30'
+                            : 'border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800'
                         )}
                       >
                         <Icon className="h-3.5 w-3.5 mb-1" />
@@ -198,7 +198,7 @@ export default function Navbar() {
               {/* Accent quick swatches */}
               <div className="space-y-1">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Accent</div>
-                <div className="flex items-center justify-between gap-1">
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                   {ACCENT_PRESETS.map((p) => {
                     const isSelected = accentKey === p.key
                     return (
@@ -209,8 +209,10 @@ export default function Navbar() {
                         title={p.label}
                         onClick={() => setAccentKey(p.key)}
                         className={cn(
-                          'h-6 w-6 rounded-full flex items-center justify-center transition-transform hover:scale-110',
-                          isSelected && 'ring-2 ring-white ring-offset-2 ring-offset-[#111726]'
+                          'h-6 w-6 rounded-full flex items-center justify-center transition-all hover:scale-110',
+                          isSelected
+                            ? 'ring-2 ring-white ring-offset-2 ring-offset-[#111726] scale-110 shadow-md'
+                            : 'opacity-80 hover:opacity-100'
                         )}
                         style={{ backgroundColor: p.hex }}
                       >
