@@ -226,8 +226,8 @@ export default function CommandCenterPage() {
     setIncidents((prev) =>
       prev.map((item) => (item.id === incidentId ? { ...item, expedited: true } : item))
     )
-    toast.info('Fast-Track CSR Capital Released', {
-      description: `Disbursed matching sandbox grant for "${title.slice(0, 40)}...".`,
+    toast.info('Fast-Track Equipment Sandbox Allocated', {
+      description: `Disbursed 50 testing sensor nodes and lab sandbox for "${title.slice(0, 40)}...".`,
     })
   }
 

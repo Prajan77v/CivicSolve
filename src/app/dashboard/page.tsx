@@ -287,7 +287,7 @@ export default function DashboardPage() {
                       ? 'District habitations pending municipal approval'
                       : 'Urgent problems awaiting multidisciplinary squads'}
                   </p>
-                  <Link href="/problems?status=SUBMITTED" className="text-blue-400 text-[11px] font-semibold hover:underline block pt-1">
+                  <Link href="/review-queue" className="text-blue-400 text-[11px] font-semibold hover:underline block pt-1">
                     Open Review Queue →
                   </Link>
                 </div>
@@ -359,9 +359,9 @@ export default function DashboardPage() {
             </div>
 
             <div className="rounded border border-slate-800 bg-[#0f131a] p-4 space-y-1">
-              <div className="text-[10px] text-slate-500 font-mono">CSR CAPITAL PLEDGED</div>
-              <div className="text-2xl font-bold text-amber-400 tracking-tight">₹25.0 Lakhs</div>
-              <div className="text-[11px] text-slate-400">TCS & Municipal Local Bodies</div>
+              <div className="text-[10px] text-slate-500 font-mono">PROBLEMS SOLVED</div>
+              <div className="text-2xl font-bold text-emerald-400 tracking-tight">18 Challenges</div>
+              <div className="text-[11px] text-slate-400">Validated by municipal bodies</div>
             </div>
           </div>
         </div>

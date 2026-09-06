@@ -51,22 +51,22 @@ const navSections: NavSection[] = [
     title: 'NETWORK',
     items: [
       { name: 'Universities', href: '/universities', icon: GraduationCap },
-      { name: 'Industry & NGO Partners', href: '/partners', icon: Building2 },
+      { name: 'Experts', href: '/teams', icon: Users },
+      { name: 'Partners', href: '/partners', icon: Building2 },
     ],
   },
   {
     title: 'INTELLIGENCE',
     items: [
       { name: 'AI Match', href: '/ai-match-center', icon: Cpu },
-      { name: 'Solution Library', href: '/solution-library', icon: Globe, badge: 'Reuse' },
-      { name: 'Impact Wall', href: '/impact-wall', icon: TrendingUp },
-      { name: 'Civic Map', href: '/map', icon: Compass },
+      { name: 'Solution Library', href: '/solution-library', icon: Globe },
+      { name: 'Impact', href: '/impact', icon: TrendingUp },
     ],
   },
   {
     title: 'GOVERNANCE',
     items: [
-      { name: 'Review Queue', href: '/problems?status=SUBMITTED', icon: ShieldCheck },
+      { name: 'Review Queue', href: '/review-queue', icon: ShieldCheck },
       { name: 'Command Center', href: '/command-center', icon: ShieldAlert, badge: 'Gov' },
       { name: 'Certificates', href: '/certificates', icon: Award },
     ],
@@ -76,7 +76,6 @@ const navSections: NavSection[] = [
     items: [
       { name: 'Notifications', href: '/notifications', icon: Bell },
       { name: 'Settings', href: '/settings', icon: Settings },
-      { name: 'Judge Demo Runner', href: '/demo', icon: PlayCircle, badge: 'Demo' },
     ],
   },
 ]

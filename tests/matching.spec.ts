@@ -34,21 +34,21 @@ test.describe('AI Solver Matchmaking Engine', () => {
     const inviteBtn = page.locator('button:has-text("Invite Team"), button:has-text("Invite")').first();
     if (await inviteBtn.isVisible()) {
       await inviteBtn.click();
-      await expect(page.locator('text=Invited, text=invitation dispatched').first()).toBeVisible();
+      await expect(page.getByRole('button', { name: /invited/i }).first()).toBeVisible();
     }
 
     // Test Request Mentorship action
     const mentorBtn = page.locator('button:has-text("Request Mentorship")').first();
     if (await mentorBtn.isVisible()) {
       await mentorBtn.click();
-      await expect(page.locator('text=Mentorship proposal, text=Requested').first()).toBeVisible();
+      await expect(page.getByRole('button', { name: /requested/i }).first()).toBeVisible();
     }
 
     // Test Request Sandbox action (Industry & NGO support)
     const sandboxBtn = page.locator('button:has-text("Request Sandbox"), button:has-text("Support Requested")').first();
     if (await sandboxBtn.isVisible()) {
       await sandboxBtn.click();
-      await expect(page.locator('text=Support & sandbox request, text=Support Requested').first()).toBeVisible();
+      await expect(page.getByRole('button', { name: /support requested/i }).first()).toBeVisible();
     }
 
     expect(errors).toHaveLength(0);

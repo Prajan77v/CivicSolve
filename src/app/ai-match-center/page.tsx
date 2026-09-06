@@ -2,35 +2,19 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import { toast } from 'sonner'
 import {
   Cpu,
   Search,
-  Sparkles,
-  Users,
-  GraduationCap,
-  Building2,
-  MapPin,
-  CheckCircle2,
-  Send,
-  Eye,
-  ArrowRight,
-  TrendingUp,
-  ShieldCheck,
-  Check,
   ExternalLink,
-  Filter,
-  RefreshCw,
-  Award,
-  Layers,
-  ChevronRight,
+  Check,
+  Send,
+  Building2,
+  GraduationCap,
+  Users,
+  Compass
 } from 'lucide-react'
 import AppShell from '@/components/layout/app-shell'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Modal } from '@/components/ui/modal'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
 interface ProblemItem {
@@ -56,174 +40,127 @@ interface ProblemItem {
 
 interface StudentTeam {
   id: string
+  rank: string
   name: string
+  type: string
   university: string
   score: number
-  size: number
-  skills: string[]
-  trackRecord: string
+  skills: { name: string; match: number }[]
   lead: string
 }
 
 interface FacultyMentor {
   id: string
+  rank: string
   name: string
   designation: string
-  department: string
   university: string
   score: number
   specialization: string[]
-  publications: number
 }
 
 interface IndustryPartner {
   id: string
+  rank: string
   name: string
   type: string
-  sector: string
   city: string
   score: number
   supportScope: string
-  focusAreas: string[]
 }
 
-interface SkillAlignment {
-  skill: string
-  matchPct: number
-  color: 'blue' | 'cyan' | 'emerald' | 'purple'
-}
-
-// Rich realistic mock pool of mentors, teams, and sponsors tailored to civic domains
-const DEFAULT_STUDENT_TEAMS: Record<string, StudentTeam[]> = {
-  WATER: [
-    {
-      id: 'team-1',
-      name: 'AquaTech Innovators',
-      university: 'IIT Bombay',
-      score: 96,
-      size: 4,
-      skills: ['IoT Sensors', 'Water Chemistry', 'Embedded C', 'LoRaWAN'],
-      trackRecord: '1st Place, National Jal Jeevan Hackathon 2024; 2 prototypes deployed in Nashik.',
-      lead: 'Aarav Sharma (Final Year Dual Degree, EE & EnvEng)',
-    },
-    {
-      id: 'team-2',
-      name: 'HydroGuard Solutions',
-      university: 'NIT Trichy',
-      score: 91,
-      size: 5,
-      skills: ['Civil Engineering', 'GIS Mapping', 'Mobile App', 'Edge AI'],
-      trackRecord: 'Finalists, SIH 2023; Patented solar-assisted filtration unit.',
-      lead: 'Meera Venkat (M.Tech Water Resources)',
-    },
-    {
-      id: 'team-3',
-      name: 'EcoHydra Labs',
-      university: 'BITS Pilani',
-      score: 87,
-      size: 4,
-      skills: ['Electrochemical Adsorption', 'Data Analytics', 'Cloud Telemetry'],
-      trackRecord: 'Published IEEE paper on rural arsenic sensors.',
-      lead: 'Kabir Sengupta (Biotech & CS)',
-    },
-  ],
-  DEFAULT: [
-    {
-      id: 'team-def-1',
-      name: 'CivicForge Systems',
-      university: 'IIT Delhi',
-      score: 94,
-      size: 4,
-      skills: ['Computer Vision', 'IoT Edge', 'Urban Planning', 'Full-Stack'],
-      trackRecord: 'Winners, Smart Cities Urban Challenge; 3 municipal deployments.',
-      lead: 'Rohan Gupta (CSE & Public Systems)',
-    },
-    {
-      id: 'team-def-2',
-      name: 'Pratibha Innovators',
-      university: 'IIIT Hyderabad',
-      score: 90,
-      size: 5,
-      skills: ['ML Modeling', 'Embedded Hardware', 'Field Telemetry'],
-      trackRecord: 'SIH 2023 Top 5 in Sustainable Mobility track.',
-      lead: 'Ananya Reddy (AI Research Fellow)',
-    },
-    {
-      id: 'team-def-3',
-      name: 'GreenMatrix Core',
-      university: 'NIT Surathkal',
-      score: 86,
-      size: 4,
-      skills: ['Remote Sensing', 'Environmental Analytics', 'Mobile Dev'],
-      trackRecord: 'Piloted agricultural monitoring system in Karnataka.',
-      lead: 'Devika Nair (Electronics & Communication)',
-    },
-  ],
-}
+const DEFAULT_STUDENT_TEAMS: StudentTeam[] = [
+  {
+    id: 'team-1',
+    rank: '01',
+    name: 'AquaTech Innovators',
+    type: 'Student Team',
+    university: 'IIT Bombay',
+    score: 96,
+    skills: [
+      { name: 'IoT Sensors', match: 96 },
+      { name: 'Water Chemistry', match: 94 },
+      { name: 'LoRaWAN Edge', match: 91 },
+    ],
+    lead: 'Aarav Sharma (EE & EnvEng)',
+  },
+  {
+    id: 'team-2',
+    rank: '02',
+    name: 'HydroGuard Solutions',
+    type: 'Student Team',
+    university: 'NIT Trichy',
+    score: 91,
+    skills: [
+      { name: 'Civil Engineering', match: 92 },
+      { name: 'GIS Mapping', match: 90 },
+      { name: 'Edge AI', match: 89 },
+    ],
+    lead: 'Meera Venkat (Water Resources)',
+  },
+  {
+    id: 'team-3',
+    rank: '03',
+    name: 'EcoHydra Labs',
+    type: 'Student Team',
+    university: 'BITS Pilani',
+    score: 87,
+    skills: [
+      { name: 'Filtration Hardware', match: 88 },
+      { name: 'Cloud Telemetry', match: 86 },
+    ],
+    lead: 'Kabir Sengupta (Biotech & CS)',
+  },
+]
 
 const DEFAULT_FACULTY_MENTORS: FacultyMentor[] = [
   {
     id: 'fac-1',
-    name: 'Prof. S. R. Sitaraman',
-    designation: 'Chair Professor, Environmental Engineering',
-    department: 'Civil & Environmental Engineering',
+    rank: '01',
+    name: 'Prof. Anita Desai',
+    designation: 'Chair of Environmental Engineering',
     university: 'IIT Bombay',
-    score: 95,
-    specialization: ['Groundwater Remediation', 'Heavy Metal Adsorption', 'Civic Hydrology'],
-    publications: 48,
+    score: 94,
+    specialization: ['Groundwater Chemistry', 'Field Fluoride Filtration', 'Rural Sensor Networks'],
   },
   {
     id: 'fac-2',
-    name: 'Dr. Anamika Swaminathan',
-    designation: 'Associate Professor, Embedded Systems & IoT',
-    department: 'Computer Science & Engineering',
-    university: 'IIT Delhi',
-    score: 91,
-    specialization: ['Low-Power Sensor Networks', 'Edge AI', 'Smart City Telemetry'],
-    publications: 32,
-  },
-  {
-    id: 'fac-3',
-    name: 'Dr. G. Balachandran',
-    designation: 'Head of Centre for Urban Informatics',
-    department: 'Civil Engineering',
+    rank: '02',
+    name: 'Dr. Ramesh Sundaram',
+    designation: 'Associate Professor, Civil & Water Systems',
     university: 'NIT Trichy',
     score: 88,
-    specialization: ['GIS Hydrological Modeling', 'Municipal Water Infrastructure'],
-    publications: 27,
+    specialization: ['GIS Hydrological Modeling', 'Municipal Pipeline Diagnostics'],
   },
 ]
 
 const DEFAULT_INDUSTRY_PARTNERS: IndustryPartner[] = [
   {
     id: 'ind-1',
+    rank: '01',
     name: 'Wipro EcoEnergy Sustainability Foundation',
     type: 'Industry Research',
-    sector: 'CleanTech & Water',
     city: 'Bengaluru, Karnataka',
     score: 96,
-    supportScope: 'IoT Testing Sandbox & Sensor Hardware Units',
-    focusAreas: ['Decentralized Water Purification', 'IoT Telemetry', 'Rural Deployment'],
+    supportScope: 'IoT Testing Sandbox & 50 Sensor Hardware Nodes',
   },
   {
     id: 'ind-2',
-    name: 'Jal Jeevan Mission NGO Directorate',
+    rank: '02',
+    name: 'Jal Jeevan Mission Technical Directorate',
     type: 'Govt Technical NGO',
-    sector: 'Public Sanitation',
     city: 'New Delhi',
     score: 93,
     supportScope: 'Municipal Field Handover & Gram Panchayat Integration',
-    focusAreas: ['Groundwater Safety', 'Community Training', 'Panchayat Integration'],
   },
   {
     id: 'ind-3',
-    name: 'Tata Consultancy Services — Civic Tech Lab',
+    rank: '03',
+    name: 'TCS Civic Innovation Lab',
     type: 'Industry Research',
-    sector: 'Smart Urban Systems',
     city: 'Mumbai, Maharashtra',
     score: 89,
     supportScope: 'Edge Microcontrollers & Lab Sandbox Facilities',
-    focusAreas: ['Edge Computing', 'Scalable Civic Dashboards', 'Citizen Engagement'],
   },
 ]
 
@@ -233,15 +170,10 @@ export default function AiMatchCenterPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
 
-  // Interactive Invitation & Pitch state tracking
   const [invitedTeams, setInvitedTeams] = useState<Record<string, boolean>>({})
   const [requestedMentors, setRequestedMentors] = useState<Record<string, boolean>>({})
-  const [sentPitches, setSentPitches] = useState<Record<string, boolean>>({})
+  const [sentSandboxes, setSentSandboxes] = useState<Record<string, boolean>>({})
 
-  // Team Modal state
-  const [viewingTeam, setViewingTeam] = useState<StudentTeam | null>(null)
-
-  // Fetch problems on mount
   useEffect(() => {
     async function loadProblems() {
       try {
@@ -253,7 +185,7 @@ export default function AiMatchCenterPage() {
           setSelectedProblemId(json.data[0].id)
         }
       } catch (err) {
-        console.error('Failed to load problems for match center:', err)
+        console.error('Failed to load problems:', err)
       } finally {
         setLoading(false)
       }
@@ -261,72 +193,20 @@ export default function AiMatchCenterPage() {
     loadProblems()
   }, [])
 
-  // Currently selected problem
   const selectedProblem = useMemo(() => {
     return problems.find((p) => p.id === selectedProblemId) || problems[0] || null
   }, [problems, selectedProblemId])
 
-  // Filtered problems list in left panel
   const filteredProblems = useMemo(() => {
     if (!searchQuery.trim()) return problems
-    const q = searchQuery.toLowerCase().trim()
-    return problems.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        (p.location?.district?.toLowerCase() || '').includes(q)
+    const q = searchQuery.toLowerCase()
+    return problems.filter((p) =>
+      p.title.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      p.location?.district?.toLowerCase().includes(q)
     )
   }, [problems, searchQuery])
 
-  // Dynamic Skill Alignment Breakdown based on selected domain
-  const skillAlignments: SkillAlignment[] = useMemo(() => {
-    const domain = selectedProblem?.category?.toUpperCase() || 'WATER'
-    if (domain === 'WATER') {
-      return [
-        { skill: 'IoT Sensor Telemetry', matchPct: 98, color: 'blue' },
-        { skill: 'Water Chemistry & Adsorption', matchPct: 92, color: 'cyan' },
-        { skill: 'GIS Hydrological Mapping', matchPct: 85, color: 'emerald' },
-        { skill: 'Low-Power LoRaWAN Mesh', matchPct: 80, color: 'purple' },
-      ]
-    } else if (domain === 'TRAFFIC') {
-      return [
-        { skill: 'Computer Vision & YOLO', matchPct: 97, color: 'cyan' },
-        { skill: 'Edge TPU Compute', matchPct: 94, color: 'blue' },
-        { skill: 'Traffic Signal Optimization', matchPct: 89, color: 'emerald' },
-        { skill: 'Municipal Transport GIS', matchPct: 82, color: 'purple' },
-      ]
-    } else if (domain === 'AIR_QUALITY') {
-      return [
-        { skill: 'Particulate Matter IoT Sensors', matchPct: 96, color: 'cyan' },
-        { skill: 'Atmospheric Modeling & ML', matchPct: 91, color: 'blue' },
-        { skill: 'Urban Microclimate Mapping', matchPct: 86, color: 'emerald' },
-        { skill: 'Public Health Telemetry', matchPct: 83, color: 'purple' },
-      ]
-    } else {
-      return [
-        { skill: 'IoT & Field Sensors', matchPct: 94, color: 'blue' },
-        { skill: 'Data Analytics & ML', matchPct: 89, color: 'cyan' },
-        { skill: 'Systems Engineering', matchPct: 85, color: 'emerald' },
-        { skill: 'Civic Handover Operations', matchPct: 79, color: 'purple' },
-      ]
-    }
-  }, [selectedProblem])
-
-  // Dynamic Student Teams for selected domain
-  const studentTeams = useMemo(() => {
-    const domain = selectedProblem?.category?.toUpperCase() || 'DEFAULT'
-    return DEFAULT_STUDENT_TEAMS[domain] || DEFAULT_STUDENT_TEAMS.DEFAULT
-  }, [selectedProblem])
-
-  // Overall compatibility score
-  const overallScore = useMemo(() => {
-    if (selectedProblem?.aiAnalysis?.confidence) {
-      return Math.round(selectedProblem.aiAnalysis.confidence * 100)
-    }
-    return 94
-  }, [selectedProblem])
-
-  // Action handlers
   const handleInviteTeam = (team: StudentTeam) => {
     setInvitedTeams((prev) => ({ ...prev, [team.id]: true }))
     toast.success(`Formal challenge invitation dispatched to team "${team.name}"!`)
@@ -338,330 +218,189 @@ export default function AiMatchCenterPage() {
   }
 
   const handleRequestSupport = (partner: IndustryPartner) => {
-    setSentPitches((prev) => ({ ...prev, [partner.id]: true }))
+    setSentSandboxes((prev) => ({ ...prev, [partner.id]: true }))
     toast.success(`Support & sandbox request forwarded to ${partner.name}!`)
   }
 
   return (
     <AppShell>
-      <div className="space-y-6 pb-16 max-w-7xl mx-auto">
-        {/* Page Title & Status Banner */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20 flex items-center gap-1">
-                <Cpu className="h-3 w-3" />
-                AI Match Center
+      <div className="max-w-6xl mx-auto space-y-8 pb-16">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-slate-800">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-mono font-bold text-blue-400 uppercase tracking-wider">
+                CIVIC INTELLIGENCE
               </span>
-              <span className="text-xs text-slate-400">Autonomous Ecosystem Harmonization</span>
+              <span className="text-slate-600">•</span>
+              <span className="text-[11px] font-mono text-slate-400">AUTONOMOUS SOLVER ROUTING</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Real-Time AI Solver Matching Engine
+            <h1 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">
+              AI Solver Matching Engine
             </h1>
-            <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-              Cross-correlate verified societal bottlenecks with NIRF-ranked university faculties, high-aptitude student teams, and CSR corporate grant sponsors.
+            <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
+              Ranked cross-correlation of verified societal bottlenecks with NIRF-ranked university faculties, high-aptitude student teams, and testing sandboxes.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button asChild variant="outline" size="md">
-              <Link href="/problems">Explore Challenges</Link>
-            </Button>
-            <Button
-              asChild
-              size="md"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-purple-500/20"
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              href="/problems"
+              className="rounded border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white transition-colors"
             >
-              <Link href="/problems/new">Post New Problem</Link>
-            </Button>
+              Explore Challenges
+            </Link>
           </div>
         </div>
 
-        {/* 2-Column Responsive Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* LEFT COLUMN: Societal Challenges Selector List (4 cols) */}
+        {/* Two-Column Grid: Selector on Left, Ranked Solver Rows on Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Challenges List (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
-            <div className="glass-card rounded-2xl border border-white/10 bg-slate-900/80 p-4 shadow-xl space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Select Active Challenge
-                </span>
-                <span className="text-xs text-cyan-400 font-medium">
-                  {filteredProblems.length} available
-                </span>
-              </div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+                Select Active Challenge
+              </h2>
+              <span className="text-[11px] text-slate-500 font-mono">{problems.length} total</span>
+            </div>
 
-              {/* Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Filter challenges..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-950/70 border border-slate-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search challenges..."
+                className="w-full rounded border border-slate-800 bg-[#0f131a] pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-700"
+              />
+            </div>
 
-              {/* Problems Scrollable List */}
-              <div className="space-y-2.5 max-h-[680px] overflow-y-auto pr-1 scrollbar-thin">
-                {loading && (
-                  <div className="space-y-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="p-3.5 rounded-xl bg-slate-950/40 border border-white/5 animate-pulse space-y-2"
-                      >
-                        <div className="h-4 w-3/4 bg-slate-800 rounded" />
-                        <div className="h-3 w-1/2 bg-slate-800/60 rounded" />
+            <div className="divide-y divide-slate-800/80 border-y border-slate-800/80 max-h-[600px] overflow-y-auto scrollbar-thin">
+              {loading ? (
+                <div className="p-8 text-center text-xs text-slate-500">Loading challenges...</div>
+              ) : (
+                filteredProblems.map((p) => {
+                  const isSelected = p.id === selectedProblem?.id
+                  const matchPct = p.aiAnalysis?.confidence ? Math.round(p.aiAnalysis.confidence * 100) : 94
+
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => setSelectedProblemId(p.id)}
+                      className={cn(
+                        'w-full text-left py-3.5 px-3 transition-colors space-y-1 block',
+                        isSelected
+                          ? 'bg-slate-800/90 border-l-2 border-blue-500 text-white'
+                          : 'hover:bg-slate-900/60 text-slate-300'
+                      )}
+                    >
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="font-mono text-blue-400 font-bold uppercase">{p.category}</span>
+                        <span className="font-mono text-emerald-400 font-semibold">{matchPct}% Match</span>
                       </div>
-                    ))}
-                  </div>
-                )}
-
-                {!loading && filteredProblems.length === 0 && (
-                  <p className="text-xs text-slate-500 text-center py-6">
-                    No challenges match your search.
-                  </p>
-                )}
-
-                {!loading &&
-                  filteredProblems.map((p) => {
-                    const isSelected = p.id === selectedProblem?.id
-                    const matchScore = p.aiAnalysis?.confidence
-                      ? Math.round(p.aiAnalysis.confidence * 100)
-                      : 94
-                    const loc = [p.location?.district, p.location?.state].filter(Boolean).join(', ')
-
-                    return (
-                      <div
-                        key={p.id}
-                        onClick={() => setSelectedProblemId(p.id)}
-                        className={cn(
-                          'p-3.5 rounded-xl border transition-all cursor-pointer text-left relative overflow-hidden group',
-                          isSelected
-                            ? 'bg-purple-600/15 border-purple-500/50 shadow-lg shadow-purple-500/10 ring-1 ring-purple-500/30'
-                            : 'bg-slate-950/50 border-white/5 hover:border-white/20 hover:bg-slate-950/80'
-                        )}
-                      >
-                        {/* Active indicator border */}
-                        {isSelected && (
-                          <div className="absolute top-0 left-0 bottom-0 w-1 bg-purple-500" />
-                        )}
-
-                        <div className="flex items-center justify-between gap-1 mb-1.5">
-                          <Badge category={p.category} size="sm" />
-                          <div className="flex items-center gap-1 text-[11px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">
-                            <Sparkles className="h-2.5 w-2.5" />
-                            <span>{matchScore}%</span>
-                          </div>
-                        </div>
-
-                        <h3 className="text-xs font-semibold text-white line-clamp-2 leading-snug group-hover:text-purple-200 transition-colors">
-                          {p.title}
-                        </h3>
-
-                        <div className="mt-2 flex items-center justify-between text-[10px] text-slate-400">
-                          <span className="truncate max-w-[120px]">{loc || 'India'}</span>
-                          <span>
-                            {p.affectedCount
-                              ? `${p.affectedCount.toLocaleString('en-IN')} affected`
-                              : 'Community scale'}
-                          </span>
-                        </div>
+                      <div className="text-xs font-semibold text-white line-clamp-1">{p.title}</div>
+                      <div className="text-[11px] text-slate-500">
+                        {p.location?.district || 'India'} • {p.priority} PRIORITY
                       </div>
-                    )
-                  })}
-              </div>
+                    </button>
+                  )
+                })
+              )}
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Real-Time AI Matching Engine Interface (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
+          {/* Right Column: Ranked Solver Lists (8 cols) */}
+          <div className="lg:col-span-8 space-y-8">
             {selectedProblem ? (
               <>
-                {/* Active Challenge Header Card */}
-                <div className="glass-card rounded-2xl border border-white/10 bg-slate-900/80 p-6 shadow-xl space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                {/* Active Case Summary Bar */}
+                <div className="rounded border border-slate-800 bg-[#0f131a] p-5 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <Badge category={selectedProblem.category} size="sm" />
-                      <Badge priority={selectedProblem.priority} dot size="sm" />
-                      <Badge status={selectedProblem.status} dot size="sm" />
+                      <span className="font-mono text-[11px] text-blue-400 font-bold uppercase">{selectedProblem.category}</span>
+                      <span className="text-slate-600">•</span>
+                      <span className="text-slate-400">{selectedProblem.location?.district || 'National'}</span>
+                      <span className="text-slate-600">•</span>
+                      <span className="text-rose-400 font-mono text-[11px] font-semibold uppercase">{selectedProblem.priority} PRIORITY</span>
                     </div>
-
-                    <Button asChild variant="ghost" size="sm" className="text-xs text-cyan-400 hover:text-cyan-300">
-                      <Link href={`/problems/${selectedProblem.id}`}>
-                        View Full Brief <ExternalLink className="h-3 w-3 ml-1" />
-                      </Link>
-                    </Button>
+                    <Link
+                      href={`/problems/${selectedProblem.id}`}
+                      className="text-xs text-blue-400 hover:underline inline-flex items-center gap-1 font-semibold"
+                    >
+                      <span>View Brief</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </Link>
                   </div>
 
-                  <div>
-                    <h2 className="text-xl font-bold text-white tracking-tight leading-snug">
-                      {selectedProblem.title}
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
-                      {selectedProblem.description}
-                    </p>
-                  </div>
+                  <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                    {selectedProblem.title}
+                  </h2>
 
-                  {/* Compatibility Score & Dial Summary Bar */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10">
-                    {/* Overall Score Dial */}
-                    <div className="p-4 rounded-xl bg-slate-950/60 border border-white/5 flex items-center gap-4">
-                      <div className="relative h-14 w-14 shrink-0 flex items-center justify-center">
-                        <svg className="h-14 w-14 -rotate-90" viewBox="0 0 36 36">
-                          <path
-                            className="text-slate-800"
-                            strokeWidth="3.5"
-                            stroke="currentColor"
-                            fill="none"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                          />
-                          <path
-                            className="text-cyan-400"
-                            strokeDasharray={`${overallScore}, 100`}
-                            strokeWidth="3.5"
-                            strokeLinecap="round"
-                            stroke="currentColor"
-                            fill="none"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                          />
-                        </svg>
-                        <span className="absolute text-sm font-extrabold text-white">
-                          {overallScore}%
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white">Overall Compatibility</p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                          Multi-factor academic and domain alignment
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-slate-950/60 border border-white/5">
-                      <p className="text-xs font-medium text-slate-400">NIRF University Affinity</p>
-                      <p className="text-2xl font-bold text-purple-400 mt-1">Tier-1 Ready</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">IITs & NITs with active lab facilities</p>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-slate-950/60 border border-white/5">
-                      <p className="text-xs font-medium text-slate-400">CSR Grant Feasibility</p>
-                      <p className="text-2xl font-bold text-emerald-400 mt-1">High (96%)</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Matches corporate environmental charter</p>
-                    </div>
-                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed max-w-3xl line-clamp-2">
+                    {selectedProblem.description}
+                  </p>
                 </div>
 
-                {/* Skill Alignment Breakdown Section */}
-                <div className="glass-card rounded-2xl border border-white/10 bg-slate-900/80 p-6 shadow-xl space-y-4">
+                {/* 1. Recommended Student Teams (Ranked List as in Section #12) */}
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Layers className="h-4 w-4 text-cyan-400" />
-                      <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                        Disciplinary Skill Alignment Breakdown
+                      <Users className="h-4 w-4 text-blue-400" />
+                      <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+                        Recommended Student Teams
                       </h3>
                     </div>
-                    <span className="text-xs text-slate-400">Weighted NLP matrix</span>
+                    <span className="text-[11px] text-slate-500 font-mono">Ranked by Aptitude & Hackathon Track Record</span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {skillAlignments.map((sa) => (
-                      <div
-                        key={sa.skill}
-                        className="p-3.5 rounded-xl bg-slate-950/50 border border-white/5 space-y-2"
-                      >
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-slate-200">{sa.skill}</span>
-                          <span className="font-bold text-cyan-400">{sa.matchPct}%</span>
-                        </div>
-                        <Progress value={sa.matchPct} color={sa.color} size="sm" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Ranked Student Teams */}
-                <div className="glass-card rounded-2xl border border-white/10 bg-slate-900/80 p-6 shadow-xl space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-blue-400" />
-                      <h3 className="text-base font-bold text-white">
-                        Ranked Student Innovator Teams
-                      </h3>
-                    </div>
-                    <span className="text-xs text-slate-400">
-                      Ranked by verified hackathon & lab records
-                    </span>
-                  </div>
-
-                  <div className="space-y-3">
-                    {studentTeams.map((team, idx) => {
+                  <div className="divide-y divide-slate-800/80 border-y border-slate-800/80">
+                    {DEFAULT_STUDENT_TEAMS.map((team) => {
                       const isInvited = invitedTeams[team.id]
 
                       return (
-                        <div
-                          key={team.id}
-                          className="p-4 rounded-xl bg-slate-950/60 border border-white/5 hover:border-blue-500/25 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                        >
-                          <div className="space-y-1.5">
+                        <div key={team.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="space-y-1.5 flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="h-5 w-5 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold flex items-center justify-center">
-                                #{idx + 1}
-                              </span>
+                              <span className="font-mono text-xs font-bold text-slate-500">{team.rank}</span>
                               <h4 className="text-sm font-bold text-white">{team.name}</h4>
                               <span className="text-xs text-slate-400">({team.university})</span>
-                              <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                                {team.score}% Match
-                              </span>
+                              <span className="text-slate-600">•</span>
+                              <span className="font-mono text-xs font-semibold text-emerald-400">{team.score}% match</span>
                             </div>
 
-                            <p className="text-xs text-slate-400">
-                              <strong>Lead:</strong> {team.lead} • {team.size} Members
-                            </p>
-
-                            <div className="flex flex-wrap gap-1.5 pt-1">
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 font-mono">
                               {team.skills.map((s) => (
-                                <span
-                                  key={s}
-                                  className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700"
-                                >
-                                  {s}
+                                <span key={s.name} className="text-[11px]">
+                                  {s.name} <span className="text-slate-300 font-semibold">{s.match}%</span>
                                 </span>
                               ))}
                             </div>
+
+                            <div className="text-[11px] text-slate-500">
+                              Lead: {team.lead}
+                            </div>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => setViewingTeam(team)}
-                              leftIcon={<Eye className="h-3.5 w-3.5" />}
-                            >
-                              View Team
-                            </Button>
-
-                            <Button
-                              size="sm"
-                              disabled={isInvited}
+                          <div className="shrink-0 sm:self-center">
+                            <button
                               onClick={() => handleInviteTeam(team)}
+                              disabled={isInvited}
                               className={cn(
+                                'rounded px-3 py-1.5 text-xs font-semibold transition-colors flex items-center gap-1.5',
                                 isInvited
-                                  ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/30'
+                                  ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-500/40'
                                   : 'bg-blue-600 hover:bg-blue-500 text-white'
                               )}
-                              leftIcon={
-                                isInvited ? (
-                                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                                ) : (
-                                  <Send className="h-3.5 w-3.5" />
-                                )
-                              }
                             >
-                              {isInvited ? 'Invited' : 'Invite to Solve'}
-                            </Button>
+                              {isInvited ? (
+                                <>
+                                  <Check className="h-3 w-3" />
+                                  <span>Invited</span>
+                                </>
+                              ) : (
+                                <span>Invite Team</span>
+                              )}
+                            </button>
                           </div>
                         </div>
                       )
@@ -669,72 +408,62 @@ export default function AiMatchCenterPage() {
                   </div>
                 </div>
 
-                {/* Recommended Faculty Mentors */}
-                <div className="glass-card rounded-2xl border border-white/10 bg-slate-900/80 p-6 shadow-xl space-y-4">
+                {/* 2. Accredited Faculty Mentors (Ranked List as in Section #12) */}
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5 text-purple-400" />
-                      <h3 className="text-base font-bold text-white">
-                        Recommended Academic Faculty Mentors
+                      <GraduationCap className="h-4 w-4 text-purple-400" />
+                      <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+                        Accredited Faculty Mentors
                       </h3>
                     </div>
-                    <span className="text-xs text-slate-400">
-                      Subject matter experts & lab directors
-                    </span>
+                    <span className="text-[11px] text-slate-500 font-mono">Domain Specialists</span>
                   </div>
 
-                  <div className="space-y-3">
-                    {DEFAULT_FACULTY_MENTORS.map((faculty) => {
-                      const isRequested = requestedMentors[faculty.id]
+                  <div className="divide-y divide-slate-800/80 border-y border-slate-800/80">
+                    {DEFAULT_FACULTY_MENTORS.map((fac) => {
+                      const isRequested = requestedMentors[fac.id]
 
                       return (
-                        <div
-                          key={faculty.id}
-                          className="p-4 rounded-xl bg-slate-950/60 border border-white/5 hover:border-purple-500/25 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                        >
-                          <div className="space-y-1">
+                        <div key={fac.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="space-y-1 flex-1">
                             <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-bold text-white">{faculty.name}</h4>
-                              <span className="text-xs text-slate-400">
-                                • {faculty.university}
-                              </span>
-                              <span className="text-xs font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
-                                {faculty.score}% Affinity
-                              </span>
+                              <span className="font-mono text-xs font-bold text-slate-500">{fac.rank}</span>
+                              <h4 className="text-sm font-bold text-white">{fac.name}</h4>
+                              <span className="text-xs text-slate-400">({fac.university})</span>
+                              <span className="text-slate-600">•</span>
+                              <span className="font-mono text-xs font-semibold text-emerald-400">{fac.score}% match</span>
                             </div>
 
-                            <p className="text-xs text-slate-400">
-                              {faculty.designation}, {faculty.department}
-                            </p>
+                            <div className="text-xs text-slate-400">
+                              {fac.designation}
+                            </div>
 
-                            <p className="text-xs text-slate-300">
-                              <strong>Specialization:</strong> {faculty.specialization.join(', ')} •{' '}
-                              <span className="text-slate-400">
-                                {faculty.publications} indexed papers
-                              </span>
-                            </p>
+                            <div className="text-[11px] text-slate-500">
+                              Specialization: {fac.specialization.join(' · ')}
+                            </div>
                           </div>
 
-                          <div className="shrink-0 self-end sm:self-auto">
-                            <Button
-                              size="sm"
+                          <div className="shrink-0 sm:self-center">
+                            <button
+                              onClick={() => handleRequestMentorship(fac)}
                               disabled={isRequested}
-                              onClick={() => handleRequestMentorship(faculty)}
                               className={cn(
+                                'rounded px-3 py-1.5 text-xs font-semibold transition-colors flex items-center gap-1.5',
                                 isRequested
-                                  ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/30'
-                                  : 'bg-purple-600 hover:bg-purple-500 text-white'
+                                  ? 'bg-purple-900/30 text-purple-300 border border-purple-500/40'
+                                  : 'rounded border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'
                               )}
-                              leftIcon={
-                                isRequested ? (
-                                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                                ) : (
-                                  <Send className="h-3.5 w-3.5" />
-                                )
-                              }
                             >
-                              {isRequested ? 'Requested' : 'Request Mentorship'}
-                            </Button>
+                              {isRequested ? (
+                                <>
+                                  <Check className="h-3 w-3" />
+                                  <span>Requested</span>
+                                </>
+                              ) : (
+                                <span>Request Mentorship</span>
+                              )}
+                            </button>
                           </div>
                         </div>
                       )
@@ -742,66 +471,62 @@ export default function AiMatchCenterPage() {
                   </div>
                 </div>
 
-                {/* Recommended Industry & NGO Partners */}
-                <div className="glass-card rounded-2xl border border-white/10 bg-slate-900/80 p-6 shadow-xl space-y-4">
+                {/* 3. Recommended Industry & NGO Partners (Ranked List as in Section #12) */}
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Building2 className="h-5 w-5 text-amber-400" />
-                      <h3 className="text-base font-bold text-white">
+                      <Building2 className="h-4 w-4 text-amber-400" />
+                      <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
                         Recommended Industry & NGO Partners
                       </h3>
                     </div>
-                    <span className="text-xs text-slate-400">
-                      Mentorship, equipment sandboxes & municipal pilot support
-                    </span>
+                    <span className="text-[11px] text-slate-500 font-mono">Equipment Sandbox & Pilot Support</span>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="divide-y divide-slate-800/80 border-y border-slate-800/80">
                     {DEFAULT_INDUSTRY_PARTNERS.map((partner) => {
-                      const isSent = sentPitches[partner.id]
+                      const isSent = sentSandboxes[partner.id]
 
                       return (
-                        <div
-                          key={partner.id}
-                          className="p-4 rounded-xl bg-slate-950/60 border border-white/5 hover:border-amber-500/25 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                        >
-                          <div className="space-y-1">
+                        <div key={partner.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="space-y-1 flex-1">
                             <div className="flex items-center gap-2">
+                              <span className="font-mono text-xs font-bold text-slate-500">{partner.rank}</span>
                               <h4 className="text-sm font-bold text-white">{partner.name}</h4>
-                              <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                                {partner.score}% Alignment Match
-                              </span>
+                              <span className="text-xs text-slate-400">({partner.city})</span>
+                              <span className="text-slate-600">•</span>
+                              <span className="font-mono text-xs font-semibold text-emerald-400">{partner.score}% match</span>
                             </div>
 
-                            <p className="text-xs text-slate-400">
-                              {partner.type} • {partner.sector} • {partner.city}
-                            </p>
+                            <div className="text-xs text-slate-400">
+                              {partner.type}
+                            </div>
 
-                            <p className="text-xs text-amber-300 font-semibold">
+                            <div className="text-[11px] text-amber-300/90 font-medium">
                               Support Scope: {partner.supportScope}
-                            </p>
+                            </div>
                           </div>
 
-                          <div className="shrink-0 self-end sm:self-auto">
-                            <Button
-                              size="sm"
-                              disabled={isSent}
+                          <div className="shrink-0 sm:self-center">
+                            <button
                               onClick={() => handleRequestSupport(partner)}
+                              disabled={isSent}
                               className={cn(
+                                'rounded px-3 py-1.5 text-xs font-semibold transition-colors flex items-center gap-1.5',
                                 isSent
-                                  ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/30'
-                                  : 'bg-amber-600 hover:bg-amber-500 text-white'
+                                  ? 'bg-amber-900/30 text-amber-300 border border-amber-500/40'
+                                  : 'rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20'
                               )}
-                              leftIcon={
-                                isSent ? (
-                                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                                ) : (
-                                  <Send className="h-3.5 w-3.5" />
-                                )
-                              }
                             >
-                              {isSent ? 'Support Requested' : 'Request Sandbox'}
-                            </Button>
+                              {isSent ? (
+                                <>
+                                  <Check className="h-3 w-3" />
+                                  <span>Support Requested</span>
+                                </>
+                              ) : (
+                                <span>Request Sandbox</span>
+                              )}
+                            </button>
                           </div>
                         </div>
                       )
@@ -810,85 +535,15 @@ export default function AiMatchCenterPage() {
                 </div>
               </>
             ) : (
-              <div className="glass-card rounded-2xl border border-white/10 bg-slate-900/60 p-12 text-center space-y-3">
-                <Cpu className="h-10 w-10 text-slate-500 mx-auto" />
-                <h3 className="text-lg font-bold text-white">No Challenge Selected</h3>
-                <p className="text-xs text-slate-400">
-                  Select a challenge from the left explorer panel to initialize the real-time AI Matching Engine.
-                </p>
+              <div className="py-16 text-center space-y-2 border-y border-slate-800/80">
+                <Compass className="h-8 w-8 text-slate-600 mx-auto" />
+                <h3 className="text-sm font-semibold text-white">No Challenge Selected</h3>
+                <p className="text-xs text-slate-400">Select an active challenge from the left panel.</p>
               </div>
             )}
           </div>
         </div>
       </div>
-
-      {/* Team Details Modal */}
-      <Modal
-        isOpen={!!viewingTeam}
-        onClose={() => setViewingTeam(null)}
-        title={
-          viewingTeam && (
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-400" />
-              <span>{viewingTeam.name}</span>
-            </div>
-          )
-        }
-        description={viewingTeam ? `${viewingTeam.university} • ${viewingTeam.size} Members` : ''}
-        footer={
-          viewingTeam && (
-            <>
-              <Button variant="secondary" size="sm" onClick={() => setViewingTeam(null)}>
-                Close
-              </Button>
-              <Button
-                size="sm"
-                disabled={invitedTeams[viewingTeam.id]}
-                onClick={() => {
-                  handleInviteTeam(viewingTeam)
-                  setViewingTeam(null)
-                }}
-              >
-                {invitedTeams[viewingTeam.id] ? 'Already Invited' : 'Invite Team to Solve'}
-              </Button>
-            </>
-          )
-        }
-      >
-        {viewingTeam && (
-          <div className="space-y-4 text-xs">
-            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-white/5 space-y-1">
-              <span className="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">
-                Team Leader
-              </span>
-              <p className="text-white font-medium text-sm">{viewingTeam.lead}</p>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-white/5 space-y-1">
-              <span className="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">
-                Civic & Hackathon Track Record
-              </span>
-              <p className="text-slate-300 leading-relaxed">{viewingTeam.trackRecord}</p>
-            </div>
-
-            <div className="space-y-1.5">
-              <span className="text-slate-400 font-semibold block uppercase tracking-wider text-[10px]">
-                Verified Technical Proficiencies
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {viewingTeam.skills.map((sk) => (
-                  <span
-                    key={sk}
-                    className="bg-blue-500/15 border border-blue-500/30 text-blue-300 px-2.5 py-1 rounded-lg font-medium"
-                  >
-                    {sk}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
     </AppShell>
   )
 }
