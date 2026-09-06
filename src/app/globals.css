@@ -2,19 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   CIVICSOLVE CENTRALIZED DESIGN TOKENS & APPEARANCE SYSTEM
+   ========================================================================== */
+
 :root {
+  /* Default Dark Tokens */
   --background: #08090c;
   --foreground: #f8fafc;
   --surface: #0f131a;
   --surface-raised: #151a24;
+  --surface-muted: #1e293b;
   --border: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.05);
   --muted: #64748b;
-  --primary: #1d4ed8;
-  --primary-hover: #1e40af;
-  --accent: #059669;
+  --muted-foreground: #94a3b8;
+
+  /* Accent Tokens (Default: Ocean Blue) */
+  --accent-color: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: rgba(37, 99, 235, 0.15);
+  --accent-border: rgba(37, 99, 235, 0.35);
+  --accent-foreground: #ffffff;
+  --accent-glow: rgba(37, 99, 235, 0.25);
+
+  /* Primary aliases */
+  --primary: var(--accent-color);
+  --primary-hover: var(--accent-hover);
+  --primary-foreground: var(--accent-foreground);
+
+  /* Density Tokens (Comfortable Default) */
+  --density-card-p: 1.5rem;
+  --density-row-h: 3rem;
+  --density-input-h: 2.5rem;
+  --density-gap: 1rem;
+  --density-font-size: 1rem;
 }
 
+/* ==========================================================================
+   THEME DEFINITIONS: LIGHT & DARK
+   ========================================================================== */
+
+html.dark,
+[data-resolved-theme="dark"] {
+  --background: #08090c;
+  --foreground: #f8fafc;
+  --surface: #0f131a;
+  --surface-raised: #151a24;
+  --surface-muted: #1e293b;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --muted: #64748b;
+  --muted-foreground: #94a3b8;
+  color-scheme: dark;
+}
+
+html.light,
+[data-resolved-theme="light"] {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-raised: #f1f5f9;
+  --surface-muted: #e2e8f0;
+  --border: rgba(15, 23, 42, 0.12);
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --muted: #64748b;
+  --muted-foreground: #475569;
+  color-scheme: light;
+}
+
+/* Base Body Application */
 * {
   box-sizing: border-box;
 }
@@ -24,72 +81,386 @@ html {
 }
 
 body {
-  background: #08090c;
-  color: #f8fafc;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.012em;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-@layer utilities {
-  /* Architectural, non-card layout primitives */
-  .editorial-divider {
-    border-color: rgba(255, 255, 255, 0.07);
-  }
+/* ==========================================================================
+   LIGHT MODE OVERRIDES FOR EXISTING HARD-CODED PALETTES
+   ========================================================================== */
 
-  .editorial-surface {
-    background-color: #0f131a;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 0.5rem;
-  }
+html.light body,
+[data-resolved-theme="light"] body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
 
-  /* Backward compatibility alias without glow */
-  .glass,
-  .glass-card,
-  .glass-dark,
-  .surface-card {
-    background: #0f131a;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 0.5rem;
-  }
+/* Background containers */
+html.light .bg-\[\#08090c\],
+html.light .bg-\[\#0b0f17\],
+html.light .bg-\[\#0a0f1e\],
+[data-resolved-theme="light"] .bg-\[\#08090c\],
+[data-resolved-theme="light"] .bg-\[\#0b0f17\],
+[data-resolved-theme="light"] .bg-\[\#0a0f1e\] {
+  background-color: #ffffff !important;
+}
 
-  .glow-blue,
-  .glow-cyan {
-    box-shadow: none;
-  }
+html.light header,
+[data-resolved-theme="light"] header {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-bottom-color: #e2e8f0 !important;
+}
 
-  .glow-text {
-    text-shadow: none;
-  }
+html.light aside,
+[data-resolved-theme="light"] aside,
+html.light .sidebar-container {
+  background-color: #ffffff !important;
+  border-right-color: #e2e8f0 !important;
+}
 
-  .civic-gradient {
-    color: #f8fafc;
-    background: none;
-    -webkit-text-fill-color: initial;
-  }
+/* Card & Surface Overrides */
+html.light .bg-\[\#111726\],
+html.light .bg-slate-900,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-950,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950\/80,
+html.light .editorial-surface,
+html.light .glass,
+html.light .glass-card,
+html.light .glass-dark,
+html.light .surface-card,
+[data-resolved-theme="light"] .bg-\[\#111726\],
+[data-resolved-theme="light"] .bg-slate-900,
+[data-resolved-theme="light"] .bg-slate-900\/80,
+[data-resolved-theme="light"] .bg-slate-950,
+[data-resolved-theme="light"] .editorial-surface,
+[data-resolved-theme="light"] .glass-card {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
 
-  .hero-grid {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
+html.light .bg-slate-800,
+html.light .bg-slate-800\/80,
+html.light .bg-slate-800\/60,
+[data-resolved-theme="light"] .bg-slate-800,
+[data-resolved-theme="light"] .bg-slate-800\/80 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
+html.light .hover\:bg-slate-800:hover,
+html.light .hover\:bg-slate-850:hover,
+[data-resolved-theme="light"] .hover\:bg-slate-800:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
 
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
+/* Text adjustments for Light Mode */
+html.light .text-white,
+html.light .text-slate-100,
+[data-resolved-theme="light"] .text-white,
+[data-resolved-theme="light"] .text-slate-100 {
+  color: #0f172a !important;
+}
 
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 2px;
+html.light .text-slate-200,
+html.light .text-slate-300,
+[data-resolved-theme="light"] .text-slate-200,
+[data-resolved-theme="light"] .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400,
+[data-resolved-theme="light"] .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Border adjustments for Light Mode */
+html.light .border-white\/10,
+html.light .border-white\/5,
+html.light .border-slate-800,
+html.light .border-slate-800\/60,
+html.light .border-slate-800\/80,
+html.light .border-slate-700,
+[data-resolved-theme="light"] .border-white\/10,
+[data-resolved-theme="light"] .border-slate-800,
+[data-resolved-theme="light"] .border-slate-700 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Form inputs in Light Mode */
+html.light input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+html.light textarea,
+html.light select,
+[data-resolved-theme="light"] input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+[data-resolved-theme="light"] textarea,
+[data-resolved-theme="light"] select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder,
+[data-resolved-theme="light"] input::placeholder,
+[data-resolved-theme="light"] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Tables in Light Mode */
+html.light table th,
+[data-resolved-theme="light"] table th {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light table td,
+[data-resolved-theme="light"] table td {
+  border-color: #e2e8f0 !important;
+}
+
+/* Modals & Dropdowns in Light Mode */
+html.light .shadow-xl,
+html.light .shadow-2xl,
+[data-resolved-theme="light"] .shadow-xl,
+[data-resolved-theme="light"] .shadow-2xl {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ==========================================================================
+   DYNAMIC ACCENT SYSTEM
+   Updates buttons, badges, links, active navigation, focus rings, progress
+   ========================================================================== */
+
+/* Primary buttons & backgrounds */
+.bg-blue-600,
+.bg-brand-600,
+button.bg-blue-600,
+a.bg-blue-600,
+[data-accent-bg] {
+  background-color: var(--accent-color) !important;
+  color: var(--accent-foreground) !important;
+}
+
+.hover\:bg-blue-500:hover,
+.hover\:bg-blue-700:active,
+button.bg-blue-600:hover,
+a.bg-blue-600:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+/* Text accents */
+.text-blue-600,
+.text-blue-500,
+.text-blue-400,
+.text-cyan-400,
+.text-brand-500,
+.text-brand-600,
+[data-accent-text] {
+  color: var(--accent-color) !important;
+}
+
+/* Borders */
+.border-blue-500,
+.border-blue-600,
+.border-blue-500\/30,
+.border-blue-500\/40,
+[data-accent-border] {
+  border-color: var(--accent-border) !important;
+}
+
+/* Light accent washes & badges */
+.bg-blue-500\/10,
+.bg-blue-500\/20,
+.bg-blue-600\/15,
+.bg-blue-600\/20,
+[data-accent-wash] {
+  background-color: var(--accent-light) !important;
+}
+
+/* Focus rings */
+.focus-visible\:ring-blue-500\/50:focus-visible,
+.focus\:ring-blue-500:focus,
+.focus\:ring-2:focus {
+  --tw-ring-color: var(--accent-color) !important;
+  outline-color: var(--accent-color) !important;
+}
+
+/* Active navigation item highlight in sidebar */
+.nav-item-active,
+a[aria-current="page"] {
+  border-left: 3px solid var(--accent-color) !important;
+}
+
+/* Progress bars */
+.progress-bar-fill,
+[role="progressbar"] > div {
+  background-color: var(--accent-color) !important;
+}
+
+/* ==========================================================================
+   INTERFACE DENSITY SYSTEM
+   Controls paddings, row heights, table spacing, card spacing, and forms
+   ========================================================================== */
+
+/* COMPACT MODE */
+[data-density="compact"] {
+  --density-card-p: 0.875rem;
+  --density-row-h: 2.25rem;
+  --density-input-h: 2rem;
+  --density-gap: 0.5rem;
+  --density-font-size: 0.875rem;
+}
+
+[data-density="compact"] main {
+  padding-top: 0.75rem !important;
+  padding-bottom: 1rem !important;
+}
+
+[data-density="compact"] .p-6,
+[data-density="compact"] .sm\:p-8,
+[data-density="compact"] .p-8,
+[data-density="compact"] .editorial-surface,
+[data-density="compact"] .glass-card,
+[data-density="compact"] .surface-card {
+  padding: 0.875rem !important;
+}
+
+[data-density="compact"] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem !important;
+}
+
+[data-density="compact"] .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem !important;
+}
+
+[data-density="compact"] table th,
+[data-density="compact"] table td {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  font-size: 0.75rem !important;
+}
+
+[data-density="compact"] input:not([type="checkbox"]):not([type="radio"]),
+[data-density="compact"] select,
+[data-density="compact"] textarea {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+  font-size: 0.8rem !important;
+}
+
+[data-density="compact"] button.h-10 {
+  height: 2.125rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  font-size: 0.75rem !important;
+}
+
+/* COMFORTABLE MODE (Default) */
+[data-density="comfortable"] {
+  --density-card-p: 1.5rem;
+  --density-row-h: 3rem;
+  --density-input-h: 2.5rem;
+  --density-gap: 1rem;
+  --density-font-size: 1rem;
+}
+
+/* SPACIOUS MODE */
+[data-density="spacious"] {
+  --density-card-p: 2.25rem;
+  --density-row-h: 3.75rem;
+  --density-input-h: 3rem;
+  --density-gap: 1.5rem;
+  --density-font-size: 1.05rem;
+}
+
+[data-density="spacious"] main {
+  padding-top: 2.5rem !important;
+  padding-bottom: 3.5rem !important;
+}
+
+[data-density="spacious"] .p-6,
+[data-density="spacious"] .sm\:p-8,
+[data-density="spacious"] .p-8,
+[data-density="spacious"] .editorial-surface,
+[data-density="spacious"] .glass-card,
+[data-density="spacious"] .surface-card {
+  padding: 2.25rem !important;
+}
+
+[data-density="spacious"] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 2rem !important;
+}
+
+[data-density="spacious"] .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 2.75rem !important;
+}
+
+[data-density="spacious"] table th,
+[data-density="spacious"] table td {
+  padding-top: 1.125rem !important;
+  padding-bottom: 1.125rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+}
+
+[data-density="spacious"] input:not([type="checkbox"]):not([type="radio"]),
+[data-density="spacious"] select,
+[data-density="spacious"] textarea {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+/* ==========================================================================
+   MOTION ACCESSIBILITY SYSTEM
+   ========================================================================== */
+
+/* REDUCED MOTION */
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.05s !important;
+  scroll-behavior: auto !important;
+}
+
+/* MOTION OFF */
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Respect OS preference if data-motion is not full */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) *,
+  :root:not([data-motion="full"]) *::before,
+  :root:not([data-motion="full"]) *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.05s !important;
+    scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   SCROLLBAR & UTILITY PRIMITIVES
+   ========================================================================== */
 
 ::-webkit-scrollbar {
   width: 5px;
@@ -97,19 +468,19 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #08090c;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(100, 116, 139, 0.25);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(100, 116, 139, 0.4);
 }
 
 .leaflet-container {
-  background: #0f131a !important;
+  background: var(--surface) !important;
   border-radius: 0.5rem;
 }

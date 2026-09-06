@@ -19,6 +19,7 @@ import {
   Award,
   Bell,
   Settings,
+  Palette,
   PlayCircle,
   LogOut,
   X,
@@ -74,6 +75,7 @@ const navSections: NavSection[] = [
   {
     title: 'SYSTEM',
     items: [
+      { name: 'Appearance', href: '/settings?tab=appearance', icon: Palette },
       { name: 'Notifications', href: '/notifications', icon: Bell },
       { name: 'Settings', href: '/settings', icon: Settings },
     ],

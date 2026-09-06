@@ -103,7 +103,7 @@ const DEMO_USERS: DemoUser[] = [
   {
     id: 'industry',
     role: 'INDUSTRY',
-    label: 'Industry Sponsor',
+    label: 'Industry Partner',
     name: 'Suresh Narayanan (TCS Foundation)',
     email: 'csr@tcs.com',
     password: 'password123',

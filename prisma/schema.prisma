@@ -33,6 +33,7 @@ model User {
   projectUpdates    ProjectUpdate[]
   certificates      Certificate[]
   teamJoinRequests  TeamJoinRequest[]
+  appearanceSettings AppearanceSettings?
 }
 
 model Student {
@@ -534,3 +535,17 @@ model ProjectFile {
   uploadedBy String?
   createdAt  DateTime @default(now())
 }
+
+model AppearanceSettings {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme       String   @default("system") // "light" | "dark" | "system"
+  accentKey   String   @default("ocean-blue")
+  customColor String?  // hex code if custom
+  density     String   @default("comfortable") // "compact" | "comfortable" | "spacious"
+  motion      String   @default("full") // "full" | "reduced" | "off"
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}
+

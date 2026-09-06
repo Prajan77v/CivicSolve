@@ -189,8 +189,41 @@ export default function NewProblemPage() {
     { title: 'Synthesizing cross-domain solution blueprint...', detail: 'Generating standard deployment roadmap and impact verification criteria' },
   ]
 
+  const DRAFT_STORAGE_KEY = 'civicsolve_problem_draft_v1'
+
+  // Load draft from localStorage or backend on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_STORAGE_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed && typeof parsed === 'object' && parsed.title) {
+          setFormData(parsed)
+          toast.info('Restored your saved challenge draft.')
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load draft from storage', e)
+    }
+  }, [])
+
+  const handleSaveDraft = () => {
+    try {
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(formData))
+      toast.success('Challenge draft saved! You can close or refresh and resume anytime.')
+    } catch (e) {
+      toast.error('Could not save draft.')
+    }
+  }
+
   const updateForm = (fields: Partial<FormData>) => {
-    setFormData((prev) => ({ ...prev, ...fields }))
+    setFormData((prev) => {
+      const next = { ...prev, ...fields }
+      try {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(next))
+      } catch {}
+      return next
+    })
     // Clear errors for modified fields
     setErrors((prev) => {
       const copy = { ...prev }
@@ -431,15 +464,26 @@ export default function NewProblemPage() {
           </div>
 
           {currentStep < 7 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePreFillSample}
-              className="text-xs shrink-0 self-start sm:self-auto border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10"
-              leftIcon={<Sparkles className="h-3.5 w-3.5 text-cyan-400" />}
-            >
-              Fill Sample Challenge
-            </Button>
+            <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSaveDraft}
+                className="text-xs border-slate-700 text-slate-300 hover:bg-slate-800"
+              >
+                Save Draft
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePreFillSample}
+                className="text-xs border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10"
+                leftIcon={<Sparkles className="h-3.5 w-3.5 text-cyan-400" />}
+              >
+                Fill Sample Challenge
+              </Button>
+            </div>
           )}
         </div>
 

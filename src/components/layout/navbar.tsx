@@ -15,9 +15,16 @@ import {
   Settings,
   Shield,
   LogOut,
+  Sun,
+  Moon,
+  Laptop,
+  Palette,
+  Check,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLayout } from './layout-context'
+import { useAppearance } from '@/components/providers/appearance-provider'
+import { ACCENT_PRESETS } from '@/types/appearance'
 import NotificationPanel from '@/components/notifications/notification-panel'
 
 export default function Navbar() {
@@ -29,11 +36,21 @@ export default function Navbar() {
     unreadNotificationsCount,
   } = useLayout()
 
+  const {
+    theme,
+    resolvedTheme,
+    accentKey,
+    setTheme,
+    setAccentKey,
+  } = useAppearance()
+
   const [isNotificationsOpen, setNotificationsOpen] = useState(false)
   const [isUserMenuOpen, setUserMenuOpen] = useState(false)
+  const [isAppearanceOpen, setAppearanceOpen] = useState(false)
 
   const notificationsRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const appearanceRef = useRef<HTMLDivElement>(null)
 
   const user = session?.user
   const userRole = (user as any)?.role || 'CITIZEN'
@@ -55,6 +72,12 @@ export default function Navbar() {
         !userMenuRef.current.contains(event.target as Node)
       ) {
         setUserMenuOpen(false)
+      }
+      if (
+        appearanceRef.current &&
+        !appearanceRef.current.contains(event.target as Node)
+      ) {
+        setAppearanceOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -90,7 +113,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Right section: Action buttons, Notifications, AI Assistant & User profile */}
+      {/* Right section: Action buttons, Notifications, Appearance, AI Assistant & User profile */}
       <div className="flex items-center gap-2 sm:gap-2.5">
         {/* Submit Problem Button */}
         <Link
@@ -109,6 +132,109 @@ export default function Navbar() {
           <Play className="h-3 w-3 fill-current text-slate-300" />
           <span>Demo Runner</span>
         </Link>
+
+        {/* Quick Appearance Dropdown */}
+        <div className="relative" ref={appearanceRef}>
+          <button
+            type="button"
+            data-testid="header-appearance-toggle"
+            onClick={() => setAppearanceOpen((prev) => !prev)}
+            className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-[#111726] text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            aria-label="Customize appearance"
+            title="Appearance & Theme"
+          >
+            {resolvedTheme === 'dark' ? (
+              <Moon className="h-3.5 w-3.5 text-blue-400" />
+            ) : (
+              <Sun className="h-3.5 w-3.5 text-amber-500" />
+            )}
+          </button>
+
+          {isAppearanceOpen && (
+            <div
+              data-testid="header-appearance-popover"
+              className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-800 bg-[#111726] p-3 shadow-xl shadow-black/60 z-50 animate-fade-in space-y-3"
+            >
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <Palette className="h-3.5 w-3.5 text-blue-400" />
+                  Appearance Quick Menu
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 uppercase">{theme}</span>
+              </div>
+
+              {/* Theme choices */}
+              <div className="space-y-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Theme</div>
+                <div className="grid grid-cols-3 gap-1">
+                  {[
+                    { id: 'light', label: 'Light', icon: Sun },
+                    { id: 'dark', label: 'Dark', icon: Moon },
+                    { id: 'system', label: 'System', icon: Laptop },
+                  ].map((t) => {
+                    const Icon = t.icon
+                    const isSelected = theme === t.id
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        data-testid={`quick-theme-${t.id}`}
+                        onClick={() => setTheme(t.id as any)}
+                        className={cn(
+                          'flex flex-col items-center justify-center py-1.5 rounded-lg border text-[11px] font-medium transition-all',
+                          isSelected
+                            ? 'border-blue-500 bg-blue-600/20 text-blue-400 font-bold'
+                            : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5 mb-1" />
+                        <span>{t.label}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Accent quick swatches */}
+              <div className="space-y-1">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Accent</div>
+                <div className="flex items-center justify-between gap-1">
+                  {ACCENT_PRESETS.map((p) => {
+                    const isSelected = accentKey === p.key
+                    return (
+                      <button
+                        key={p.key}
+                        type="button"
+                        data-testid={`quick-accent-${p.key}`}
+                        title={p.label}
+                        onClick={() => setAccentKey(p.key)}
+                        className={cn(
+                          'h-6 w-6 rounded-full flex items-center justify-center transition-transform hover:scale-110',
+                          isSelected && 'ring-2 ring-white ring-offset-2 ring-offset-[#111726]'
+                        )}
+                        style={{ backgroundColor: p.hex }}
+                      >
+                        {isSelected && <Check className="h-3 w-3 text-white stroke-[3]" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Link to full settings */}
+              <div className="pt-2 border-t border-slate-800">
+                <Link
+                  href="/settings?tab=appearance"
+                  onClick={() => setAppearanceOpen(false)}
+                  className="flex items-center justify-between text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  <span>All Appearance Settings</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* AI Assistant Toggle Button */}
         <button
@@ -196,6 +322,15 @@ export default function Navbar() {
                 >
                   <UserIcon className="h-3.5 w-3.5 text-slate-400" />
                   <span>Your Profile</span>
+                </Link>
+
+                <Link
+                  href="/settings?tab=appearance"
+                  onClick={() => setUserMenuOpen(false)}
+                  className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                >
+                  <Palette className="h-3.5 w-3.5 text-blue-400" />
+                  <span>Appearance Settings</span>
                 </Link>
 
                 <Link

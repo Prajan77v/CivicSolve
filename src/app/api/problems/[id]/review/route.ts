@@ -59,6 +59,19 @@ export async function POST(
       }
     })
 
+    // Notify submitter of review decision
+    if (problem.submittedById) {
+      await prisma.notification.create({
+        data: {
+          userId: problem.submittedById,
+          title: `Challenge Status Updated: ${nextReviewStatus}`,
+          message: `Your challenge "${problem.title}" status is now ${nextReviewStatus}.${feedback ? ` Feedback: ${feedback}` : ''}`,
+          type: nextReviewStatus === 'PUBLISHED' || nextReviewStatus === 'VERIFIED' ? 'SUCCESS' : 'INFO',
+          link: `/problems/${params.id}`,
+        }
+      }).catch((e) => console.warn('Notification create error:', e))
+    }
+
     return NextResponse.json({ success: true, data: updated })
   } catch (error) {
     console.error('Review error:', error)
