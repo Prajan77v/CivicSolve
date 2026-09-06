@@ -15,6 +15,10 @@ import {
   Cpu,
   ChevronRight,
   ShieldCheck,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLayout } from '@/components/layout/layout-context'
@@ -57,8 +61,101 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [speechEnabled, setSpeechEnabled] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const recognitionRef = useRef<any>(null)
+
+  // Speech synthesis speaker
+  const speakText = (text: string) => {
+    if (!speechEnabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return
+    window.speechSynthesis.cancel()
+
+    // Strip markdown formatting for cleaner audio speech
+    const cleanText = text
+      .replace(/#+\s/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/\*/g, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/`[^`]+`/g, '')
+      .replace(/•/g, '')
+      .trim()
+
+    const utterance = new SpeechSynthesisUtterance(cleanText)
+    utterance.rate = 1.05
+    utterance.pitch = 1.0
+
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+
+    window.speechSynthesis.speak(utterance)
+  }
+
+  const stopSpeaking = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      setIsSpeaking(false)
+    }
+  }
+
+  // Speech recognition listener
+  const toggleListening = () => {
+    if (typeof window === 'undefined') return
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+
+    if (!SpeechRecognition) {
+      alert('Voice recognition is not supported in this browser. Please use Chrome, Edge, or Safari.')
+      return
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+      return
+    }
+
+    // Stop speaking if currently speaking
+    stopSpeaking()
+
+    try {
+      const recognition = new SpeechRecognition()
+      recognitionRef.current = recognition
+      recognition.continuous = false
+      recognition.interimResults = false
+      recognition.lang = 'en-IN'
+
+      recognition.onstart = () => {
+        setIsListening(true)
+      }
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript
+        if (transcript) {
+          setInputValue(transcript)
+          handleSendMessage(transcript)
+        }
+      }
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error)
+        setIsListening(false)
+      }
+
+      recognition.onend = () => {
+        setIsListening(false)
+      }
+
+      recognition.start()
+    } catch (err) {
+      console.error('Failed to initialize speech recognition:', err)
+      setIsListening(false)
+    }
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -216,10 +313,12 @@ Would you like me to guide you to a specific challenge or explain our matching a
 
       setMessages((prev) => [...prev, aiMessage])
       setIsTyping(false)
+      speakText(aiResponseData.text)
     }, 600)
   }
 
   const handleClearChat = () => {
+    stopSpeaking()
     setMessages(initialMessages)
   }
 
@@ -270,6 +369,33 @@ Would you like me to guide you to a specific challenge or explain our matching a
               </div>
 
               <div className="flex items-center gap-1">
+                {isSpeaking && (
+                  <button
+                    type="button"
+                    onClick={stopSpeaking}
+                    className="flex items-center gap-1 rounded-lg bg-cyan-500/20 px-2 py-1 text-xs text-cyan-300 animate-pulse border border-cyan-500/30"
+                    title="Stop speaking"
+                  >
+                    <Volume2 className="h-3.5 w-3.5 animate-bounce" />
+                    <span className="text-[10px] font-semibold">Speaking...</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isSpeaking) stopSpeaking()
+                    setSpeechEnabled(!speechEnabled)
+                  }}
+                  className={cn(
+                    "rounded-lg p-2 transition-colors",
+                    speechEnabled ? "text-cyan-400 hover:bg-slate-800" : "text-slate-500 hover:bg-slate-800"
+                  )}
+                  title={speechEnabled ? "Voice output enabled (Click to mute)" : "Voice output muted (Click to unmute)"}
+                >
+                  {speechEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                </button>
+
                 <button
                   type="button"
                   onClick={handleClearChat}
@@ -280,7 +406,10 @@ Would you like me to guide you to a specific challenge or explain our matching a
                 </button>
                 <button
                   type="button"
-                  onClick={() => setAiOpen(false)}
+                  onClick={() => {
+                    stopSpeaking()
+                    setAiOpen(false)
+                  }}
                   className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
                   title="Close Assistant"
                 >
@@ -426,21 +555,49 @@ Would you like me to guide you to a specific challenge or explain our matching a
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask Civic AI about challenges, matching, certificates..."
-                  className="w-full rounded-xl border border-white/10 bg-slate-950 px-4 py-3 pr-12 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  placeholder={isListening ? "Listening to your voice... Speak now" : "Ask Civic AI, or click mic to speak..."}
+                  className={cn(
+                    "w-full rounded-xl border bg-slate-950 px-4 py-3 pr-20 text-xs text-white placeholder-slate-500 focus:outline-none transition-all",
+                    isListening
+                      ? "border-red-500/60 ring-2 ring-red-500/20 bg-red-950/10 placeholder-red-400"
+                      : "border-white/10 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                  )}
                 />
-                <button
-                  type="submit"
-                  disabled={!inputValue.trim()}
-                  className="absolute right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500 text-black shadow-md transition-transform duration-150 hover:bg-cyan-400 active:scale-95 disabled:opacity-40 disabled:hover:bg-cyan-500"
-                  aria-label="Send message"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                </button>
+
+                <div className="absolute right-2 flex items-center gap-1">
+                  {/* Voice Chat Microphone Button */}
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200",
+                      isListening
+                        ? "bg-red-500 text-white shadow-[0_0_12px_rgba(239,68,68,0.6)] animate-pulse"
+                        : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-cyan-400"
+                    )}
+                    title={isListening ? "Stop listening" : "Start Voice Chat"}
+                    aria-label="Voice input"
+                  >
+                    {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  </button>
+
+                  {/* Send Button */}
+                  <button
+                    type="submit"
+                    disabled={!inputValue.trim()}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500 text-black shadow-md transition-transform duration-150 hover:bg-cyan-400 active:scale-95 disabled:opacity-40 disabled:hover:bg-cyan-500"
+                    aria-label="Send message"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </form>
-              <p className="mt-2 text-center text-[10px] text-slate-500">
-                Civic AI processes real-time SIH26043 datasets & municipal registries.
-              </p>
+              <div className="mt-2 flex items-center justify-between text-[10px] text-slate-500">
+                <span>Civic AI SIH26043 Engine</span>
+                <span className="flex items-center gap-1 text-cyan-400/80">
+                  <Mic className="h-3 w-3" /> Voice Chat Enabled
+                </span>
+              </div>
             </div>
           </motion.aside>
         </div>
