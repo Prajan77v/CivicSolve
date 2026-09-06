@@ -19,6 +19,8 @@ import {
   X,
   ArrowRight,
   Sparkles,
+  UserCheck,
+  Briefcase,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLayout } from '@/components/layout/layout-context'
@@ -151,6 +153,24 @@ const commandItems: CommandItem[] = [
     category: 'Ecosystem',
     href: '/universities',
     icon: GraduationCap,
+  },
+  {
+    id: 'eco-students',
+    title: 'Student Solvers Directory',
+    subtitle: 'Engineering fellows, hackathon champions, and SIH solvers',
+    category: 'Ecosystem',
+    href: '/students',
+    icon: UserCheck,
+    badge: 'Solvers',
+  },
+  {
+    id: 'eco-professionals',
+    title: 'IT Professionals & Mentors',
+    subtitle: 'Principal architects, technical advisors, and research fellows',
+    category: 'Ecosystem',
+    href: '/professionals',
+    icon: Briefcase,
+    badge: 'Mentors',
   },
   {
     id: 'eco-partners',

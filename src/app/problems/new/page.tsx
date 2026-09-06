@@ -181,6 +181,13 @@ export default function NewProblemPage() {
   const [createdProblemId, setCreatedProblemId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Duplicate detection modal state
+  const [dupModalOpen, setDupModalOpen] = useState(false)
+  const [dupCheckLoading, setDupCheckLoading] = useState(false)
+  const [dupMatches, setDupMatches] = useState<any[]>([])
+  const [dupScore, setDupScore] = useState(0)
+  const [pendingAction, setPendingAction] = useState<string | null>(null)
+
   const pipelineStages = [
     { title: 'Analyzing problem narrative with NLP...', detail: 'Extracting key civic entities, domains, and semantic gravity' },
     { title: 'Detecting required engineering disciplines...', detail: 'Identifying Embedded Systems, IoT, Chemical & Civil Engineering needs' },
@@ -310,14 +317,44 @@ export default function NewProblemPage() {
     return true
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateStep(currentStep)) {
       if (currentStep < 6) {
         setCurrentStep((prev) => prev + 1)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       } else if (currentStep === 6) {
-        // Proceed to Step 7 (Submission & AI Pipeline)
-        startSubmission()
+        // Run duplicate check before submission
+        setDupCheckLoading(true)
+        try {
+          const checkRes = await fetch('/api/problems/duplicates/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: formData.title,
+              description: formData.description,
+              category: formData.category,
+              district: formData.district || undefined,
+              state: formData.state || undefined,
+              affectedCount: parseInt(formData.affectedCount, 10) || undefined,
+            }),
+          })
+          const checkJson = await checkRes.json()
+
+          if (checkJson.success && (checkJson.isDuplicate || checkJson.isRelated) && checkJson.topMatches?.length > 0) {
+            // Show duplicate modal
+            setDupMatches(checkJson.topMatches)
+            setDupScore(checkJson.score)
+            setDupModalOpen(true)
+          } else {
+            // No significant similarity — proceed to submission
+            startSubmission()
+          }
+        } catch {
+          // If check fails, allow submission anyway
+          startSubmission()
+        } finally {
+          setDupCheckLoading(false)
+        }
       }
     }
   }
@@ -330,7 +367,8 @@ export default function NewProblemPage() {
   }
 
   // Step 7: Submitting to API & running simulated AI animations
-  const startSubmission = async () => {
+  const startSubmission = async (action?: string, canonicalProblemId?: string) => {
+    setDupModalOpen(false)
     setCurrentStep(7)
     setIsSubmitting(true)
     setPipelineProgress(15)
@@ -338,7 +376,7 @@ export default function NewProblemPage() {
 
     try {
       // 1. Submit to POST /api/problems
-      const payload = {
+      const payload: any = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         category: formData.category,
@@ -361,6 +399,10 @@ export default function NewProblemPage() {
         lat: parseFloat(formData.lat) || undefined,
         lng: parseFloat(formData.lng) || undefined,
       }
+
+      // Pass action override if provided
+      if (action) payload.action = action
+      if (canonicalProblemId) payload.canonicalProblemId = canonicalProblemId
 
       const responsePromise = fetch('/api/problems', {
         method: 'POST',
@@ -445,6 +487,95 @@ export default function NewProblemPage() {
 
   return (
     <AppShell>
+      {/* ── Duplicate Warning Modal ──────────────────────────────────────── */}
+      {dupModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 max-w-lg w-full p-6 space-y-5">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+                <AlertOctagon className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Similar Challenge Already Exists</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                  Our AI found an existing challenge with <span className="font-semibold text-amber-500">{Math.round(dupScore * 100)}% similarity</span>. Review before submitting.
+                </p>
+              </div>
+            </div>
+
+            {/* Top Match Cards */}
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+              {dupMatches.slice(0, 3).map((match) => (
+                <div key={match.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-white/8">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{match.title}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {match.district ? `${match.district}, ` : ''}{match.state || ''} · {match.category}
+                    </p>
+                  </div>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                    match.label === 'DUPLICATE'
+                      ? 'bg-red-500/15 text-red-500'
+                      : 'bg-amber-500/15 text-amber-500'
+                  }`}>
+                    {Math.round(match.score * 100)}% {match.label}
+                  </span>
+                  <a
+                    href={`/problems/${match.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-500 hover:text-blue-400 shrink-0"
+                    title="View existing challenge"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-2 pt-1">
+              <button
+                onClick={() => {
+                  if (dupMatches[0]) {
+                    router.push(`/problems/${dupMatches[0].id}`)
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                <ExternalLink className="w-4 h-4" />
+                View Existing Challenge
+              </button>
+              <button
+                onClick={() => {
+                  const canonicalId = dupMatches[0]?.id
+                  if (canonicalId) {
+                    startSubmission('link_related', canonicalId)
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-amber-500/40 bg-amber-500/5 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                Report as Related (Group with Existing)
+              </button>
+              <button
+                onClick={() => startSubmission('force_new')}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-sm font-semibold text-white hover:bg-blue-500 transition-colors"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Submit as New Independent Challenge
+              </button>
+              <button
+                onClick={() => setDupModalOpen(false)}
+                className="w-full text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 py-1 transition-colors"
+              >
+                Cancel — go back and revise
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto space-y-8 pb-16">
         {/* Wizard Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
@@ -1138,10 +1269,11 @@ export default function NewProblemPage() {
                   type="button"
                   size="md"
                   onClick={handleNext}
+                  disabled={dupCheckLoading}
                   className="bg-blue-600 hover:bg-blue-500 text-white"
-                  rightIcon={<ArrowRight className="h-4 w-4" />}
+                  rightIcon={dupCheckLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                 >
-                  {currentStep === 6 ? 'Confirm & Run AI Engine' : 'Next Step'}
+                  {dupCheckLoading ? 'Checking...' : currentStep === 6 ? 'Confirm & Run AI Engine' : 'Next Step'}
                 </Button>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { aiProvider } from '@/lib/ai'
+import { checkDuplicates } from '@/lib/duplicate-detector'
 
 export async function GET(request: Request) {
   try {
@@ -9,8 +10,14 @@ export async function GET(request: Request) {
     const category = searchParams.get('category')
     const priority = searchParams.get('priority')
     const status = searchParams.get('status')
+    const includeAll = searchParams.get('includeAll') === 'true' // Admin bypass
 
     const where: any = {}
+
+    // Only return canonical problems (no duplicates) unless admin requests all
+    if (!includeAll) {
+      where.isCanonical = true
+    }
 
     if (q && q.trim()) {
       const term = q.trim()
@@ -56,11 +63,20 @@ export async function GET(request: Request) {
             teamId: true,
           },
         },
+        _count: {
+          select: { relatedReports: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json({ data: problems, success: true })
+    // Attach relatedReportsCount to each problem for convenience
+    const problemsWithCount = problems.map((p) => ({
+      ...p,
+      relatedReportsCount: (p as any)._count?.relatedReports ?? 0,
+    }))
+
+    return NextResponse.json({ data: problemsWithCount, success: true })
   } catch (error) {
     console.error('Error fetching problems:', error)
     return NextResponse.json(
@@ -90,6 +106,10 @@ export async function POST(request: Request) {
       lat,
       lng,
       submittedById,
+      // Duplicate handling: 'create_canonical' | 'link_related' | 'force_new'
+      action,
+      // If linking as related, the canonical problem ID
+      canonicalProblemId: incomingCanonicalId,
     } = body
 
     if (!title || !description || !category) {
@@ -98,6 +118,72 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+
+    // ── Duplicate pre-check (skip if action is already decided) ────────────────
+    if (!action || action === 'create_canonical') {
+      const existingProblems = await prisma.problem.findMany({
+        where: { isCanonical: true },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          category: true,
+          affectedCount: true,
+          location: { select: { district: true, state: true } },
+        },
+        take: 200,
+      })
+
+      const flattened = existingProblems.map((p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        category: p.category,
+        affectedCount: p.affectedCount,
+        district: p.location?.district ?? null,
+        state: p.location?.state ?? null,
+      }))
+
+      const dupResult = checkDuplicates(
+        { title, description, category, district, state, affectedCount },
+        flattened
+      )
+
+      // Block at ≥90% without override
+      if (dupResult.score >= 0.90) {
+        return NextResponse.json(
+          {
+            success: false,
+            isDuplicate: true,
+            isRelated: false,
+            score: dupResult.score,
+            label: dupResult.label,
+            topMatches: dupResult.topMatches,
+            message:
+              'A very similar challenge already exists. Please review the existing challenge, report as related, or submit as new if genuinely different.',
+          },
+          { status: 409 }
+        )
+      }
+
+      // Warn at ≥65% but allow with action
+      if (dupResult.score >= 0.65 && !action) {
+        return NextResponse.json(
+          {
+            success: false,
+            isDuplicate: false,
+            isRelated: true,
+            score: dupResult.score,
+            label: dupResult.label,
+            topMatches: dupResult.topMatches,
+            message:
+              'A similar challenge exists. Choose to report as related, or submit as a new independent challenge.',
+          },
+          { status: 409 }
+        )
+      }
+    }
+
 
     // Resolve or find submitter
     let userId = submittedById
@@ -127,6 +213,11 @@ export async function POST(request: Request) {
     const parsedLat = lat !== undefined && lat !== null ? parseFloat(String(lat)) : null
     const parsedLng = lng !== undefined && lng !== null ? parseFloat(String(lng)) : null
 
+    // Determine canonical status
+    const isLinkedRelated = action === 'link_related' && incomingCanonicalId
+    const isCanonical = !isLinkedRelated
+    const resolvedCanonicalId = isLinkedRelated ? incomingCanonicalId : null
+
     // 1. Create problem with location
     const problem = await prisma.problem.create({
       data: {
@@ -141,6 +232,9 @@ export async function POST(request: Request) {
         tags: tagsString,
         sdgGoals: sdgGoalsString,
         submittedById: userId,
+        isCanonical,
+        canonicalProblemId: resolvedCanonicalId,
+        duplicateOfId: resolvedCanonicalId,
         location: {
           create: {
             address: address || null,

@@ -1,6 +1,12 @@
-﻿# 🇮🇳 CivicSolve (SIH26043)
+# 🇮🇳 CivicSolve (SIH26043)
 ### **Intelligent Societal Problem-Solving Platform**
 *A Continuous Digital Smart India Hackathon Ecosystem Transforming Real-World Problems into Measurable Solutions*
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen?style=for-the-badge&logo=cloudflare)](https://mirror-monetary-celtic-negotiation.trycloudflare.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#-docker-production-deployment)
+
+> 🌐 **Live Public URL**: [https://mirror-monetary-celtic-negotiation.trycloudflare.com](https://mirror-monetary-celtic-negotiation.trycloudflare.com)  
+> Access the live running platform instantly from anywhere with no setup required.
 
 ---
 

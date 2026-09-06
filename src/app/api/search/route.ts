@@ -24,6 +24,7 @@ export async function GET(request: Request) {
     const [problems, projects, teams, universities, certificates] = await Promise.all([
       prisma.problem.findMany({
         where: {
+          isCanonical: true,
           OR: [
             { title: { contains: q } },
             { description: { contains: q } },

@@ -4,7 +4,8 @@ import { prisma } from '@/lib/db'
 export async function GET() {
   try {
     const [
-      totalProblems,
+      totalReports,
+      totalCanonicalChallenges,
       statusGroups,
       totalProjects,
       totalUniversities,
@@ -15,8 +16,10 @@ export async function GET() {
       totalCertificates,
     ] = await Promise.all([
       prisma.problem.count(),
+      prisma.problem.count({ where: { isCanonical: true } }),
       prisma.problem.groupBy({
         by: ['status'],
+        where: { isCanonical: true },
         _count: { status: true },
       }),
       prisma.project.count(),
@@ -58,7 +61,8 @@ export async function GET() {
 
     return NextResponse.json({
       data: {
-        totalProblems,
+        totalProblems: totalReports,          // All reports including related
+        totalCanonicalChallenges,             // Unique challenges only
         byStatus,
         totalProjects,
         totalUniversities,

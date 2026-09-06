@@ -24,6 +24,8 @@ import {
   LogOut,
   X,
   Layers,
+  UserCheck,
+  Briefcase,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLayout } from './layout-context'
@@ -52,7 +54,8 @@ const navSections: NavSection[] = [
     title: 'NETWORK',
     items: [
       { name: 'Universities', href: '/universities', icon: GraduationCap },
-      { name: 'Experts', href: '/teams', icon: Users },
+      { name: 'Students', href: '/students', icon: UserCheck, badge: 'Solvers' },
+      { name: 'IT Professionals', href: '/professionals', icon: Briefcase, badge: 'Mentors' },
       { name: 'Partners', href: '/partners', icon: Building2 },
     ],
   },

@@ -59,15 +59,23 @@ html.dark,
 
 html.light,
 [data-resolved-theme="light"] {
-  --background: #f8fafc;
+  /* ── Page Foundation ────────────────────────────────── */
+  --background: #f5f6f8;
   --foreground: #0f172a;
+
+  /* ── Surface Hierarchy ──────────────────────────────── */
   --surface: #ffffff;
-  --surface-raised: #f1f5f9;
-  --surface-muted: #e2e8f0;
-  --border: rgba(15, 23, 42, 0.12);
-  --border-subtle: rgba(15, 23, 42, 0.06);
+  --surface-raised: #f8fafc;
+  --surface-muted: #f1f5f9;
+
+  /* ── Borders ────────────────────────────────────────── */
+  --border: rgba(15, 23, 42, 0.10);
+  --border-subtle: rgba(15, 23, 42, 0.055);
+
+  /* ── Muted Text ─────────────────────────────────────── */
   --muted: #64748b;
   --muted-foreground: #475569;
+
   color-scheme: light;
 }
 
@@ -94,43 +102,50 @@ body {
    LIGHT MODE OVERRIDES FOR EXISTING HARD-CODED PALETTES
    ========================================================================== */
 
+/* ── Body ─────────────────────────────────────────────────────────── */
 html.light body,
 [data-resolved-theme="light"] body {
-  background-color: #f8fafc !important;
+  background-color: #f5f6f8 !important;
   color: #0f172a !important;
 }
 
-/* Background containers */
+/* ── Page-level dark containers → warm neutral page ─────────────────── */
 html.light .bg-\[\#08090c\],
 html.light .bg-\[\#0b0f17\],
 html.light .bg-\[\#0a0f1e\],
+html.light .bg-\[\#0d1117\],
 [data-resolved-theme="light"] .bg-\[\#08090c\],
 [data-resolved-theme="light"] .bg-\[\#0b0f17\],
-[data-resolved-theme="light"] .bg-\[\#0a0f1e\] {
-  background-color: #ffffff !important;
+[data-resolved-theme="light"] .bg-\[\#0a0f1e\],
+[data-resolved-theme="light"] .bg-\[\#0d1117\] {
+  background-color: #f5f6f8 !important;
 }
 
+/* ── Header ──────────────────────────────────────────────────────── */
 html.light header,
 [data-resolved-theme="light"] header {
-  background-color: rgba(255, 255, 255, 0.92) !important;
-  border-bottom-color: #e2e8f0 !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.09) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06) !important;
 }
 
+/* ── Sidebar ─────────────────────────────────────────────────────── */
 html.light aside,
 [data-resolved-theme="light"] aside,
 html.light .sidebar-container {
   background-color: #ffffff !important;
-  border-right-color: #e2e8f0 !important;
+  border-right: 1px solid rgba(15, 23, 42, 0.09) !important;
+  box-shadow: 1px 0 0 0 rgba(15, 23, 42, 0.06) !important;
 }
 
-/* Card & Surface Overrides */
+/* ── Cards & Surfaces ─────────────────────────────────────────────── */
 html.light .bg-\[\#111726\],
 html.light .bg-slate-900,
 html.light .bg-slate-900\/80,
 html.light .bg-slate-900\/90,
 html.light .bg-slate-950,
-html.light .bg-slate-950\/70,
-html.light .bg-slate-950\/80,
 html.light .editorial-surface,
 html.light .glass,
 html.light .glass-card,
@@ -143,28 +158,44 @@ html.light .surface-card,
 [data-resolved-theme="light"] .editorial-surface,
 [data-resolved-theme="light"] .glass-card {
   background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(15, 23, 42, 0.09) !important;
+  box-shadow:
+    0 1px 3px 0 rgba(15, 23, 42, 0.06),
+    0 1px 2px -1px rgba(15, 23, 42, 0.04) !important;
 }
 
 html.light .bg-slate-800,
 html.light .bg-slate-800\/80,
 html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/40,
+html.light .bg-slate-800\/20,
 [data-resolved-theme="light"] .bg-slate-800,
-[data-resolved-theme="light"] .bg-slate-800\/80 {
+[data-resolved-theme="light"] .bg-slate-800\/80,
+[data-resolved-theme="light"] .bg-slate-800\/60 {
   background-color: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
+  border-color: rgba(15, 23, 42, 0.09) !important;
   color: #1e293b !important;
 }
 
+html.light .bg-slate-700,
+html.light .bg-slate-700\/60,
+[data-resolved-theme="light"] .bg-slate-700 {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+/* Hover state overrides */
 html.light .hover\:bg-slate-800:hover,
 html.light .hover\:bg-slate-850:hover,
+html.light .hover\:bg-slate-700:hover,
 [data-resolved-theme="light"] .hover\:bg-slate-800:hover {
-  background-color: #e2e8f0 !important;
+  background-color: #e8edf4 !important;
   color: #0f172a !important;
 }
 
-/* Text adjustments for Light Mode */
+/* ── Text ────────────────────────────────────────────────────────── */
+
+/* H1 / page title level */
 html.light .text-white,
 html.light .text-slate-100,
 [data-resolved-theme="light"] .text-white,
@@ -172,6 +203,7 @@ html.light .text-slate-100,
   color: #0f172a !important;
 }
 
+/* Secondary heading level */
 html.light .text-slate-200,
 html.light .text-slate-300,
 [data-resolved-theme="light"] .text-slate-200,
@@ -179,25 +211,35 @@ html.light .text-slate-300,
   color: #334155 !important;
 }
 
+/* Supporting / body text level */
 html.light .text-slate-400,
 [data-resolved-theme="light"] .text-slate-400 {
   color: #64748b !important;
 }
 
-/* Border adjustments for Light Mode */
+/* ── Borders ─────────────────────────────────────────────────────── */
 html.light .border-white\/10,
 html.light .border-white\/5,
+html.light .border-white\/8,
 html.light .border-slate-800,
 html.light .border-slate-800\/60,
 html.light .border-slate-800\/80,
 html.light .border-slate-700,
+html.light .border-slate-700\/50,
+html.light .border-slate-700\/60,
 [data-resolved-theme="light"] .border-white\/10,
 [data-resolved-theme="light"] .border-slate-800,
 [data-resolved-theme="light"] .border-slate-700 {
-  border-color: #e2e8f0 !important;
+  border-color: rgba(15, 23, 42, 0.10) !important;
 }
 
-/* Form inputs in Light Mode */
+html.light .divide-white\/10 > :not([hidden]) ~ :not([hidden]),
+html.light .divide-slate-800 > :not([hidden]) ~ :not([hidden]),
+[data-resolved-theme="light"] .divide-slate-800 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+/* ── Form Inputs ──────────────────────────────────────────────────── */
 html.light input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
 html.light textarea,
 html.light select,
@@ -206,7 +248,17 @@ html.light select,
 [data-resolved-theme="light"] select {
   background-color: #ffffff !important;
   color: #0f172a !important;
-  border-color: #cbd5e1 !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04) inset !important;
+}
+
+html.light input:focus,
+html.light textarea:focus,
+html.light select:focus,
+[data-resolved-theme="light"] input:focus,
+[data-resolved-theme="light"] textarea:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
 }
 
 html.light input::placeholder,
@@ -216,25 +268,98 @@ html.light textarea::placeholder,
   color: #94a3b8 !important;
 }
 
-/* Tables in Light Mode */
+/* ── Tables ─────────────────────────────────────────────────────── */
 html.light table th,
 [data-resolved-theme="light"] table th {
   background-color: #f8fafc !important;
   color: #475569 !important;
-  border-color: #e2e8f0 !important;
+  border-color: rgba(15, 23, 42, 0.09) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.03em !important;
 }
 
 html.light table td,
 [data-resolved-theme="light"] table td {
-  border-color: #e2e8f0 !important;
+  border-color: rgba(15, 23, 42, 0.07) !important;
+  color: #1e293b !important;
 }
 
-/* Modals & Dropdowns in Light Mode */
+html.light table tr:hover td,
+[data-resolved-theme="light"] table tr:hover td {
+  background-color: #f8fafc !important;
+}
+
+/* ── Modals & Dropdowns ───────────────────────────────────────────── */
 html.light .shadow-xl,
 html.light .shadow-2xl,
 [data-resolved-theme="light"] .shadow-xl,
 [data-resolved-theme="light"] .shadow-2xl {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  box-shadow:
+    0 10px 25px -5px rgba(15, 23, 42, 0.12),
+    0 8px 10px -6px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* ── Badge / Tag Pills ────────────────────────────────────────────── */
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-800\/50,
+[data-resolved-theme="light"] .bg-slate-900\/60 {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.09) !important;
+  color: #334155 !important;
+}
+
+/* ── Specialization / Category Tag Pills (University cards) ───────── */
+html.light [class*="bg-"][class*="500/10"],
+html.light [class*="bg-"][class*="500/15"],
+html.light [class*="bg-"][class*="600/10"],
+html.light [class*="bg-"][class*="600/15"] {
+  filter: saturate(0.7) !important;
+}
+
+/* ── Stat Metric Boxes in Cards ───────────────────────────────────── */
+html.light .bg-slate-800\/30,
+html.light .bg-slate-800\/40,
+html.light .bg-slate-800\/50,
+[data-resolved-theme="light"] .bg-slate-800\/30 {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  color: #1e293b !important;
+}
+
+/* ── Flagship / Highlight Box ─────────────────────────────────────── */
+html.light .bg-blue-500\/5,
+html.light .bg-blue-600\/5,
+html.light .bg-indigo-500\/5,
+[data-resolved-theme="light"] .bg-blue-500\/5 {
+  background-color: rgba(37, 99, 235, 0.05) !important;
+}
+
+/* ── Sidebar Nav Items (unselected) ───────────────────────────────── */
+html.light .hover\:bg-slate-800\/60:hover,
+html.light .hover\:bg-white\/5:hover,
+[data-resolved-theme="light"] .hover\:bg-slate-800\/60:hover {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+
+/* ── Inactive / Muted backgrounds ────────────────────────────────── */
+html.light .bg-white\/5,
+html.light .bg-white\/10,
+html.light .bg-black\/20,
+[data-resolved-theme="light"] .bg-white\/5,
+[data-resolved-theme="light"] .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+/* ── Scrollbar tint in light mode ─────────────────────────────────── */
+html.light ::-webkit-scrollbar-thumb,
+[data-resolved-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.15) !important;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover,
+[data-resolved-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.25) !important;
 }
 
 /* ==========================================================================

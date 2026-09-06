@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from './db'
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'civicsolve-sih2026-secret-key-32chars',
   session: { strategy: 'jwt' },
   pages: { signIn: '/login' },
   providers: [

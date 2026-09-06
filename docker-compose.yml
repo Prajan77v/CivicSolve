@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  civicsolve-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: civicsolve-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - NEXTAUTH_SECRET=civicsolve-sih2026-secret-key-32chars
+      - NEXTAUTH_URL=http://localhost:3000
+    volumes:
+      - civicsolve_data:/app/prisma
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/auth/csrf || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  civicsolve_data:
+    driver: local

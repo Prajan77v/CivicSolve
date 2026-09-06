@@ -157,6 +157,12 @@ model Problem {
   priorityBreakdown String?
   challengeGroupId  String?
   challengeGroup    ChallengeGroup?     @relation(fields: [challengeGroupId], references: [id])
+  // Canonical / duplicate tracking
+  isCanonical        Boolean             @default(true)
+  canonicalProblemId String?
+  canonicalProblem   Problem?            @relation("CanonicalReports", fields: [canonicalProblemId], references: [id])
+  relatedReports     Problem[]           @relation("CanonicalReports")
+  duplicateOfId      String?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   location          ProblemLocation?
