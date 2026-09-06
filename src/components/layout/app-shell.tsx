@@ -13,7 +13,7 @@ interface AppShellProps {
 
 function AppShellContent({ children }: AppShellProps) {
   return (
-    <div className="relative min-h-screen bg-[#08090c] text-slate-100 selection:bg-blue-600/30 selection:text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-[#08090c] text-slate-100 selection:bg-blue-600/30 selection:text-white">
       {/* Sidebar Navigation */}
       <Sidebar />
 

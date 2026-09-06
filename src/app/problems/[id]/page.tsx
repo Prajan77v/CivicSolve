@@ -48,6 +48,7 @@ import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { Modal } from '@/components/ui/modal'
 import { cn } from '@/lib/utils'
+import EvidenceGallery, { EvidenceItem } from '@/components/evidence/evidence-gallery'
 
 interface LocationData {
   address?: string | null
@@ -60,9 +61,18 @@ interface LocationData {
 
 interface EvidenceData {
   id: string
+  problemId?: string
+  projectId?: string
   type: string
   url: string
+  filename?: string
+  originalName?: string
+  mimeType?: string
+  sizeBytes?: number
+  uploadedBy?: string | null
   caption?: string | null
+  stage?: string | null
+  createdAt?: string | Date
 }
 
 interface MatchedEntity {
@@ -858,6 +868,27 @@ export default function ProblemDetailPage() {
                   <span><strong>Reported Landmark:</strong> {problem.location.address}</span>
                 </div>
               )}
+
+              {/* Supporting Evidence Gallery */}
+              <div className="pt-4 border-t border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
+                      Ground-Truth Supporting Evidence ({problem.evidence?.length || 0})
+                    </h3>
+                    <p className="text-[11px] text-slate-400">
+                      Empirical proof uploaded by citizen reporters and field officers.
+                    </p>
+                  </div>
+                </div>
+
+                <EvidenceGallery
+                  evidence={problem.evidence || []}
+                  problemId={problem.id}
+                  canEdit={true}
+                  onEvidenceChange={fetchProblem}
+                />
+              </div>
             </section>
 
             {/* SECTION 3: SIMILAR REGIONAL PROBLEMS */}
@@ -1102,6 +1133,28 @@ export default function ProblemDetailPage() {
                     {ai?.duplicateRisk ? Math.round(ai.duplicateRisk * 100) : 8}%
                   </span>
                 </div>
+              </div>
+
+              {/* AI Ground-Truth Evidence Detection */}
+              <div className="p-3 rounded bg-slate-950/80 border border-slate-800 text-xs space-y-1">
+                <span className="font-mono text-[10px] text-cyan-400 uppercase tracking-wider block font-semibold flex items-center gap-1.5">
+                  <FileCheck className="h-3 w-3" />
+                  Evidence Detected by Workflow
+                </span>
+                <p className="text-slate-300 font-medium">
+                  {problem.evidence && problem.evidence.length > 0 ? (
+                    <span>
+                      {problem.evidence.filter((e) => e.type === 'IMAGE').length} photos,{' '}
+                      {problem.evidence.filter((e) => e.type === 'VIDEO').length} videos,{' '}
+                      {problem.evidence.filter((e) => e.type === 'DOCUMENT').length} documents
+                    </span>
+                  ) : (
+                    <span className="text-slate-500 italic">No empirical media attached yet</span>
+                  )}
+                </p>
+                <p className="text-[10px] text-slate-500">
+                  Ground-truth evidence verified for municipal field officer dispatch.
+                </p>
               </div>
 
               {/* Technical Disciplines Required */}

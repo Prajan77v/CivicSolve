@@ -187,12 +187,19 @@ model ProblemLocation {
 }
 
 model ProblemEvidence {
-  id        String  @id @default(cuid())
-  problemId String
-  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  type      String
-  url       String
-  caption   String?
+  id           String   @id @default(cuid())
+  problemId    String
+  problem      Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  type         String   // IMAGE | VIDEO | DOCUMENT
+  url          String
+  filename     String   @default("evidence_file")
+  originalName String   @default("evidence_file")
+  mimeType     String   @default("application/octet-stream")
+  sizeBytes    Int      @default(0)
+  uploadedBy   String?  @default("Citizen Reporter")
+  caption      String?
+  stage        String?  // PROBLEM | PROTOTYPE | PILOT | DEPLOYMENT | IMPACT
+  createdAt    DateTime @default(now())
 }
 
 model ProblemAIAnalysis {

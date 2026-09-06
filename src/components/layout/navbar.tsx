@@ -88,11 +88,11 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-slate-800/80 bg-[#0b0f17]/90 px-4 backdrop-blur-md md:px-6">
       {/* Left section: Mobile menu & Search bar */}
-      <div className="flex items-center gap-3 md:gap-4 flex-1 max-w-xl">
+      <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0 max-w-xl">
         {/* Mobile Sidebar Hamburger */}
         <button
           onClick={toggleMobileSidebar}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden"
           aria-label="Open navigation drawer"
         >
           <Menu className="h-4 w-4" />
@@ -102,20 +102,20 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setCommandPaletteOpen(true)}
-          className="group relative flex w-full items-center justify-between rounded-lg border border-slate-800 bg-[#111726] px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200 sm:w-80 md:w-96"
+          className="group relative flex w-full min-w-0 items-center justify-between rounded-lg border border-slate-800 bg-[#111726] px-2.5 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200 sm:w-80 md:w-96"
         >
-          <div className="flex items-center gap-2 truncate">
+          <div className="flex items-center gap-2 min-w-0 truncate">
             <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span className="truncate">Search challenges, teams, solutions...</span>
           </div>
-          <kbd className="hidden sm:flex items-center gap-0.5 rounded border border-slate-700 bg-slate-800/60 px-1.5 py-0.5 text-[10px] font-medium text-slate-400">
+          <kbd className="hidden sm:flex items-center gap-0.5 rounded border border-slate-700 bg-slate-800/60 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 shrink-0">
             <span>⌘</span>K
           </kbd>
         </button>
       </div>
 
       {/* Right section: Action buttons, Notifications, Appearance, AI Assistant & User profile */}
-      <div className="flex items-center gap-2 sm:gap-2.5">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* Submit Problem Button */}
         <Link
           href="/problems/new"

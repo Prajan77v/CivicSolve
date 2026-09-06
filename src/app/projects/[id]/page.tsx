@@ -59,6 +59,7 @@ import { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import EvidenceUploadZone, { UploadedEvidenceItem } from '@/components/evidence/evidence-upload-zone'
 
 interface TaskItem {
   id: string
@@ -343,6 +344,7 @@ export default function ProjectWorkspacePage() {
   const [newFileName, setNewFileName] = useState('')
   const [newFileType, setNewFileType] = useState('SCHEMATIC')
   const [isUploadingFile, setIsUploadingFile] = useState(false)
+  const [projectStagedMedia, setProjectStagedMedia] = useState<UploadedEvidenceItem[]>([])
 
   // Evaluation state
   const [evaluations, setEvaluations] = useState<EvaluationItem[]>([])
@@ -486,6 +488,39 @@ export default function ProjectWorkspacePage() {
   // Upload File
   const handleUploadFile = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // If real media was uploaded via EvidenceUploadZone, save each to project files
+    if (projectStagedMedia.length > 0) {
+      setIsUploadingFile(true)
+      try {
+        for (const item of projectStagedMedia) {
+          const res = await fetch(`/api/projects/${projectId}/files`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: item.originalName,
+              fileType: item.type === 'IMAGE' ? 'REPORT' : item.type === 'VIDEO' ? 'REPORT' : newFileType,
+              url: item.url,
+              sizeBytes: item.sizeBytes,
+            }),
+          })
+          const json = await res.json()
+          if (json.success && json.data) {
+            setFiles((prev) => [json.data, ...prev])
+          }
+        }
+        toast.success(`Attached ${projectStagedMedia.length} media artifact(s) to project workspace!`)
+        setIsFileModalOpen(false)
+        setProjectStagedMedia([])
+        setNewFileName('')
+      } catch {
+        toast.error('Network error uploading files')
+      } finally {
+        setIsUploadingFile(false)
+      }
+      return
+    }
+
     if (!newFileName.trim()) return
 
     setIsUploadingFile(true)
@@ -2191,38 +2226,62 @@ Timestamp: ${new Date().toISOString()}
         {/* MODAL: UPLOAD FILE */}
         <Modal
           isOpen={isFileModalOpen}
-          onClose={() => setIsFileModalOpen(false)}
-          title="Upload Project Artifact"
+          onClose={() => {
+            setIsFileModalOpen(false)
+            setProjectStagedMedia([])
+          }}
+          title="Upload Project Artifact & Proof"
         >
           <form onSubmit={handleUploadFile} className="space-y-4 text-xs">
-            <div>
-              <label className="block text-slate-300 mb-1 font-medium">Document Title *</label>
-              <input
-                type="text"
-                placeholder="e.g. PCB Schematic Revision 2.1 (Eagle)"
-                value={newFileName}
-                onChange={(e) => setNewFileName(e.target.value)}
-                required
-                className="w-full rounded-xl border border-white/10 bg-[#0f172a] px-3 py-2 text-white focus:border-teal-500 focus:outline-none"
+            <div className="space-y-3">
+              <label className="block text-slate-300 font-medium">
+                Upload Media / Artifact (Photos, Videos, Schematics)
+              </label>
+              <EvidenceUploadZone
+                items={projectStagedMedia}
+                onChange={(items) => setProjectStagedMedia(items)}
               />
             </div>
 
-            <div>
-              <label className="block text-slate-300 mb-1 font-medium">Artifact Category</label>
-              <select
-                value={newFileType}
-                onChange={(e) => setNewFileType(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-[#0f172a] px-3 py-2 text-white focus:border-teal-500 focus:outline-none"
-              >
-                <option value="SCHEMATIC">Hardware / Circuit Schematic</option>
-                <option value="CODE">Firmware / Source Code</option>
-                <option value="REPORT">Field Pilot Testing Report</option>
-                <option value="DATASET">Water Telemetry CSV Dataset</option>
-              </select>
-            </div>
+            {projectStagedMedia.length === 0 && (
+              <>
+                <div>
+                  <label className="block text-slate-300 mb-1 font-medium">Document Title *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. PCB Schematic Revision 2.1 (Eagle)"
+                    value={newFileName}
+                    onChange={(e) => setNewFileName(e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-[#0f172a] px-3 py-2 text-white focus:border-teal-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 mb-1 font-medium">Artifact Category</label>
+                  <select
+                    value={newFileType}
+                    onChange={(e) => setNewFileType(e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-[#0f172a] px-3 py-2 text-white focus:border-teal-500 focus:outline-none"
+                  >
+                    <option value="SCHEMATIC">Hardware / Circuit Schematic</option>
+                    <option value="CODE">Firmware / Source Code</option>
+                    <option value="REPORT">Field Pilot Testing Report</option>
+                    <option value="DATASET">Water Telemetry CSV Dataset</option>
+                  </select>
+                </div>
+              </>
+            )}
 
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsFileModalOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsFileModalOpen(false)
+                  setProjectStagedMedia([])
+                }}
+              >
                 Cancel
               </Button>
               <Button type="submit" size="sm" disabled={isUploadingFile} className="bg-teal-600 hover:bg-teal-500 text-white font-semibold">

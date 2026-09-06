@@ -22,6 +22,7 @@ import {
   Upload,
   ShieldCheck,
   Flame,
+  Film,
   Info,
   ExternalLink,
   ChevronRight,
@@ -36,6 +37,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
+import EvidenceUploadZone, { UploadedEvidenceItem } from '@/components/evidence/evidence-upload-zone'
 
 const DOMAIN_OPTIONS = [
   { value: 'WATER', label: 'Water Management & Quality' },
@@ -172,6 +174,7 @@ export default function NewProblemPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>(INITIAL_DATA)
+  const [evidenceFiles, setEvidenceFiles] = useState<UploadedEvidenceItem[]>([])
   const [tagInput, setTagInput] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -398,6 +401,16 @@ export default function NewProblemPage() {
         pincode: formData.pincode || undefined,
         lat: parseFloat(formData.lat) || undefined,
         lng: parseFloat(formData.lng) || undefined,
+        evidence: evidenceFiles.map((ev) => ({
+          type: ev.type,
+          url: ev.url,
+          filename: ev.filename,
+          originalName: ev.originalName,
+          mimeType: ev.mimeType,
+          sizeBytes: ev.sizeBytes,
+          caption: ev.caption,
+          stage: 'PROBLEM',
+        })),
       }
 
       // Pass action override if provided
@@ -949,17 +962,36 @@ export default function NewProblemPage() {
                 </p>
               </div>
 
-              <div className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-6">
+                {/* Real Media Evidence Upload (Photos, Videos, Documents) */}
+                <div className="rounded-2xl border border-slate-800 bg-[#0d1117] p-5 space-y-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Upload className="h-4 w-4 text-cyan-400" />
+                      Supporting Evidence (Photos, Videos & Documents)
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Upload ground-truth proof from your device. You can select multiple photos (JPG, PNG, WEBP), field videos (MP4, WebM), and laboratory test reports (PDF, DOC).
+                    </p>
+                  </div>
+
+                  <EvidenceUploadZone
+                    items={evidenceFiles}
+                    onChange={(items) => setEvidenceFiles(items)}
+                  />
+                </div>
+
+                {/* Optional external evidence URL */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1 border-t border-white/5">
                   <Input
-                    label="Evidence Document / Lab Report URL"
+                    label="External Lab Report / Reference URL (Optional)"
                     placeholder="https://... or link to government notice / report"
                     value={formData.evidenceUrl}
                     onChange={(e) => updateForm({ evidenceUrl: e.target.value })}
                   />
 
                   <Input
-                    label="Evidence Document Type"
+                    label="Reference Document Type"
                     placeholder="e.g. District Lab Report, Media Article, Survey"
                     value={formData.evidenceType}
                     onChange={(e) => updateForm({ evidenceType: e.target.value })}
@@ -1151,6 +1183,50 @@ export default function NewProblemPage() {
                       </span>
                     ))}
                   </div>
+                </div>
+
+                {/* Attached Supporting Evidence Preview */}
+                <div data-testid="step6-evidence-preview" className="p-4 rounded-xl bg-slate-950/70 border border-white/5 space-y-3 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-cyan-400 uppercase tracking-wider">
+                      Attached Ground-Truth Evidence ({evidenceFiles.length})
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-mono">
+                      {evidenceFiles.filter((f) => f.type === 'IMAGE').length} photos •{' '}
+                      {evidenceFiles.filter((f) => f.type === 'VIDEO').length} videos •{' '}
+                      {evidenceFiles.filter((f) => f.type === 'DOCUMENT').length} docs
+                    </span>
+                  </div>
+
+                  {evidenceFiles.length === 0 ? (
+                    <p className="text-slate-500 italic text-xs">No media files attached</p>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      {evidenceFiles.map((ev, idx) => (
+                        <div
+                          key={ev.id || idx}
+                          className="rounded-lg border border-slate-800 bg-[#0d1117] p-2 space-y-1.5"
+                        >
+                          <div className="aspect-video w-full rounded bg-slate-900 overflow-hidden flex items-center justify-center">
+                            {ev.type === 'IMAGE' ? (
+                              <img src={ev.url} alt={ev.originalName} className="h-full w-full object-cover" />
+                            ) : ev.type === 'VIDEO' ? (
+                              <div className="flex items-center gap-1 text-[11px] text-purple-400">
+                                <Film className="h-4 w-4" /> Video
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 text-[11px] text-emerald-400">
+                                <FileText className="h-4 w-4" /> Document
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-300 truncate" title={ev.originalName}>
+                            {ev.originalName}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Consent callout */}

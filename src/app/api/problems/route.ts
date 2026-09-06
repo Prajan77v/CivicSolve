@@ -44,6 +44,7 @@ export async function GET(request: Request) {
       where,
       include: {
         location: true,
+        evidence: true,
         aiAnalysis: true,
         submittedBy: {
           select: {
@@ -110,6 +111,8 @@ export async function POST(request: Request) {
       action,
       // If linking as related, the canonical problem ID
       canonicalProblemId: incomingCanonicalId,
+      // Evidence files array
+      evidence = [],
     } = body
 
     if (!title || !description || !category) {
@@ -245,9 +248,25 @@ export async function POST(request: Request) {
             lng: parsedLng,
           },
         },
+        evidence: Array.isArray(evidence) && evidence.length > 0
+          ? {
+              create: evidence.map((ev: any) => ({
+                type: ev.type || 'DOCUMENT',
+                url: ev.url,
+                filename: ev.filename || 'evidence_file',
+                originalName: ev.originalName || ev.filename || 'evidence_file',
+                mimeType: ev.mimeType || 'application/octet-stream',
+                sizeBytes: ev.sizeBytes || 0,
+                uploadedBy: ev.uploadedBy || 'Citizen Reporter',
+                caption: ev.caption || null,
+                stage: ev.stage || 'PROBLEM',
+              })),
+            }
+          : undefined,
       },
       include: {
         location: true,
+        evidence: true,
       },
     })
 
@@ -309,6 +328,7 @@ export async function POST(request: Request) {
       where: { id: problem.id },
       include: {
         location: true,
+        evidence: true,
         aiAnalysis: true,
         submittedBy: {
           select: {

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import EvidenceGallery, { EvidenceItem } from '@/components/evidence/evidence-gallery'
 
 interface ProblemItem {
   id: string
@@ -43,11 +44,7 @@ interface ProblemItem {
     domain: string
     detectedTech?: string
   } | null
-  evidence?: Array<{
-    id: string
-    title: string
-    fileUrl: string
-  }>
+  evidence?: EvidenceItem[]
 }
 
 const TABS = [
@@ -284,6 +281,29 @@ export default function ReviewQueuePage() {
                       </div>
                     )}
                   </div>
+
+                  {/* Evidence Display Section */}
+                  {prob.evidence && prob.evidence.length > 0 && (
+                    <div className="p-3.5 rounded-lg border border-slate-800 bg-slate-950/60 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[11px] font-semibold text-slate-300 flex items-center gap-1.5">
+                          <FileCheck className="h-3.5 w-3.5 text-cyan-400" />
+                          Field Evidence Verified by Submitter ({prob.evidence.length})
+                        </span>
+                        <span className="font-mono text-[10px] text-slate-500">
+                          {prob.evidence.filter((e) => e.type === 'IMAGE').length} photos •{' '}
+                          {prob.evidence.filter((e) => e.type === 'VIDEO').length} videos •{' '}
+                          {prob.evidence.filter((e) => e.type === 'DOCUMENT').length} documents
+                        </span>
+                      </div>
+
+                      <EvidenceGallery
+                        evidence={prob.evidence}
+                        problemId={prob.id}
+                        canEdit={false}
+                      />
+                    </div>
+                  )}
 
                   {/* Feedback line if present */}
                   {prob.adminFeedback && (
