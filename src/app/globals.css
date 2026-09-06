@@ -169,29 +169,69 @@ html.light .surface-card,
     0 1px 2px -1px rgba(15, 23, 42, 0.03) !important;
 }
 
-/* Specific light banner override for gradient headers like universities */
+/* Universal light banner overrides for all top-level header hero blocks */
+html.light .bg-gradient-to-r.from-slate-900,
 html.light .bg-gradient-to-r.from-\[\#0d172e\],
-[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] {
-  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 50%, #f0fdf4 100%) !important;
-  border-color: rgba(37, 99, 235, 0.25) !important;
-  box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.08) !important;
+html.light .bg-gradient-to-r.from-\[\#0d162d\],
+html.light .bg-gradient-to-r.from-\[\#0e162e\],
+html.light .bg-gradient-to-r.from-\[\#17130b\],
+html.light .bg-gradient-to-r.from-\[\#0a1824\],
+html.light .bg-gradient-to-r.from-\[\#0a1628\],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-slate-900,
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d162d\],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0e162e\],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#17130b\],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0a1824\],
+[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0a1628\] {
+  background: linear-gradient(135deg, #f0f4fd 0%, #e2eafc 50%, #edf2f7 100%) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
 }
 
-html.light .bg-gradient-to-r.from-\[\#0d172e\] h1,
-[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] h1 {
+/* Light mode text inside all top banners */
+html.light .bg-gradient-to-r h1,
+html.light .bg-gradient-to-r h2,
+[data-resolved-theme="light"] .bg-gradient-to-r h1,
+[data-resolved-theme="light"] .bg-gradient-to-r h2 {
   color: #0f172a !important;
 }
 
-html.light .bg-gradient-to-r.from-\[\#0d172e\] p,
-[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] p {
+html.light .bg-gradient-to-r p,
+[data-resolved-theme="light"] .bg-gradient-to-r p {
   color: #334155 !important;
 }
 
-html.light .bg-gradient-to-r.from-\[\#0d172e\] div[class*="border-blue-400"],
-[data-resolved-theme="light"] .bg-gradient-to-r.from-\[\#0d172e\] div[class*="border-blue-400"] {
+/* Pill badge inside banners */
+html.light .bg-gradient-to-r div[class*="border-blue-"],
+html.light .bg-gradient-to-r div[class*="border-amber-"],
+html.light .bg-gradient-to-r div[class*="border-indigo-"],
+html.light .bg-gradient-to-r div[class*="border-emerald-"],
+html.light .bg-gradient-to-r div[class*="border-teal-"],
+[data-resolved-theme="light"] .bg-gradient-to-r div[class*="border-blue-"],
+[data-resolved-theme="light"] .bg-gradient-to-r div[class*="border-amber-"] {
   background-color: #ffffff !important;
-  color: #1d4ed8 !important;
-  border-color: rgba(37, 99, 235, 0.3) !important;
+  color: #1e40af !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+}
+
+/* Key Metrics Strip inside Projects / Workspaces */
+html.light .bg-gradient-to-r .bg-slate-900\/60,
+html.light .bg-gradient-to-r .bg-slate-900,
+[data-resolved-theme="light"] .bg-gradient-to-r .bg-slate-900\/60 {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light .bg-gradient-to-r .bg-slate-900\/60 span,
+[data-resolved-theme="light"] .bg-gradient-to-r .bg-slate-900\/60 span {
+  color: #475569 !important;
+}
+
+html.light .bg-gradient-to-r .bg-slate-900\/60 p,
+[data-resolved-theme="light"] .bg-gradient-to-r .bg-slate-900\/60 p {
+  color: #0f172a !important;
 }
 
 
