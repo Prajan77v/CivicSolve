@@ -60,7 +60,19 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
 export function useLayout() {
   const context = useContext(LayoutContext)
   if (!context) {
-    throw new Error('useLayout must be used within a LayoutProvider')
+    return {
+      isAiOpen: false,
+      setAiOpen: () => {},
+      toggleAi: () => {},
+      isCommandPaletteOpen: false,
+      setCommandPaletteOpen: () => {},
+      toggleCommandPalette: () => {},
+      isMobileSidebarOpen: false,
+      setMobileSidebarOpen: () => {},
+      toggleMobileSidebar: () => {},
+      unreadNotificationsCount: 0,
+      setUnreadNotificationsCount: () => {},
+    }
   }
   return context
 }

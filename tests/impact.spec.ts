@@ -12,7 +12,7 @@ test.describe('Societal Impact & Telemetry Wall', () => {
     await expect(page.locator('h1, h2').filter({ hasText: /Impact|Proven Deployments|Societal/i }).first()).toBeVisible();
 
     // Verify metric cards or counters
-    const metricStats = page.locator('text=Beneficiaries, text=Citizens, text=Deployments, text=Villages, text=Water').first();
+    const metricStats = page.getByText(new RegExp('Beneficiaries|Citizens|Deployments|Villages|Water', 'i')).first();
     await expect(metricStats).toBeVisible({ timeout: 10000 });
 
     // Verify impact project stories exist

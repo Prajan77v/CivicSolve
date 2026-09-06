@@ -33,7 +33,7 @@ test.describe('AI Classification & Analysis Engine', () => {
     await page.goto('/problems/cmtoobswg002tzfwtr7evt8z9');
     await page.waitForLoadState('networkidle');
 
-    const aiIndicators = page.locator('text=INTELLIGENCE SPECIFICATION, text=THE PROBLEM, text=Groundwater, text=Priority').first();
+    const aiIndicators = page.getByText(new RegExp('INTELLIGENCE SPECIFICATION|THE PROBLEM|Groundwater|Priority', 'i')).first();
     await expect(aiIndicators).toBeVisible({ timeout: 10000 });
 
     expect(errors).toHaveLength(0);

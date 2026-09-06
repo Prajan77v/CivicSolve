@@ -244,6 +244,7 @@ export default function SolutionLibraryPage() {
               return (
                 <div
                   key={sol.id}
+                  data-testid="solution-card"
                   className="rounded-xl border border-slate-800 bg-[#111726] p-6 flex flex-col justify-between hover:border-slate-700 transition-colors"
                 >
                   <div className="space-y-4">

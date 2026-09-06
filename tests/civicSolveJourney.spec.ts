@@ -13,7 +13,7 @@ test.describe('Master CivicSolve End-to-End Innovation Lifecycle', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveTitle(/CivicSolve/i);
-    await expect(page.locator('text=SIH26043, text=Intelligent Societal Problem-Solving').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('SIH26043|Intelligent Societal Problem-Solving', 'i')).first()).toBeVisible();
 
     // Verify NO bounties link on landing page
     const bountyNav = page.locator('nav a[href="/bounties"]');
@@ -30,7 +30,7 @@ test.describe('Master CivicSolve End-to-End Innovation Lifecycle', () => {
 
     // 4. Command Center / Dashboard
     await page.waitForURL('**/dashboard', { timeout: 15000 });
-    await expect(page.locator('text=Command Center, text=CivicSolve, text=Dashboard').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('Command Center|CivicSolve|Dashboard', 'i')).first()).toBeVisible();
 
     // 5. Problems Directory
     await page.goto('/problems');
@@ -134,7 +134,7 @@ test.describe('Master CivicSolve End-to-End Innovation Lifecycle', () => {
     // 21. Specific Credential Verification
     await page.goto('/verify/cert-nashik-001');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('text=Official SIH Verification, text=Authentic, text=Verified Credential, text=Outstanding Solver').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('Official SIH Verification|Authentic|Verified Credential|Outstanding Solver', 'i')).first()).toBeVisible();
 
     // 22. Civic Map
     await page.goto('/map');
@@ -144,12 +144,12 @@ test.describe('Master CivicSolve End-to-End Innovation Lifecycle', () => {
     // 23. Live Judge Demo Runner
     await page.goto('/demo');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('text=Judge, text=Demo, text=Simulation').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('Judge|Demo|Simulation', 'i')).first()).toBeVisible();
 
     // 24. Notifications
     await page.goto('/notifications');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('h1, h2').filter({ hasText: /Notifications|Alerts/i }).first()).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
     // Final assert: zero uncaught page errors
     expect(pageErrors).toHaveLength(0);

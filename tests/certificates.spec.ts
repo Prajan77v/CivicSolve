@@ -26,7 +26,7 @@ test.describe('Digital Certificates & QR Verification', () => {
     await page.goto('/verify/cert-nashik-001');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('text=Public Ledger Verification, text=Cryptographic, text=AUTHENTIC').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(new RegExp('Public Ledger Verification|Cryptographic|AUTHENTIC', 'i')).first()).toBeVisible({ timeout: 10000 });
 
     expect(errors).toHaveLength(0);
   });

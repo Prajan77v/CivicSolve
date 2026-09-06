@@ -11,7 +11,7 @@ test.describe('Responsive Viewport Adaptability', () => {
 
     // On desktop, the sidebar should be visible
     await expect(page.locator('aside, nav').first()).toBeVisible();
-    await expect(page.locator('text=Command Center, text=CivicSolve').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('Command Center|CivicSolve', 'i')).first()).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });
@@ -25,7 +25,7 @@ test.describe('Responsive Viewport Adaptability', () => {
     await page.waitForLoadState('networkidle');
 
     // Main content area remains visible
-    await expect(page.locator('main, div.space-y-6').first()).toBeVisible();
+    await expect(page.locator('main')).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });
@@ -42,7 +42,7 @@ test.describe('Responsive Viewport Adaptability', () => {
     await expect(page.locator('body')).toBeVisible();
 
     // Check for mobile menu trigger button
-    const mobileMenuBtn = page.locator('button[aria-label*="menu" i], button:has(svg.lucide-menu), button:has(svg)').first();
+    const mobileMenuBtn = page.locator('header button[aria-label*="navigation" i], header button:has(svg)').first();
     await expect(mobileMenuBtn).toBeVisible();
 
     expect(errors).toHaveLength(0);

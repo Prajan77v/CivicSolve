@@ -368,6 +368,7 @@ export default function ImpactWallPage() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
+              data-testid="impact-card"
               className="rounded-lg border border-slate-800 bg-[#0f131a] p-6 space-y-5"
             >
               {/* Header */}

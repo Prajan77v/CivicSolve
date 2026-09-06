@@ -29,7 +29,7 @@ test.describe('Civic Problems & Submission Workflow', () => {
     await expect(page.locator('h1').first()).toBeVisible();
 
     // Check for AI analysis / confidence or priority indicators
-    await expect(page.locator('text=Priority, text=AI Analysis, text=Confidence, text=Severity, text=Groundwater').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('Priority|AI Analysis|Confidence|Severity|Groundwater', 'i')).first()).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });

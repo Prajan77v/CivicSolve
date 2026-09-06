@@ -31,7 +31,7 @@ test.describe('Global Search & Discovery', () => {
       await page.waitForTimeout(300);
 
       // Verify matching results appear
-      await expect(page.locator('text=Water, text=Challenges, text=Groundwater').first()).toBeVisible();
+      await expect(page.getByText(new RegExp('Water|Challenges|Groundwater', 'i')).first()).toBeVisible();
     }
 
     expect(errors).toHaveLength(0);

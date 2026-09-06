@@ -43,7 +43,7 @@ test.describe('Expert Evaluation & Hackathon Rubric', () => {
     const evalTab = page.locator('button:has-text("Evaluation"), button:has-text("Rubric"), button:has-text("Scores")').first();
     if (await evalTab.isVisible()) {
       await evalTab.click();
-      await expect(page.locator('text=Innovation, text=Feasibility, text=Scalability, text=Score').first()).toBeVisible();
+      await expect(page.getByText(new RegExp('Innovation|Feasibility|Scalability|Score', 'i')).first()).toBeVisible();
     }
 
     expect(errors).toHaveLength(0);

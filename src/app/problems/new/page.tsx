@@ -530,6 +530,8 @@ export default function NewProblemPage() {
 
               <div className="space-y-4">
                 <Input
+                  id="title"
+                  name="title"
                   label="Challenge Title *"
                   placeholder="e.g. Arsenic Contamination in Rural Groundwater"
                   value={formData.title}
@@ -557,6 +559,8 @@ export default function NewProblemPage() {
                 </div>
 
                 <Textarea
+                  id="description"
+                  name="description"
                   label="Detailed Problem Description *"
                   placeholder="Describe the issue in detail: what causes it, who experiences it, current severity, and on-ground constraints..."
                   rows={6}

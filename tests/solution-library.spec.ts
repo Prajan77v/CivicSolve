@@ -28,12 +28,8 @@ test.describe('Solution Library & Regional Adaptation', () => {
     await page.goto('/solution-library');
     await page.waitForLoadState('networkidle');
 
-    // Click on the first solution card or "View Details" button
-    const viewBtn = page.locator('button:has-text("View"), button:has-text("Inspect"), div.glass-card').first();
-    await viewBtn.click();
-
-    // Verify details modal or drawer opens
-    const adaptBtn = page.locator('button:has-text("Adapt Solution"), button:has-text("Replicate")').first();
+    // Click Adapt to Your Region on first card
+    const adaptBtn = page.locator('button:has-text("Adapt to Your Region"), button:has-text("Adapt"), button:has-text("Replicate")').first();
     await expect(adaptBtn).toBeVisible({ timeout: 10000 });
     await adaptBtn.click();
 

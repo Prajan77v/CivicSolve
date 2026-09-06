@@ -31,7 +31,7 @@ test.describe('Authentication Flows', () => {
 
     // Expect navigation to dashboard
     await page.waitForURL('**/dashboard', { timeout: 15000 });
-    await expect(page.locator('text=Command Center, text=Societal Impact, text=Dashboard').first()).toBeVisible();
+    await expect(page.getByText(new RegExp('Command Center|Societal Impact|Dashboard', 'i')).first()).toBeVisible();
 
     expect(errors).toHaveLength(0);
   });
