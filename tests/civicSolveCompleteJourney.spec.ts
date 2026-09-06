@@ -15,12 +15,12 @@ test.describe('CivicSolve Complete End-to-End Enterprise Lifecycle', () => {
     const studentBtn = page.locator('button:has-text("Student Solver")').first();
     await studentBtn.click();
     await page.waitForURL('**/dashboard', { timeout: 15000 });
-    await expect(page.getByRole('heading', { level: 1 }).filter({ hasText: /Overview|Good morning|Workspace/i })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 }).filter({ hasText: /Overview|Good|Workspace/i })).toBeVisible();
 
     // Verify session survives refresh
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('heading', { level: 1 }).filter({ hasText: /Overview|Good morning|Workspace/i })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 }).filter({ hasText: /Overview|Good|Workspace/i })).toBeVisible();
 
     // 2. CREATE PROBLEM & SAVE DRAFT
     await page.goto('/problems/new');

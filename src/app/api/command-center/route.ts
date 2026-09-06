@@ -3,11 +3,12 @@ import { prisma } from '@/lib/db'
 
 export async function GET() {
   try {
-    const [allProblems, categoryGroups, priorityGroups] = await Promise.all([
+    const [allProblems, categoryGroups, priorityGroups, allProjects, allDeployments, allChallengeGroups] = await Promise.all([
       prisma.problem.findMany({
         include: {
           location: true,
           aiAnalysis: true,
+          challengeGroup: true,
           projects: {
             select: { id: true, title: true, status: true, progressPercent: true },
           },
@@ -24,6 +25,34 @@ export async function GET() {
       prisma.problem.groupBy({
         by: ['priority'],
         _count: { priority: true },
+      }),
+      prisma.project.findMany({
+        include: {
+          problem: {
+            include: { location: true },
+          },
+          team: true,
+          university: true,
+        },
+      }),
+      prisma.deployment.findMany({
+        include: {
+          project: {
+            include: {
+              problem: {
+                include: { location: true },
+              },
+            },
+          },
+          impactMetrics: true,
+        },
+      }),
+      prisma.challengeGroup.findMany({
+        include: {
+          problems: {
+            include: { location: true },
+          },
+        },
       }),
     ])
 
@@ -166,12 +195,117 @@ export async function GET() {
     const totalCitizensAffected = allProblems.reduce((sum, p) => sum + (p.affectedCount || 0), 0)
     const resolutionRate = totalProblems > 0 ? Math.round((resolvedProblems / totalProblems) * 100) : 0
 
+    // Map items mapping
+    const mapProblems = allProblems.map((p) => {
+      const loc = p.location
+      const district = loc?.district || 'Central'
+      let lat = loc?.lat
+      let lng = loc?.lng
+      if (!lat || !lng) {
+        if (DEFAULT_COORDS[district]) {
+          lat = DEFAULT_COORDS[district][0]
+          lng = DEFAULT_COORDS[district][1]
+        } else {
+          lat = 20.5937 + ((district.charCodeAt(0) % 10) - 5) * 1.2
+          lng = 78.9629 + ((district.charCodeAt(district.length - 1) % 10) - 5) * 1.2
+        }
+      }
+      return {
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        category: p.category,
+        priority: p.priority,
+        status: p.status,
+        affectedCount: p.affectedCount || 0,
+        district: loc?.district || 'Nashik',
+        state: loc?.state || 'Maharashtra',
+        lat,
+        lng,
+        submittedByName: p.submittedBy?.name || 'Citizen Reporter',
+        challengeGroupId: p.challengeGroupId,
+      }
+    })
+
+    const mapProjects = allProjects.map((proj) => {
+      const p = proj.problem
+      const loc = p?.location
+      const district = loc?.district || 'Nashik'
+      let lat = loc?.lat || DEFAULT_COORDS[district]?.[0] || 19.8488
+      let lng = loc?.lng || DEFAULT_COORDS[district]?.[1] || 74.0025
+      return {
+        id: proj.id,
+        title: proj.title,
+        status: proj.status,
+        progressPercent: proj.progressPercent,
+        teamName: proj.team?.name || 'Assigned Innovation Lab',
+        universityName: proj.university?.name || 'Partner University',
+        problemId: proj.problemId,
+        problemTitle: p?.title || 'Civic Problem',
+        category: p?.category || 'Civic Tech',
+        district,
+        state: loc?.state || 'Maharashtra',
+        lat,
+        lng,
+      }
+    })
+
+    const mapDeployments = allDeployments.map((dep) => {
+      const proj = dep.project
+      const p = proj?.problem
+      const loc = p?.location
+      const district = loc?.district || 'Nashik'
+      let lat = loc?.lat || DEFAULT_COORDS[district]?.[0] || 19.8488
+      let lng = loc?.lng || DEFAULT_COORDS[district]?.[1] || 74.0025
+      const primaryMetric = dep.impactMetrics[0]
+      return {
+        id: dep.id,
+        projectId: dep.projectId,
+        title: proj?.title || 'Deployed Solution',
+        description: dep.description,
+        location: dep.location || `${district}, ${loc?.state || 'Maharashtra'}`,
+        status: dep.status,
+        deployedAt: dep.deployedAt,
+        district,
+        state: loc?.state || 'Maharashtra',
+        lat,
+        lng,
+        peopleImpacted: p?.affectedCount || 2350,
+        metric: primaryMetric ? `${primaryMetric.metricName}: ${primaryMetric.beforeValue} → ${primaryMetric.afterValue}` : null,
+      }
+    })
+
+    const mapChallengeGroups = allChallengeGroups.map((cg) => {
+      const probs = cg.problems
+      const firstWithLoc = probs.find((pr) => pr.location?.lat && pr.location?.lng)
+      const lat = firstWithLoc?.location?.lat || 19.8488
+      const lng = firstWithLoc?.location?.lng || 74.0025
+      return {
+        id: cg.id,
+        title: cg.title,
+        description: cg.description,
+        domain: cg.domain,
+        combinedPopulation: cg.combinedPopulation,
+        combinedPriority: cg.combinedPriority,
+        region: cg.region,
+        status: cg.status,
+        lat,
+        lng,
+        problemCount: probs.length,
+        problems: probs.map((pr) => ({ id: pr.id, title: pr.title, priority: pr.priority, district: pr.location?.district })),
+      }
+    })
+
     return NextResponse.json({
       data: {
         categoryBreakdown,
         priorityBreakdown,
         districtPoints,
         criticalProblems,
+        mapProblems,
+        mapProjects,
+        mapDeployments,
+        mapChallengeGroups,
         summaryStats: {
           totalProblems,
           activeProblems,
