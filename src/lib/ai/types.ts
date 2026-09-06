@@ -3,6 +3,8 @@ export interface ProblemAnalysisInput {
   description: string
   category: string
   location?: string
+  district?: string
+  state?: string
   affectedCount?: number
 }
 
