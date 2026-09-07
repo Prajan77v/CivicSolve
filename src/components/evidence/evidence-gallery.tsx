@@ -20,6 +20,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { formatFileSize } from '@/lib/evidence-shared'
 import EvidenceUploadZone, { UploadedEvidenceItem } from './evidence-upload-zone'
+import VideoPreviewModal, { VideoPreviewItem } from './video-preview-modal'
 
 export interface EvidenceItem {
   id: string
@@ -54,6 +55,7 @@ export default function EvidenceGallery({
 }: EvidenceGalleryProps) {
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'IMAGE' | 'VIDEO' | 'DOCUMENT'>('ALL')
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [previewVideo, setPreviewVideo] = useState<EvidenceItem | null>(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [stagedNewItems, setStagedNewItems] = useState<UploadedEvidenceItem[]>([])
   const [isSaving, setIsSaving] = useState(false)
@@ -276,13 +278,27 @@ export default function EvidenceGallery({
                       </button>
                     </>
                   ) : isVideo ? (
-                    <video
-                      src={ev.url}
-                      controls
-                      playsInline
-                      preload="metadata"
-                      className="h-full w-full object-cover"
-                    />
+                    <div className="relative h-full w-full bg-slate-950 flex items-center justify-center">
+                      <video
+                        src={ev.url}
+                        playsInline
+                        preload="metadata"
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPreviewVideo(ev)}
+                        title="Open Video Preview Cinema Player"
+                        className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 hover:bg-black/60 transition-all text-white group/btn cursor-pointer"
+                      >
+                        <div className="rounded-full bg-purple-600/90 p-3 shadow-lg shadow-purple-600/50 backdrop-blur-sm transform group-hover/btn:scale-110 active:scale-95 transition-transform">
+                          <Play className="h-5 w-5 fill-white text-white translate-x-0.5" />
+                        </div>
+                        <span className="mt-2 text-[10px] font-bold tracking-wider uppercase bg-black/70 px-2 py-0.5 rounded text-purple-300 border border-purple-500/30">
+                          Video Preview
+                        </span>
+                      </button>
+                    </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center p-4 text-center">
                       <FileText className="h-10 w-10 text-emerald-400 mb-1" />
@@ -311,12 +327,24 @@ export default function EvidenceGallery({
                     ) : null}
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-800/80">
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-800/80">
                     <span className="truncate">
                       By {ev.uploadedBy || 'Field Reporter'}
                     </span>
 
                     <div className="flex items-center gap-1.5 shrink-0">
+                      {/* Video Preview Action Button */}
+                      {isVideo && (
+                        <button
+                          type="button"
+                          onClick={() => setPreviewVideo(ev)}
+                          title="Open Video Preview"
+                          className="inline-flex items-center gap-1 rounded bg-purple-500/15 border border-purple-500/30 px-2 py-0.5 text-[10px] font-bold text-purple-300 hover:bg-purple-500 hover:text-white transition-colors"
+                        >
+                          <Play className="h-2.5 w-2.5 fill-current" /> Preview
+                        </button>
+                      )}
+
                       {/* Open / Download */}
                       <a
                         href={ev.url}
@@ -349,6 +377,15 @@ export default function EvidenceGallery({
           })}
         </div>
       )}
+
+      {/* Video Preview Cinema Modal */}
+      <VideoPreviewModal
+        isOpen={previewVideo !== null}
+        video={previewVideo}
+        playlist={videoItems}
+        onSelectVideo={(item) => setPreviewVideo(item as any)}
+        onClose={() => setPreviewVideo(null)}
+      />
 
       {/* Lightbox / Modal Image Viewer */}
       {lightboxIndex !== null && imageItems[lightboxIndex] && (

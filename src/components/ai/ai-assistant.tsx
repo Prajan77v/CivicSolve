@@ -40,6 +40,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useLayout } from '@/components/layout/layout-context'
 import { CivicAIChatMessage, CivicAIContext, CivicAIMetadata, CivicAIAction, CivicAIEntity } from '@/lib/ai/types'
+import VideoPreviewModal from '@/components/evidence/video-preview-modal'
 
 interface ConversationItem {
   id: string
@@ -190,6 +191,14 @@ export default function AIAssistant() {
     Array<{ url: string; originalName: string; mimeType: string; sizeBytes: number; type: string }>
   >([])
   const [isUploadingAttachment, setIsUploadingAttachment] = useState(false)
+  const [previewVideo, setPreviewVideo] = useState<{
+    url: string
+    originalName?: string
+    filename?: string
+    mimeType?: string
+    sizeBytes?: number
+    uploadedBy?: string | null
+  } | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -813,15 +822,36 @@ export default function AIAssistant() {
                           <p className="whitespace-pre-wrap">{msg.content}</p>
                           {msg.metadata?.attachments && msg.metadata.attachments.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 pt-1">
-                              {msg.metadata.attachments.map((att, aIdx) => (
-                                <span
-                                  key={aIdx}
-                                  className="inline-flex items-center gap-1 rounded bg-black/20 border border-white/20 px-2 py-0.5 text-[10px] text-white"
-                                >
-                                  {att.type === 'IMAGE' ? '📷' : att.type === 'VIDEO' ? '🎥' : '📄'}
-                                  <span className="truncate max-w-[120px]">{att.originalName}</span>
-                                </span>
-                              ))}
+                              {msg.metadata.attachments.map((att, aIdx) => {
+                                const isVid = att.type === 'VIDEO' || att.url?.endsWith('.mp4') || att.url?.endsWith('.webm')
+                                return isVid ? (
+                                  <button
+                                    key={aIdx}
+                                    type="button"
+                                    onClick={() =>
+                                      setPreviewVideo({
+                                        url: att.url,
+                                        originalName: att.originalName,
+                                        mimeType: att.mimeType,
+                                        sizeBytes: att.sizeBytes,
+                                      })
+                                    }
+                                    title="Click to preview video"
+                                    className="inline-flex items-center gap-1 rounded bg-black/30 hover:bg-black/50 border border-purple-400/40 px-2 py-0.5 text-[10px] text-purple-200 transition-colors cursor-pointer"
+                                  >
+                                    🎥 <span className="truncate max-w-[120px] underline underline-offset-2">{att.originalName}</span>
+                                    <span className="text-[9px] bg-purple-500/30 px-1 rounded font-bold">Preview</span>
+                                  </button>
+                                ) : (
+                                  <span
+                                    key={aIdx}
+                                    className="inline-flex items-center gap-1 rounded bg-black/20 border border-white/20 px-2 py-0.5 text-[10px] text-white"
+                                  >
+                                    {att.type === 'IMAGE' ? '📷' : '📄'}
+                                    <span className="truncate max-w-[120px]">{att.originalName}</span>
+                                  </span>
+                                )
+                              })}
                             </div>
                           )}
                         </div>
@@ -1007,23 +1037,42 @@ export default function AIAssistant() {
               {/* Staged Attachment Chips */}
               {attachedFiles.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-1.5">
-                  {attachedFiles.map((att, attIdx) => (
-                    <span
-                      key={attIdx}
-                      className="inline-flex items-center gap-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/40 px-2 py-1 text-[11px] text-cyan-800 dark:text-cyan-300"
-                    >
-                      {att.type === 'IMAGE' ? '📷' : att.type === 'VIDEO' ? '🎥' : '📄'}
-                      <span className="truncate max-w-[120px] font-medium">{att.originalName}</span>
-                      <button
-                        type="button"
-                        onClick={() => setAttachedFiles((prev) => prev.filter((_, i) => i !== attIdx))}
-                        className="ml-1 text-cyan-600 dark:text-cyan-400 hover:text-cyan-900 dark:hover:text-white"
-                        title="Remove attachment"
+                  {attachedFiles.map((att, attIdx) => {
+                    const isVid = att.type === 'VIDEO' || att.url?.endsWith('.mp4') || att.url?.endsWith('.webm')
+                    return (
+                      <span
+                        key={attIdx}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/40 px-2 py-1 text-[11px] text-cyan-800 dark:text-cyan-300"
                       >
-                        ×
-                      </button>
-                    </span>
-                  ))}
+                        {att.type === 'IMAGE' ? '📷' : att.type === 'VIDEO' ? '🎥' : '📄'}
+                        <span className="truncate max-w-[120px] font-medium">{att.originalName}</span>
+                        {isVid && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreviewVideo({
+                                url: att.url,
+                                originalName: att.originalName,
+                                mimeType: att.mimeType,
+                                sizeBytes: att.sizeBytes,
+                              })
+                            }
+                            className="rounded bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 px-1 py-0.2 text-[9px] font-bold hover:bg-purple-500 hover:text-white transition-colors"
+                          >
+                            Preview
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setAttachedFiles((prev) => prev.filter((_, i) => i !== attIdx))}
+                          className="ml-0.5 text-cyan-600 dark:text-cyan-400 hover:text-cyan-900 dark:hover:text-white"
+                          title="Remove attachment"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )
+                  })}
                 </div>
               )}
 
@@ -1108,6 +1157,13 @@ export default function AIAssistant() {
               </div>
             </div>
           </motion.aside>
+
+          {/* Video Preview Modal in AIAssistant */}
+          <VideoPreviewModal
+            isOpen={previewVideo !== null}
+            video={previewVideo}
+            onClose={() => setPreviewVideo(null)}
+          />
         </div>
       )}
     </AnimatePresence>

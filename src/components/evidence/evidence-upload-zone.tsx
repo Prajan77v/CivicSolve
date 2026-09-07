@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { formatFileSize, UPLOAD_LIMITS, EvidenceMediaType } from '@/lib/evidence-shared'
+import VideoPreviewModal, { VideoPreviewItem } from './video-preview-modal'
 
 export interface UploadedEvidenceItem {
   id?: string
@@ -47,6 +48,7 @@ export default function EvidenceUploadZone({
 }: EvidenceUploadZoneProps) {
   const [activeTypeTab, setActiveTypeTab] = useState<'ALL' | 'IMAGE' | 'VIDEO' | 'DOCUMENT'>('ALL')
   const [isDragging, setIsDragging] = useState(false)
+  const [previewVideo, setPreviewVideo] = useState<UploadedEvidenceItem | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [currentAccept, setCurrentAccept] = useState<string>('*/*')
 
@@ -407,14 +409,26 @@ export default function EvidenceUploadZone({
                         />
                       </div>
                     ) : item.type === 'VIDEO' ? (
-                      <div className="relative aspect-video w-full bg-slate-950">
+                      <div className="relative aspect-video w-full bg-slate-950 flex items-center justify-center">
                         <video
                           src={item.url}
-                          controls
                           playsInline
                           preload="metadata"
                           className="h-full w-full object-cover"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setPreviewVideo(item)}
+                          title="Preview Video"
+                          className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 hover:bg-black/60 transition-all text-white group/btn cursor-pointer"
+                        >
+                          <div className="rounded-full bg-purple-600/90 p-2.5 shadow-lg shadow-purple-600/40 backdrop-blur-sm transform group-hover/btn:scale-110 active:scale-95 transition-transform">
+                            <Film className="h-4 w-4 text-white" />
+                          </div>
+                          <span className="mt-1.5 text-[9px] font-bold uppercase bg-black/70 px-1.5 py-0.5 rounded text-purple-300 border border-purple-500/30">
+                            Video Preview
+                          </span>
+                        </button>
                       </div>
                     ) : (
                       <div className="flex aspect-video w-full flex-col items-center justify-center bg-slate-900/60 p-4 text-center">
@@ -441,10 +455,21 @@ export default function EvidenceUploadZone({
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                        {item.type}
-                      </span>
+                    <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/60">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+                          {item.type}
+                        </span>
+                        {item.type === 'VIDEO' && (
+                          <button
+                            type="button"
+                            onClick={() => setPreviewVideo(item)}
+                            className="text-[10px] font-bold text-purple-400 hover:text-purple-300 bg-purple-500/15 border border-purple-500/30 px-1.5 py-0.5 rounded"
+                          >
+                            Preview
+                          </button>
+                        )}
+                      </div>
 
                       {item.uploading ? (
                         <span className="flex items-center gap-1 text-cyan-400 text-[10px]">
@@ -467,6 +492,13 @@ export default function EvidenceUploadZone({
           </div>
         </div>
       )}
+
+      {/* Video Preview Modal */}
+      <VideoPreviewModal
+        isOpen={previewVideo !== null}
+        video={previewVideo}
+        onClose={() => setPreviewVideo(null)}
+      />
     </div>
   )
 }
