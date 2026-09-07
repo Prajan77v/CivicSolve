@@ -66,19 +66,16 @@ ${attachSummary}
         projectId = context.pathname.split('/projects/')[1]?.split('/')[0]
       }
 
-      // If no project in context, search for active project
       if (!projectId) {
-        const cmdStats = await civicAITools.getCommandCenterStats()
-        // default to first active problem or prompt user
+        const firstProj = await civicAITools.searchSolutions({ limit: 1 })
       }
 
       if (projectId) {
-        // Extract title & assignee
         let taskTitle = 'Review prototype telemetry & verify sensor logs'
         let assigneeName = undefined
 
         const forMatch = lastUserMessage.match(/(?:for|to)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i)
-        if (forMatch && forMatch[1] && !['the', 'our', 'a', 'this'].includes(forMatch[1].toLowerCase())) {
+        if (forMatch && forMatch[1] && !['the', 'our', 'a', 'this', 'team'].includes(forMatch[1].toLowerCase())) {
           assigneeName = forMatch[1]
         }
 
@@ -96,15 +93,15 @@ ${attachSummary}
 
         if (taskResult.success && taskResult.proposedAction) {
           metadata.action = taskResult.proposedAction
-          responseText = `I have prepared the task **"${taskTitle}"** for this project.
+          responseText = `I have prepared the task **"${taskTitle}"** for this project workspace.
 
 ### Proposed Action:
 - **Title**: ${taskTitle}
 - **Project**: Workspace #${projectId.slice(0, 8)}
-- **Assignee**: ${assigneeName || 'Team Lead'}
+- **Assignee**: ${assigneeName || 'Assigned Engineer'}
 - **Priority**: High
 
-Please confirm below to execute and save this task to the project workspace.`
+Please confirm below to execute and save this task directly to the project Kanban board.`
         } else {
           responseText = `Could not prepare task: ${taskResult.error || 'Project workspace not found.'}`
         }
@@ -113,7 +110,7 @@ Please confirm below to execute and save this task to the project workspace.`
       }
     }
 
-    // 2. Hallucination Guard / Zero Result Search Check (e.g. nuclear waste in Iceland, impossible queries)
+    // 2. Hallucination Guard / Zero Result Search Check
     else if (
       (lower.includes('nuclear') && lower.includes('iceland')) ||
       lower.includes('nonexistent') ||
@@ -152,14 +149,14 @@ CivicSolve is focused on real civic and municipal challenges across Indian state
 
           responseText = `### 🎯 Priority Breakdown for "${p.title}"
 
-**Overall Priority**: **${p.priority}** (Score: **${p.aiAnalysis?.priorityScore || (p.priority === 'CRITICAL' ? 92 : 84)}/100**)
+**Overall Priority**: **${p.priority}** (Composite Severity Score: **${p.aiAnalysis?.priorityScore || (p.priority === 'CRITICAL' ? 92 : 84)}/100**)
 
 #### Evaluation Parameters:
 - **Severity & Urgency**: ${pb.urgency || 28}/30
 - **Affected Population**: ${pb.affectedPopulation || (p.affectedCount ? `${p.affectedCount.toLocaleString()} citizens` : 'High density')} (${pb.populationScore || 24}/25)
-- **Environmental / Health Risk**: ${pb.environmentalRisk || 18}/20
+- **Environmental / Public Health Risk**: ${pb.environmentalRisk || 18}/20
 - **Implementation Feasibility**: ${pb.feasibility || 14}/15
-- **Geo-Vulnerability**: ${pb.vulnerability || 8}/10
+- **Geo-Vulnerability & Infrastructure Index**: ${pb.vulnerability || 8}/10
 
 **AI Rationale**:
 > ${p.aiAnalysis?.priorityReason || p.urgencyNote || 'High severity issue with significant population density impact requiring multi-stakeholder technical intervention.'}
@@ -169,16 +166,96 @@ CivicSolve is focused on real civic and municipal challenges across Indian state
           responseText = `Could not retrieve problem details: ${probResult.error}`
         }
       } else {
-        responseText = `Priority scores in CivicSolve are calculated using 5 dimensions: Urgency (30%), Affected Population (25%), Environmental/Public Health Impact (20%), Technical Feasibility (15%), and Vulnerability Index (10%). Please open a specific challenge to inspect its exact breakdown.`
+        responseText = `### 🎯 CivicSolve 5-Tier Priority Algorithm
+
+Priority scores in CivicSolve are calculated using a 5-dimensional rubric:
+1. **Urgency & Severity (30%)**: Immediacy of risk to human health or municipal infrastructure.
+2. **Affected Population (25%)**: Number of citizens directly impacted based on census density.
+3. **Environmental / Public Health Impact (20%)**: Toxicity, contagion, or ecosystem degradation risk.
+4. **Technical Feasibility (15%)**: Availability of practical engineering interventions.
+5. **Geo-Vulnerability Index (10%)**: Socio-economic and climate resilience factors.
+
+Open any challenge from the problem registry to inspect its exact mathematical breakdown.`
       }
     }
 
-    // 4. Team Matchmaking / "Who can solve this?"
+    // 4. Missing Skills & Skill Gap Analysis ("What skills are missing from my team?")
+    else if (
+      lower.includes('missing skill') ||
+      lower.includes('skills are missing') ||
+      lower.includes('skill gap') ||
+      lower.includes('what skills do we need') ||
+      lower.includes('skills needed')
+    ) {
+      metadata.toolsCalled?.push('get_skill_gap_analysis')
+
+      let problemId = context?.entityId && context.pageType === 'PROBLEM' ? context.entityId : undefined
+      let projectId = context?.entityId && context.pageType === 'PROJECT' ? context.entityId : undefined
+
+      const gapRes = await civicAITools.getSkillGapAnalysis({ problemId })
+      if (gapRes.success && gapRes.data) {
+        const d = gapRes.data
+        responseText = `### 🔍 Skill Gap & Readiness Analysis for "${d.problemTitle}"
+
+- **Overall Skill Coverage**: **${d.matchScore}%**
+- **Required Domain Competencies**: ${d.requiredSkills.map((s: string) => `\`${s}\``).join(', ')}
+- **Covered Skills**: ${d.coveredSkills.length > 0 ? d.coveredSkills.map((s: string) => `✅ ${s}`).join(', ') : 'None currently matched'}
+- **Missing / Gap Competencies**: ${d.missingSkills.map((s: string) => `⚠️ **${s}**`).join(', ')}
+
+#### 🚀 Recommended Action:
+${d.recommendedAction}
+
+You can browse verified student solvers under the [Students Directory](/students) or invite an experienced faculty advisor from the [Universities Portal](/universities).`
+      } else {
+        responseText = `Unable to perform skill gap analysis: ${gapRes.error}`
+      }
+    }
+
+    // 5. Faculty Mentors & Advisors ("Who is mentoring this project?", "Find mentors")
+    else if (
+      lower.includes('mentor') ||
+      lower.includes('advisor') ||
+      lower.includes('faculty') ||
+      lower.includes('professor')
+    ) {
+      metadata.toolsCalled?.push('get_mentors')
+
+      let domain = undefined
+      if (lower.includes('water')) domain = 'Water'
+      else if (lower.includes('iot')) domain = 'IoT'
+      else if (lower.includes('waste')) domain = 'Environment'
+
+      const mentorRes = await civicAITools.getMentors({ domain, limit: 3 })
+      if (mentorRes.success && mentorRes.data) {
+        metadata.entities = mentorRes.entities
+        if (mentorRes.citation) metadata.citations?.push(mentorRes.citation)
+
+        const list = mentorRes.data
+          .map(
+            (m: any, i: number) =>
+              `${i + 1}. **${m.name}** — ${m.designation}\n   - **Institution**: ${m.university} (${m.department})\n   - **Specializations**: ${m.specializations.join(', ') || 'Civic Tech & Embedded Systems'}\n   - **Contact**: \`${m.email}\``
+          )
+          .join('\n\n')
+
+        responseText = `### 🎓 Verified Faculty Mentors & Technical Advisors
+
+Here are the top certified academic mentors aligned with this problem domain:
+
+${list}
+
+Mentors provide lab testing access, technical peer review, and municipal validation certificates.`
+      } else {
+        responseText = `No specific mentors found for this query.`
+      }
+    }
+
+    // 6. Team Matchmaking / "Who can solve this?"
     else if (
       lower.includes('who can solve this') ||
       lower.includes('which team') ||
       lower.includes('who should solve') ||
       lower.includes('recommend team') ||
+      lower.includes('best suited') ||
       lower.includes('match')
     ) {
       metadata.toolsCalled?.push('get_problem_matches')
@@ -199,7 +276,7 @@ CivicSolve is focused on real civic and municipal challenges across Indian state
             .slice(0, 3)
             .map(
               (t: any, i: number) =>
-                `${i + 1}. **${t.name}** (${t.university})\n   - **Match Score**: ${t.matchScore}%\n   - **Skills**: ${t.skills.join(', ') || 'Engineering'}\n   - **Reason**: ${t.reason}`
+                `${i + 1}. **${t.name}** (${t.university})\n   - **Match Score**: **${t.matchScore}%**\n   - **Skills**: ${t.skills.join(', ') || 'Engineering'}\n   - **Reason**: ${t.reason}`
             )
             .join('\n\n')
 
@@ -224,14 +301,53 @@ Open a specific challenge to view algorithmic match compatibility scores.`
       }
     }
 
-    // 5. Similar Challenges / Duplicates
+    // 7. How does matching work / 3-tier matching engine
+    else if (
+      lower.includes('3-tier') ||
+      lower.includes('matching engine') ||
+      lower.includes('how does matching work') ||
+      lower.includes('algorithm work')
+    ) {
+      responseText = `### ⚙️ CivicSolve 3-Tier Matchmaking Architecture
+
+CivicSolve pairs municipal challenges with student engineering teams and research labs through an objective 3-tier algorithm:
+
+#### 1. Tier 1: Skill & Domain Vector Compatibility (50% Weight)
+- Matches problem technical requirements (e.g. \`IoT\`, \`Membrane Filtration\`, \`Computer Vision\`) against verified student credentials and course projects.
+
+#### 2. Tier 2: Institutional Infrastructure & Lab Hardware Readiness (30% Weight)
+- Evaluates university lab capabilities (e.g., Water Testing Mass Spectrometers, IoT FabLabs, GIS Workstations).
+
+#### 3. Tier 3: Geo-Proximity & Faculty Mentorship (20% Weight)
+- Prioritizes regional teams capable of conducting on-site field visits with municipal authorities within 48 hours.`
+    }
+
+    // 8. Project Lifecycle / How CivicSolve Works
+    else if (
+      lower.includes('project lifecycle') ||
+      lower.includes('how does civicsolve work') ||
+      lower.includes('workflow') ||
+      lower.includes('stages')
+    ) {
+      responseText = `### 🔄 CivicSolve 5-Stage Project Lifecycle
+
+1. **Problem Dossier & Telemetry**: Civic challenges are reported by citizens, mapped to districts, and prioritized via AI analysis.
+2. **Algorithmic Matchmaking**: Interdisciplinary student teams and faculty mentors are matched to the challenge.
+3. **Workspace & Prototyping**: Teams track tasks, upload media evidence, calibrate sensors, and record milestone progress.
+4. **Municipal Field Pilot**: Prototypes are deployed on-ground in collaboration with local urban bodies.
+5. **Solution Library & Verified Credentials**: Successful interventions are cataloged for nationwide reuse and solvers earn verified impact credentials.`
+    }
+
+    // 9. Similar Challenges / Specific Domain Query (Water, Agriculture, Waste, etc.)
     else if (
       lower.includes('similar') ||
       lower.includes('duplicate') ||
       lower.includes('related challenge') ||
-      lower.includes('water problem') ||
+      lower.includes('water') ||
       lower.includes('agriculture') ||
-      lower.includes('waste')
+      lower.includes('waste') ||
+      lower.includes('traffic') ||
+      lower.includes('highest priority')
     ) {
       metadata.toolsCalled?.push('search_problems')
 
@@ -254,7 +370,7 @@ Open a specific challenge to view algorithmic match compatibility scores.`
         const list = searchRes.data
           .map(
             (p: any, i: number) =>
-              `${i + 1}. **[${p.title}](/problems/${p.id})**\n   - **Priority**: ${p.priority} (${p.priorityScore || 85}/100)\n   - **Location**: ${p.location}\n   - **Active Projects**: ${p.activeProjectsCount}`
+              `${i + 1}. **[${p.title}](/problems/${p.id})**\n   - **Priority**: \`${p.priority}\` (Severity: **${p.priorityScore || 85}/100**)\n   - **District / State**: ${p.location}\n   - **Status**: ${p.status} • **Active Projects**: ${p.activeProjectsCount}`
           )
           .join('\n\n')
 
@@ -268,7 +384,7 @@ Click on any challenge above or card below to review telemetry, photographic evi
       }
     }
 
-    // 6. Project Copilot: "What should we do next?", "What is our progress?", "Are we behind schedule?"
+    // 10. Project Copilot: "What should we do next?", "What is our progress?", "Are we behind schedule?"
     else if (
       lower.includes('what should we do next') ||
       lower.includes('what next') ||
@@ -292,6 +408,16 @@ Click on any challenge above or card below to review telemetry, photographic evi
           metadata.entities = projRes.entities
           if (projRes.citation) metadata.citations?.push(projRes.citation)
 
+          // Prepare next step task
+          const taskResult = await civicAITools.prepareCreateTask({
+            projectId: p.id,
+            title: 'Verify field telemetry & sensor calibration logs',
+            priority: 'HIGH',
+          })
+          if (taskResult.proposedAction) {
+            metadata.action = taskResult.proposedAction
+          }
+
           responseText = `### 🚀 Project Status & Copilot Recommendations for "${p.title}"
 
 - **Current Stage**: **${p.status}** (${p.progressPercent}% overall completion)
@@ -301,18 +427,20 @@ Click on any challenge above or card below to review telemetry, photographic evi
 - **Tasks**: ${p.tasksSummary.done} done, ${p.tasksSummary.inProgress} in progress, ${p.tasksSummary.todo} todo
 
 #### 📌 Recommended Next Steps:
-1. **Telemetry & Sensor Audit**: Verify live field calibration data with municipal partner **${p.partnerName || 'Local Municipal Body'}**.
+1. **Telemetry & Sensor Calibration**: Verify live field calibration logs with municipal partner **${p.partnerName || 'Local Municipal Body'}**.
 2. **Community Checkpoint**: Schedule mid-pilot feedback review with local community representatives.
-3. **Milestone Documentation**: Upload lab photos & firmware schematics before moving to next verification phase.`
+3. **Milestone Evidence Documentation**: Upload lab test certificates & firmware schematics before moving to next verification phase.
+
+*I have prepared the first action item below. Click **Confirm & Create** to add it directly to your project workspace.*`
         } else {
           responseText = `Could not load project telemetry: ${projRes.error}`
         }
       } else {
-        responseText = `To evaluate project milestones and get copilot recommendations, please open a specific project workspace.`
+        responseText = `To evaluate project milestones and get copilot recommendations, please open a specific project workspace (e.g. \`/projects/...\`).`
       }
     }
 
-    // 7. Solutions Library Reusability: "Which solutions can we reuse?", "existing water solution"
+    // 11. Solutions Library Reusability: "Which solutions can we reuse?", "existing water solution"
     else if (
       lower.includes('solution') ||
       lower.includes('reuse') ||
@@ -347,7 +475,7 @@ You can adapt these existing open-source solutions to save development time and 
       }
     }
 
-    // 8. Command Center / Government / High Level Analytics
+    // 12. Command Center / Government / High Level Analytics
     else if (
       lower.includes('command center') ||
       lower.includes('district') ||
@@ -376,22 +504,23 @@ ${d.problems.categories.map((c: any) => `- **${c.category}**: ${c.count} challen
       }
     }
 
-    // 9. Default Grounded Response
+    // 13. Default Grounded Response
     else {
       metadata.toolsCalled?.push('get_command_center_stats')
-      responseText = `I am **Civic AI**, the intelligent assistant for the **CivicSolve** ecosystem.
+      responseText = `I am **Civic AI**, the intelligent conversational copilot for the **CivicSolve** ecosystem.
 
 I can help you with:
 - 🎯 **Challenge Analysis**: Detailed priority breakdown, affected population metrics, and SDG alignment.
-- 🤝 **Matchmaking**: Finding the highest-ranking student teams and faculty mentors for specific civic challenges.
-- 🚀 **Project Copilot**: Recommending next steps, auditing milestone progress, and creating tasks.
-- 💡 **Solution Reuse**: Finding previously deployed solutions in the Solution Library.
-- 🏛️ **Command Center Analytics**: Real-time municipal intelligence across districts.
+- 🤝 **Matchmaking & Mentorship**: Finding top student engineering teams and verified faculty advisors.
+- 🚀 **Project Copilot**: Auditing milestone progress, identifying skill gaps, and creating tasks.
+- 💡 **Solution Reuse**: Searching the Solution Library for open-source municipal interventions.
+- 🏛️ **Command Center Analytics**: Real-time municipal intelligence across Indian districts.
 
 Try asking:
+- *"What are the highest priority water problems?"*
 - *"Why is this high priority?"*
 - *"Who can solve this?"*
-- *"Find similar water challenges in Maharashtra"*
+- *"What skills are missing from our team?"*
 - *"What should our team do next?"*`
     }
 

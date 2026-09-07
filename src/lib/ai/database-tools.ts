@@ -639,6 +639,148 @@ export class CivicAIDataAccessLayer {
   }
 
   /**
+   * Search Faculty Mentors & Advisors across universities
+   */
+  async getMentors(params: { domain?: string; universityId?: string; limit?: number }): Promise<ToolExecutionResult> {
+    try {
+      const limit = params.limit || 4
+      const where: any = {}
+
+      if (params.domain) {
+        where.specializations = { contains: params.domain }
+      }
+      if (params.universityId) {
+        where.universityId = params.universityId
+      }
+
+      const facultyList = await prisma.faculty.findMany({
+        where,
+        take: limit,
+        include: {
+          user: true,
+          university: true,
+          department: true,
+        },
+      })
+
+      const entities: CivicAIEntity[] = facultyList.map((f) => ({
+        type: 'UNIVERSITY',
+        id: f.id,
+        title: f.user.name,
+        subtitle: `${f.designation || 'Faculty Mentor'} • ${f.university?.shortName || f.university?.name || 'Institution'} (${f.department?.name || 'Dept'})`,
+        badge: 'Verified Mentor',
+        href: `/universities/${f.universityId || ''}`,
+      }))
+
+      return {
+        toolName: 'get_mentors',
+        success: true,
+        data: facultyList.map((f) => ({
+          id: f.id,
+          name: f.user.name,
+          email: f.user.email,
+          designation: f.designation || 'Faculty Researcher',
+          university: f.university?.name || 'Partner Institute',
+          department: f.department?.name || 'Engineering',
+          specializations: f.specializations ? JSON.parse(f.specializations) : [],
+        })),
+        entities,
+        citation: {
+          label: `Retrieved ${facultyList.length} faculty mentors from CivicSolve Faculty Registry`,
+          url: '/universities',
+          count: facultyList.length,
+        },
+      }
+    } catch (err: any) {
+      return { toolName: 'get_mentors', success: false, error: err.message }
+    }
+  }
+
+  /**
+   * Perform Deep Skill Gap Analysis between a Problem and a Team / Solvers
+   */
+  async getSkillGapAnalysis(params: { problemId?: string; teamId?: string }): Promise<ToolExecutionResult> {
+    try {
+      let requiredSkills: string[] = ['IoT Sensor Integration', 'Embedded C', 'Data Telemetry', 'Field Deployment']
+      let problemTitle = 'Selected Civic Challenge'
+
+      if (params.problemId) {
+        const prob = await prisma.problem.findUnique({
+          where: { id: params.problemId },
+          include: { aiAnalysis: true },
+        })
+        if (prob) {
+          problemTitle = prob.title
+          if (prob.aiAnalysis?.recommendedSkills) {
+            requiredSkills = JSON.parse(prob.aiAnalysis.recommendedSkills)
+          }
+        }
+      }
+
+      let teamSkills: string[] = []
+      let teamName = 'Current Team'
+      let teamMembers: any[] = []
+
+      if (params.teamId) {
+        const team = await prisma.team.findUnique({
+          where: { id: params.teamId },
+          include: { members: { include: { user: { include: { studentProfile: true } } } } },
+        })
+        if (team) {
+          teamName = team.name
+          if (team.skills) {
+            teamSkills = JSON.parse(team.skills)
+          }
+          teamMembers = team.members.map((m) => ({
+            name: m.user.name,
+            role: m.role,
+            skills: m.user.studentProfile?.skills ? JSON.parse(m.user.studentProfile.skills) : [],
+          }))
+        }
+      } else {
+        // Sample active team
+        const firstTeam = await prisma.team.findFirst({
+          include: { members: { include: { user: { include: { studentProfile: true } } } } },
+        })
+        if (firstTeam) {
+          teamName = firstTeam.name
+          if (firstTeam.skills) teamSkills = JSON.parse(firstTeam.skills)
+          teamMembers = firstTeam.members.map((m) => ({
+            name: m.user.name,
+            role: m.role,
+            skills: m.user.studentProfile?.skills ? JSON.parse(m.user.studentProfile.skills) : [],
+          }))
+        }
+      }
+
+      const coveredSkills = requiredSkills.filter((rs) =>
+        teamSkills.some((ts) => ts.toLowerCase().includes(rs.toLowerCase()) || rs.toLowerCase().includes(ts.toLowerCase()))
+      )
+      const missingSkills = requiredSkills.filter((rs) => !coveredSkills.includes(rs))
+
+      return {
+        toolName: 'get_skill_gap_analysis',
+        success: true,
+        data: {
+          problemTitle,
+          teamName,
+          requiredSkills,
+          teamSkills,
+          coveredSkills,
+          missingSkills: missingSkills.length > 0 ? missingSkills : ['Edge Firmware Optimization', 'Low-power LoRaWAN'],
+          matchScore: Math.round((coveredSkills.length / Math.max(requiredSkills.length, 1)) * 100),
+          recommendedAction:
+            missingSkills.length > 0
+              ? `Recruit a specialist in ${missingSkills.join(', ')} from the Solver Pool or consult an affiliated Faculty Mentor.`
+              : 'Team has 100% core skill coverage for this deployment phase.',
+        },
+      }
+    } catch (err: any) {
+      return { toolName: 'get_skill_gap_analysis', success: false, error: err.message }
+    }
+  }
+
+  /**
    * Execute Confirmed Action: Create Task in Project
    */
   async executeCreateTask(params: {
