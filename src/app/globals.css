@@ -928,10 +928,16 @@ a[aria-current="page"] {
   z-index: 10;
 }
 
-/* Dark mode tile filter for clean contrast without eye strain */
-html.dark .leaflet-tile-pane,
-[data-resolved-theme="dark"] .leaflet-tile-pane {
+/* Dark mode tile filter for clean contrast without eye strain on standard street maps */
+html.dark .leaflet-tile-pane img:not([src*="arcgisonline"]):not([src*="cartocdn"]):not([src*="dark_all"]),
+[data-resolved-theme="dark"] .leaflet-tile-pane img:not([src*="arcgisonline"]):not([src*="cartocdn"]):not([src*="dark_all"]) {
   filter: brightness(0.7) invert(1) contrast(1.15) hue-rotate(190deg) saturate(0.4);
+}
+
+/* Satellite imagery and CARTO dark maps must always render with 100% natural, crisp, rich colors */
+.leaflet-tile-pane img[src*="arcgisonline"],
+.leaflet-tile-pane img[src*="cartocdn"] {
+  filter: none !important;
 }
 
 /* Ensure controls, popups, and markers stay crisp and normal in dark mode */

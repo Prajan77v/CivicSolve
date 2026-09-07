@@ -152,6 +152,32 @@ export default function CivicMap({
   const [searchQuery, setSearchQuery] = useState('')
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null)
   const [currentZoom, setCurrentZoom] = useState(initialZoom)
+  const [tileMode, setTileMode] = useState<'satellite' | 'terrain' | 'dark' | 'street'>('satellite')
+  const [cursorCoords, setCursorCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const tileLayerRef = useRef<any>(null)
+
+  const TILE_SERVERS = {
+    satellite: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attribution: 'Tiles &copy; Esri &mdash; Earthstar Geographics, Maxar, GeoEye',
+      maxZoom: 19
+    },
+    terrain: {
+      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+      maxZoom: 19
+    },
+    dark: {
+      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+      maxZoom: 19
+    },
+    street: {
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }
+  }
 
   // Initialize Map
   useEffect(() => {
@@ -181,16 +207,17 @@ export default function CivicMap({
       maxZoom: 18,
     })
 
-    // Real OpenStreetMap Tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      subdomains: ['a', 'b', 'c'],
+    // Add initial base tile layer (Realistic Satellite Imagery by default)
+    const baseTile = L.tileLayer(TILE_SERVERS[tileMode].url, {
+      maxZoom: TILE_SERVERS[tileMode].maxZoom,
+      attribution: TILE_SERVERS[tileMode].attribution,
     }).addTo(map)
+    tileLayerRef.current = baseTile
 
     L.control
       .attribution({
         position: 'bottomright',
-        prefix: '<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a> | © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+        prefix: '<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a> | Realistic Earth GIS',
       })
       .addTo(map)
 
@@ -199,6 +226,15 @@ export default function CivicMap({
 
     map.on('zoomend', () => {
       setCurrentZoom(map.getZoom())
+    })
+
+    map.on('mousemove', (e: any) => {
+      if (e && e.latlng) {
+        setCursorCoords({
+          lat: Number(e.latlng.lat.toFixed(4)),
+          lng: Number(e.latlng.lng.toFixed(4))
+        })
+      }
     })
 
     if (containerRef.current) {
@@ -223,8 +259,28 @@ export default function CivicMap({
       mapInstanceRef.current = null
       markersLayerRef.current = null
       heatLayerRef.current = null
+      tileLayerRef.current = null
     }
   }, [])
+
+  // Switch Tile Layer when user selects basemap mode
+  useEffect(() => {
+    if (!mapInstanceRef.current || !tileLayerRef.current) return
+    let L: any
+    try {
+      L = require('leaflet')
+    } catch {
+      return
+    }
+
+    mapInstanceRef.current.removeLayer(tileLayerRef.current)
+    const newTile = L.tileLayer(TILE_SERVERS[tileMode].url, {
+      maxZoom: TILE_SERVERS[tileMode].maxZoom,
+      attribution: TILE_SERVERS[tileMode].attribution,
+    }).addTo(mapInstanceRef.current)
+    newTile.bringToBack()
+    tileLayerRef.current = newTile
+  }, [tileMode])
 
   // Pan to selected district if provided
   useEffect(() => {
@@ -706,6 +762,66 @@ export default function CivicMap({
           style={{ minHeight: '340px' }}
         />
 
+        {/* Floating Basemap Imagery Style Switcher */}
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-1 bg-[#0f172a]/95 backdrop-blur border border-slate-700/80 p-1 rounded-lg shadow-xl font-mono text-[11px]">
+          <button
+            type="button"
+            data-testid="basemap-satellite"
+            onClick={() => setTileMode('satellite')}
+            className={`px-2 py-1 rounded transition-all flex items-center gap-1 ${
+              tileMode === 'satellite'
+                ? 'bg-emerald-600 text-white font-bold shadow-sm'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+            title="Realistic High-Resolution Satellite Earth Imagery"
+          >
+            <span>🛰️</span>
+            <span className="hidden sm:inline">Satellite</span>
+          </button>
+          <button
+            type="button"
+            data-testid="basemap-terrain"
+            onClick={() => setTileMode('terrain')}
+            className={`px-2 py-1 rounded transition-all flex items-center gap-1 ${
+              tileMode === 'terrain'
+                ? 'bg-blue-600 text-white font-bold shadow-sm'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+            title="Terrain Topography & Infrastructure"
+          >
+            <span>🗺️</span>
+            <span className="hidden sm:inline">Terrain</span>
+          </button>
+          <button
+            type="button"
+            data-testid="basemap-dark"
+            onClick={() => setTileMode('dark')}
+            className={`px-2 py-1 rounded transition-all flex items-center gap-1 ${
+              tileMode === 'dark'
+                ? 'bg-indigo-600 text-white font-bold shadow-sm'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+            title="Tactical Dark Vector GIS"
+          >
+            <span>🌃</span>
+            <span className="hidden sm:inline">Dark</span>
+          </button>
+          <button
+            type="button"
+            data-testid="basemap-street"
+            onClick={() => setTileMode('street')}
+            className={`px-2 py-1 rounded transition-all flex items-center gap-1 ${
+              tileMode === 'street'
+                ? 'bg-cyan-600 text-white font-bold shadow-sm'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+            title="Standard Street Map"
+          >
+            <span>☀️</span>
+            <span className="hidden sm:inline">Street</span>
+          </button>
+        </div>
+
         {/* Floating Custom Map Controls */}
         <div className="absolute top-4 left-4 z-20 flex flex-col gap-1.5 shadow-lg">
           <button
@@ -741,12 +857,24 @@ export default function CivicMap({
         {searchFeedback && (
           <div
             data-testid="map-search-feedback"
-            className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-md bg-slate-900/95 border border-cyan-500/40 text-cyan-300 font-mono text-xs shadow-xl flex items-center gap-2 animate-in fade-in"
+            className="absolute top-16 right-4 z-20 px-3 py-1.5 rounded-md bg-slate-900/95 border border-cyan-500/40 text-cyan-300 font-mono text-xs shadow-xl flex items-center gap-2 animate-in fade-in"
           >
             <MapPin className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
             <span>{searchFeedback}</span>
           </div>
         )}
+
+        {/* Live Cursor Coordinates & Telemetry Bar (Bottom Right) */}
+        <div className="absolute bottom-3 right-3 z-20 hidden sm:flex items-center gap-2 font-mono text-[10px] text-slate-300 bg-slate-950/90 backdrop-blur px-2.5 py-1 rounded-md border border-slate-800/90 shadow-xl">
+          <Activity className="h-3 w-3 text-emerald-400 animate-pulse" />
+          <span>
+            {cursorCoords
+              ? `GPS: ${cursorCoords.lat}° N, ${cursorCoords.lng}° E`
+              : 'GPS: 19.9975° N, 73.7898° E'}
+          </span>
+          <span className="text-slate-600">|</span>
+          <span className="text-teal-400">Zoom: {currentZoom}x</span>
+        </div>
 
         {/* Unobtrusive Map Legend (Requirement 27) */}
         <div className="absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-3 font-mono text-[11px] text-slate-300 bg-slate-950/85 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-800/90 shadow-xl">
