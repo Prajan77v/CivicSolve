@@ -120,10 +120,10 @@ export default function Sidebar() {
   }
 
   const sidebarContent = (
-    <div className="sidebar-container flex h-full flex-col justify-between overflow-y-auto scrollbar-thin px-3 py-4 bg-[#08090c] border-r border-slate-800/80">
-      <div className="space-y-6">
+    <div className="sidebar-container flex h-full flex-col justify-between overflow-y-auto scrollbar-thin px-3.5 py-4 bg-[#08090c] border-r border-slate-800/80 pt-[max(env(safe-area-inset-top),1rem)] pb-[max(env(safe-area-inset-bottom),1rem)]">
+      <div className="space-y-5">
         {/* Brand Header */}
-        <div className="flex items-center justify-between px-2 pt-1">
+        <div className="flex items-center justify-between px-2 pt-1 pb-1">
           <Link
             href="/dashboard"
             className="flex items-center gap-2.5 group"
@@ -150,7 +150,7 @@ export default function Sidebar() {
 
           <button
             onClick={() => setMobileSidebarOpen(false)}
-            className="rounded p-1 text-slate-400 hover:text-white lg:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white lg:hidden active:scale-95 transition-all"
             aria-label="Close sidebar"
           >
             <X className="h-4 w-4" />
@@ -158,7 +158,7 @@ export default function Sidebar() {
         </div>
 
         {/* 5 Editorial Navigation Sections */}
-        <nav className="space-y-5">
+        <nav className="space-y-4">
           {navSections.map((section) => (
             <div key={section.title} className="space-y-1">
               <div className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -176,7 +176,7 @@ export default function Sidebar() {
                       href={item.href}
                       onClick={() => setMobileSidebarOpen(false)}
                       className={cn(
-                        'group flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all',
+                        'group flex min-h-[38px] items-center justify-between rounded-lg px-2.5 py-2 text-xs font-semibold transition-all active:scale-[0.98]',
                         active
                           ? 'font-bold shadow-md border-l-4 border-white pl-2'
                           : isCertificates
@@ -242,10 +242,11 @@ export default function Sidebar() {
 
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="p-1 text-slate-500 hover:text-slate-300 transition-colors"
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors active:scale-95"
             title="Sign out"
+            aria-label="Sign out"
           >
-            <LogOut className="h-3.5 w-3.5" />
+            <LogOut className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -261,10 +262,10 @@ export default function Sidebar() {
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm animate-fade-in"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <div className="fixed inset-y-0 left-0 w-60 shadow-2xl">
+          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] shadow-2xl z-10 animate-slide-right">
             {sidebarContent}
           </div>
         </div>

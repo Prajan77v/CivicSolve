@@ -5,6 +5,7 @@ import Sidebar from './sidebar'
 import Navbar from './navbar'
 import AIAssistant from '@/components/ai/ai-assistant'
 import CommandPalette from '@/components/search/command-palette'
+import BottomNav from './bottom-nav'
 import { LayoutProvider } from './layout-context'
 
 interface AppShellProps {
@@ -23,10 +24,13 @@ function AppShellContent({ children }: AppShellProps) {
         <Navbar />
 
         {/* Main View Area */}
-        <main className="flex-1 px-4 py-6 sm:px-6 md:py-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-3 py-4 sm:px-6 md:py-8 max-w-7xl w-full mx-auto pb-24 lg:pb-8">
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <BottomNav />
 
       {/* Global AI Assistant Sliding Drawer */}
       <AIAssistant />

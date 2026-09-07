@@ -264,7 +264,7 @@ export default function CommandPalette() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4">
+      <div className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-24 px-3 sm:px-4">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -281,18 +281,18 @@ export default function CommandPalette() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: -10 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl shadow-black/90 text-slate-100 z-10"
+          className="relative w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl shadow-black/90 text-slate-100 z-10"
         >
           {/* Search Input Bar */}
-          <div className="relative flex items-center border-b border-white/10 px-4 py-3.5 bg-slate-900/60">
-            <Search className="h-5 w-5 text-blue-400 shrink-0 mr-3" />
+          <div className="relative flex items-center border-b border-white/10 px-3.5 sm:px-4 py-3 bg-slate-900/60">
+            <Search className="h-5 w-5 text-blue-400 shrink-0 mr-2.5 sm:mr-3" />
             <input
               ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search challenges, teams, universities, actions..."
-              className="w-full bg-transparent text-sm text-white placeholder-slate-400 focus:outline-none"
+              className="w-full bg-transparent text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none"
             />
             {query && (
               <button
@@ -303,6 +303,14 @@ export default function CommandPalette() {
                 <X className="h-4 w-4" />
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => setCommandPaletteOpen(false)}
+              className="sm:hidden ml-2 rounded p-1 text-slate-400 hover:text-white"
+              aria-label="Close search"
+            >
+              <X className="h-4 w-4" />
+            </button>
             <kbd className="hidden sm:inline-block ml-2 rounded border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
               ESC
             </kbd>

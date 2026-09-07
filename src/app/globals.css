@@ -82,10 +82,12 @@ html.light,
 /* Base Body Application */
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -96,6 +98,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.012em;
   transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+  touch-action: manipulation;
+}
+
+/* Mobile Ergonomics & Utilities */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Safe Area Inset Helpers */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+}
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top), 1rem);
 }
 
 /* ==========================================================================

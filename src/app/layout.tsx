@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Toaster } from 'sonner'
 import SessionProvider from '@/components/providers/session-provider'
@@ -9,6 +9,18 @@ import { authOptions } from '@/lib/auth'
 export const metadata: Metadata = {
   title: 'CivicSolve — Intelligent Societal Problem-Solving Platform',
   description: 'Connect societal challenges with universities, students, and industry to create measurable impact. SIH26043.',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#08090c' },
+  ],
 }
 
 const themeInitScript = `

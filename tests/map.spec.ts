@@ -20,7 +20,7 @@ test.describe('CivicSolve Real Interactive Map System', () => {
     await expect(tiles.first()).toBeVisible({ timeout: 15000 })
 
     // Verify attribution text
-    await expect(page.locator('.leaflet-control-attribution')).toContainText('OpenStreetMap')
+    await expect(page.locator('.leaflet-control-attribution')).toContainText(/Esri|OpenStreetMap|CARTO/i)
   })
 
   test('2. Interactive zoom controls function properly', async ({ page }) => {

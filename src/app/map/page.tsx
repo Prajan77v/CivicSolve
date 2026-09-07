@@ -334,11 +334,11 @@ export default function CivicMapPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           
           {/* Geospatial Map Canvas Container */}
-          <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 dark:border-teal-500/30 bg-white dark:bg-[#070d18] lg:col-span-8 min-h-[560px] shadow-lg">
+          <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 dark:border-teal-500/30 bg-white dark:bg-[#070d18] lg:col-span-8 min-h-[420px] sm:min-h-[560px] shadow-lg">
             
             {/* 1. INTERACTIVE LEAFLET OPENSTREETMAP GIS ENGINE */}
             {mapMode === 'interactive' && (
-              <div className="w-full h-full min-h-[560px]">
+              <div className="w-full h-full min-h-[420px] sm:min-h-[560px]">
                 <InteractiveCivicMap
                   problems={leafletProblems}
                   projects={leafletProjects}
@@ -350,7 +350,7 @@ export default function CivicMapPage() {
                     const found = problems.find((p) => p.id === mapItem.id)
                     if (found) setSelectedProblem(found)
                   }}
-                  className="h-full min-h-[560px] w-full"
+                  className="h-full min-h-[420px] sm:min-h-[560px] w-full"
                 />
               </div>
             )}

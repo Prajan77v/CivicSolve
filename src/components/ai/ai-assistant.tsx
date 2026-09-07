@@ -1023,7 +1023,7 @@ export default function AIAssistant() {
             </div>
 
             {/* Input Bar */}
-            <div className="border-t border-slate-200 dark:border-white/10 p-3 sm:p-4 bg-white/95 dark:bg-slate-900/95">
+            <div className="border-t border-slate-200 dark:border-white/10 p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom),1rem)] bg-white/95 dark:bg-slate-900/95">
               {/* Hidden attachment file input */}
               <input
                 ref={attachmentInputRef}
