@@ -266,11 +266,44 @@ html.light .hover\:bg-slate-700:hover,
 
 /* ── Text ────────────────────────────────────────────────────────── */
 
-/* H1 / page title level (exempt buttons, pills, tags, and colored backgrounds) */
-html.light .text-white:not(button):not(button *):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-rose"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-cyan"]):not([class*="bg-violet"]):not([style*="background"]):not([class*="rounded-full"]):not([class*="badge"]),
+/* Headings in Light Mode */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6,
+[data-resolved-theme="light"] h1,
+[data-resolved-theme="light"] h2,
+[data-resolved-theme="light"] h3,
+[data-resolved-theme="light"] h4,
+[data-resolved-theme="light"] h5,
+[data-resolved-theme="light"] h6 {
+  color: #0f172a !important;
+}
+
+/* Paragraphs & general body copy in Light Mode */
+html.light p:not(button *):not([class*="text-"]):not([style*="color"]),
+[data-resolved-theme="light"] p:not(button *):not([class*="text-"]):not([style*="color"]) {
+  color: #334155 !important;
+}
+
+/* Form labels in Light Mode */
+html.light label,
+[data-resolved-theme="light"] label {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+/* Primary heading & title levels in Light Mode */
+html.light .text-white:not(button):not(button *):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-rose"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-cyan"]):not([class*="bg-violet"]):not([class*="bg-teal"]):not([class*="bg-purple"]):not([style*="background"]):not([class*="rounded-full"]):not([class*="badge"]),
 html.light .text-slate-100:not(button):not(button *):not([style*="background"]):not([data-accent-bg]),
-[data-resolved-theme="light"] .text-white:not(button):not(button *):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-rose"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-cyan"]):not([class*="bg-violet"]):not([style*="background"]):not([class*="rounded-full"]):not([class*="badge"]),
-[data-resolved-theme="light"] .text-slate-100:not(button):not(button *):not([style*="background"]):not([data-accent-bg]) {
+html.light .text-slate-200:not(button):not(button *):not([style*="background"]):not([data-accent-bg]),
+html.light .text-slate-300:not(button):not(button *):not([style*="background"]):not([data-accent-bg]),
+[data-resolved-theme="light"] .text-white:not(button):not(button *):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-rose"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-cyan"]):not([class*="bg-violet"]):not([class*="bg-teal"]):not([class*="bg-purple"]):not([style*="background"]):not([class*="rounded-full"]):not([class*="badge"]),
+[data-resolved-theme="light"] .text-slate-100:not(button):not(button *):not([style*="background"]):not([data-accent-bg]),
+[data-resolved-theme="light"] .text-slate-200:not(button):not(button *):not([style*="background"]):not([data-accent-bg]),
+[data-resolved-theme="light"] .text-slate-300:not(button):not(button *):not([style*="background"]):not([data-accent-bg]) {
   color: #0f172a !important;
 }
 
@@ -290,19 +323,58 @@ html.light a[style*="background-color"] *,
   color: var(--accent-foreground, #ffffff) !important;
 }
 
-/* Secondary heading level */
-html.light .text-slate-200,
-html.light .text-slate-300,
-[data-resolved-theme="light"] .text-slate-200,
-[data-resolved-theme="light"] .text-slate-300 {
+/* Secondary & Muted text utility classes in Light Mode — Deep Crisp Contrast */
+html.light .text-slate-400,
+html.light .text-slate-500,
+html.light .text-gray-400,
+html.light .text-gray-500,
+html.light .text-zinc-400,
+html.light .text-zinc-500,
+html.light .text-neutral-400,
+html.light .text-neutral-500,
+[data-resolved-theme="light"] .text-slate-400,
+[data-resolved-theme="light"] .text-slate-500,
+[data-resolved-theme="light"] .text-gray-400,
+[data-resolved-theme="light"] .text-gray-500,
+[data-resolved-theme="light"] .text-zinc-400,
+[data-resolved-theme="light"] .text-zinc-500 {
   color: #334155 !important;
 }
 
-/* Supporting / body text level */
-html.light .text-slate-400,
-[data-resolved-theme="light"] .text-slate-400 {
-  color: #64748b !important;
+html.light .text-slate-600,
+html.light .text-slate-700,
+html.light .text-gray-600,
+html.light .text-gray-700,
+[data-resolved-theme="light"] .text-slate-600,
+[data-resolved-theme="light"] .text-slate-700 {
+  color: #1e293b !important;
 }
+
+/* Translucent white text utility classes mapped to crisp solid slate in Light Mode */
+html.light .text-white\/90,
+html.light .text-white\/80,
+html.light .text-white\/70,
+[data-resolved-theme="light"] .text-white\/90,
+[data-resolved-theme="light"] .text-white\/80,
+[data-resolved-theme="light"] .text-white\/70 {
+  color: #0f172a !important;
+}
+
+html.light .text-white\/60,
+html.light .text-white\/50,
+html.light .text-white\/40,
+[data-resolved-theme="light"] .text-white\/60,
+[data-resolved-theme="light"] .text-white\/50,
+[data-resolved-theme="light"] .text-white\/40 {
+  color: #475569 !important;
+}
+
+/* Monospace metadata tags & microcopy in Light Mode */
+html.light .font-mono,
+[data-resolved-theme="light"] .font-mono {
+  color: #334155;
+}
+
 
 /* ── Borders ─────────────────────────────────────────────────────── */
 html.light .border-white\/10,
