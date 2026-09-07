@@ -65,6 +65,11 @@ jobs:
           DATABASE_URL: "file:./dev.db"
         run: npm run build
 
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
   deploy:
     environment:
       name: github-pages
