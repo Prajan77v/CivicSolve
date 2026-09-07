@@ -80,7 +80,7 @@ export default async function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <SessionProvider session={session}>
           <AppearanceProvider>
             {children}
