@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test'
 
 // All API tests hit the dev server on port 3001 with new code
-const BASE = 'http://localhost:3001'
+const BASE = 'http://localhost:3000'
 
 test.describe('Duplicate Problem Detection', () => {
   test('duplicate check API returns results for similar title', async ({ request }) => {
-    const res = await request.post('http://localhost:3001/api/problems/duplicates/check', {
+    const res = await request.post('http://localhost:3000/api/problems/duplicates/check', {
       data: {
         title: 'Water quality contamination in rural areas',
         description: 'Groundwater contamination affecting drinking water supply in rural communities. Arsenic levels exceed safe limits.',
@@ -24,7 +24,7 @@ test.describe('Duplicate Problem Detection', () => {
   })
 
   test('duplicate check API returns UNIQUE for unrelated problem', async ({ request }) => {
-    const res = await request.post('http://localhost:3001/api/problems/duplicates/check', {
+    const res = await request.post('http://localhost:3000/api/problems/duplicates/check', {
       data: {
         title: 'Zebra crossing installation needed near school',
         description: 'Children crossing busy highway near school have no safe zebra crossing. Multiple near-accidents reported.',
@@ -41,7 +41,7 @@ test.describe('Duplicate Problem Detection', () => {
   })
 
   test('GET /api/problems only returns canonical problems by default', async ({ request }) => {
-    const res = await request.get('http://localhost:3001/api/problems')
+    const res = await request.get('http://localhost:3000/api/problems')
     expect(res.ok()).toBeTruthy()
     const json = await res.json()
     expect(json.success).toBe(true)
@@ -53,15 +53,15 @@ test.describe('Duplicate Problem Detection', () => {
   })
 
   test('GET /api/problems with includeAll=true returns all problems', async ({ request }) => {
-    const canonical = await request.get('http://localhost:3001/api/problems')
-    const all = await request.get('http://localhost:3001/api/problems?includeAll=true')
+    const canonical = await request.get('http://localhost:3000/api/problems')
+    const all = await request.get('http://localhost:3000/api/problems?includeAll=true')
     const canonicalJson = await canonical.json()
     const allJson = await all.json()
     expect(allJson.data.length).toBeGreaterThanOrEqual(canonicalJson.data.length)
   })
 
   test('search API only returns canonical problems', async ({ request }) => {
-    const res = await request.get('http://localhost:3001/api/search?q=water')
+    const res = await request.get('http://localhost:3000/api/search?q=water')
     expect(res.ok()).toBeTruthy()
     const json = await res.json()
     expect(json.success).toBe(true)
@@ -71,7 +71,7 @@ test.describe('Duplicate Problem Detection', () => {
   })
 
   test('stats API returns both totalProblems and totalCanonicalChallenges', async ({ request }) => {
-    const res = await request.get('http://localhost:3001/api/stats')
+    const res = await request.get('http://localhost:3000/api/stats')
     expect(res.ok()).toBeTruthy()
     const json = await res.json()
     expect(json.success).toBe(true)
@@ -81,7 +81,7 @@ test.describe('Duplicate Problem Detection', () => {
   })
 
   test('problems page loads without duplicate canonical entries visible', async ({ page }) => {
-    await page.goto('http://localhost:3001/problems')
+    await page.goto('http://localhost:3000/problems')
     await page.waitForLoadState('networkidle')
 
     // Get only problem titles from the problems list (use more specific selector)
@@ -101,7 +101,7 @@ test.describe('Duplicate Problem Detection', () => {
   })
 
   test('duplicate check endpoint handles POST correctly', async ({ request }) => {
-    const res = await request.post('http://localhost:3001/api/problems/duplicates/check', {
+    const res = await request.post('http://localhost:3000/api/problems/duplicates/check', {
       data: {
         title: 'Urban traffic congestion signal optimization',
         description: 'Traffic signals in city center are not timed properly causing massive jams during peak hours.',

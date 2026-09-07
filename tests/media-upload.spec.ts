@@ -73,8 +73,8 @@ test.describe('CivicSolve — Photo & Video Evidence System', () => {
     await fileChooser1.setFiles(path.join(fixturesDir, 'water_leakage_ground.png'))
 
     // Verify thumbnail preview and file name
-    await expect(page.locator('text=water_leakage_ground.png')).toBeVisible({ timeout: 10000 })
-    await expect(page.locator('text=Ready')).toBeVisible()
+    await expect(page.locator('[data-testid="evidence-filename"]:has-text("water_leakage_ground.png")')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=Ready').first()).toBeVisible()
 
     // Add Photo 2
     const fileChooserPromise2 = page.waitForEvent('filechooser')

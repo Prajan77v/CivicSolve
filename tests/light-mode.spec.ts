@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test'
 
-const BASE = 'http://localhost:3001'
+const BASE = 'http://localhost:3000'
 
 test.describe('Light Mode — Premium Appearance', () => {
   test.beforeEach(async ({ page }) => {
     // Enable light mode before each test
-    await page.goto('http://localhost:3001/settings/appearance')
+    await page.goto('http://localhost:3000/settings/appearance')
     await page.waitForLoadState('networkidle')
 
     const lightBtn = page.locator('[data-testid="theme-light-btn"]').first()
@@ -24,7 +24,7 @@ test.describe('Light Mode — Premium Appearance', () => {
   })
 
   test('body has warm neutral background in light mode', async ({ page }) => {
-    await page.goto('http://localhost:3001/dashboard')
+    await page.goto('http://localhost:3000/dashboard')
     await page.waitForLoadState('networkidle')
     const bg = await page.evaluate(() =>
       window.getComputedStyle(document.body).backgroundColor
@@ -41,7 +41,7 @@ test.describe('Light Mode — Premium Appearance', () => {
   })
 
   test('html element has light class in light mode', async ({ page }) => {
-    await page.goto('http://localhost:3001/dashboard')
+    await page.goto('http://localhost:3000/dashboard')
     await page.waitForLoadState('networkidle')
     const htmlClass = await page.evaluate(() => document.documentElement.className)
     const resolvedTheme = await page.evaluate(() => document.documentElement.getAttribute('data-resolved-theme'))
@@ -50,7 +50,7 @@ test.describe('Light Mode — Premium Appearance', () => {
   })
 
   test('dashboard page loads correctly in light mode', async ({ page }) => {
-    await page.goto('http://localhost:3001/dashboard')
+    await page.goto('http://localhost:3000/dashboard')
     await page.waitForLoadState('networkidle')
     await expect(page.locator('h1, h2').first()).toBeVisible()
     const color = await page.evaluate(() =>
@@ -64,19 +64,19 @@ test.describe('Light Mode — Premium Appearance', () => {
   })
 
   test('problems page loads correctly in light mode', async ({ page }) => {
-    await page.goto('http://localhost:3001/problems')
+    await page.goto('http://localhost:3000/problems')
     await page.waitForLoadState('networkidle')
     await expect(page.locator('main, [role="main"]').first()).toBeVisible()
   })
 
   test('universities page loads correctly in light mode', async ({ page }) => {
-    await page.goto('http://localhost:3001/universities')
+    await page.goto('http://localhost:3000/universities')
     await page.waitForLoadState('networkidle')
     await expect(page.locator('main, [role="main"]').first()).toBeVisible()
   })
 
   test('dark mode is visually unchanged — body still has dark background', async ({ page }) => {
-    await page.goto('http://localhost:3001/settings/appearance')
+    await page.goto('http://localhost:3000/settings/appearance')
     await page.waitForLoadState('networkidle')
     const darkBtn = page.locator('[data-testid="theme-dark-btn"]').first()
     if (await darkBtn.isVisible()) {
@@ -103,7 +103,7 @@ test.describe('Light Mode — Premium Appearance', () => {
   })
 
   test('settings appearance page accessible in light mode', async ({ page }) => {
-    await page.goto('http://localhost:3001/settings/appearance')
+    await page.goto('http://localhost:3000/settings/appearance')
     await page.waitForLoadState('networkidle')
     await expect(page.locator('h1, h2').first()).toBeVisible()
   })
@@ -113,7 +113,7 @@ test.describe('Light Mode — Premium Appearance', () => {
     page.on('console', (msg) => {
       if (msg.type() === 'error') errors.push(msg.text())
     })
-    await page.goto('http://localhost:3001/dashboard')
+    await page.goto('http://localhost:3000/dashboard')
     await page.waitForLoadState('networkidle')
     const realErrors = errors.filter(
       (e) => !e.includes('NO_SECRET') && !e.includes('NEXTAUTH')

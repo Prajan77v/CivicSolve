@@ -102,7 +102,7 @@ test.describe('CivicSolve Complete End-to-End Enterprise Lifecycle', () => {
 
     // Find action buttons on the review queue
     const verifyActionBtn = page.locator('button:has-text("Verify Truth"), button:has-text("Verify")').first();
-    if (await verifyActionBtn.isVisible()) {
+    if (await verifyActionBtn.isVisible() && await verifyActionBtn.isEnabled()) {
       await verifyActionBtn.click();
       await page.waitForTimeout(800);
     }
