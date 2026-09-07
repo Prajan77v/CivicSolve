@@ -68,6 +68,7 @@ export interface CivicAIMetadata {
   toolsCalled?: string[]
   entities?: CivicAIEntity[]
   suggestedPrompts?: string[]
+  attachments?: Array<{ url: string; originalName: string; mimeType: string; sizeBytes: number; type: string }>
 }
 
 export interface CivicAIChatMessage {

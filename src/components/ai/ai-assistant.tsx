@@ -31,6 +31,11 @@ import {
   Building2,
   Users,
   Target,
+  Paperclip,
+  Loader2,
+  Camera,
+  Video,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLayout } from '@/components/layout/layout-context'
@@ -181,9 +186,14 @@ export default function AIAssistant() {
   const [aiMode, setAiMode] = useState<'REAL_AI' | 'DEMO_AI'>('DEMO_AI')
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [executingActionId, setExecutingActionId] = useState<string | null>(null)
+  const [attachedFiles, setAttachedFiles] = useState<
+    Array<{ url: string; originalName: string; mimeType: string; sizeBytes: number; type: string }>
+  >([])
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const attachmentInputRef = useRef<HTMLInputElement>(null)
   const recognitionRef = useRef<any>(null)
 
   // Compute active context from URL
@@ -434,21 +444,63 @@ export default function AIAssistant() {
     }
   }
 
+  const handleAttachmentChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return
+    const files = Array.from(e.target.files)
+    setIsUploadingAttachment(true)
+
+    try {
+      for (const file of files) {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await fetch('/api/media/upload', {
+          method: 'POST',
+          body: formData,
+        })
+        const json = await res.json()
+        if (json.success && json.data && json.data.length > 0) {
+          const m = json.data[0]
+          setAttachedFiles((prev) => [
+            ...prev,
+            {
+              url: m.url,
+              originalName: m.originalName || file.name,
+              mimeType: m.mimeType || file.type,
+              sizeBytes: m.sizeBytes || file.size,
+              type: m.type || (file.type.startsWith('image/') ? 'IMAGE' : file.type.startsWith('video/') ? 'VIDEO' : 'DOCUMENT'),
+            },
+          ])
+        }
+      }
+    } catch (err) {
+      console.error('Failed to upload attachment:', err)
+    } finally {
+      setIsUploadingAttachment(false)
+      if (attachmentInputRef.current) attachmentInputRef.current.value = ''
+    }
+  }
+
   // Send message to Civic AI
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputValue).trim()
-    if (!text || isTyping) return
+    if ((!text && attachedFiles.length === 0) || isTyping) return
 
+    const currentAttachments = [...attachedFiles]
     const userMessage: CivicAIChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
-      content: text,
+      content: text || (currentAttachments.length > 0 ? `Attached ${currentAttachments.length} file(s) for analysis.` : ''),
       createdAt: new Date().toISOString(),
+      metadata: currentAttachments.length > 0 ? {
+        mode: aiMode,
+        attachments: currentAttachments,
+      } : undefined,
     }
 
     const updatedMessages = [...messages, userMessage]
     setMessages(updatedMessages)
     if (!textToSend) setInputValue('')
+    setAttachedFiles([])
     setIsTyping(true)
     stopSpeaking()
 
@@ -753,7 +805,22 @@ export default function AIAssistant() {
                       {isAssistant ? (
                         renderFormattedText(msg.content)
                       ) : (
-                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                        <div className="space-y-2">
+                          <p className="whitespace-pre-wrap">{msg.content}</p>
+                          {msg.metadata?.attachments && msg.metadata.attachments.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 pt-1">
+                              {msg.metadata.attachments.map((att, aIdx) => (
+                                <span
+                                  key={aIdx}
+                                  className="inline-flex items-center gap-1 rounded bg-black/30 border border-white/20 px-2 py-0.5 text-[10px] text-white"
+                                >
+                                  {att.type === 'IMAGE' ? '📷' : att.type === 'VIDEO' ? '🎥' : '📄'}
+                                  <span className="truncate max-w-[120px]">{att.originalName}</span>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       {/* Clickable Entity Cards if present in metadata */}
@@ -923,6 +990,39 @@ export default function AIAssistant() {
 
             {/* Input Bar */}
             <div className="border-t border-white/10 p-3 sm:p-4 bg-slate-900/95">
+              {/* Hidden attachment file input */}
+              <input
+                ref={attachmentInputRef}
+                type="file"
+                multiple
+                accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                className="hidden"
+                onChange={handleAttachmentChange}
+              />
+
+              {/* Staged Attachment Chips */}
+              {attachedFiles.length > 0 && (
+                <div className="mb-2 flex flex-wrap gap-1.5">
+                  {attachedFiles.map((att, attIdx) => (
+                    <span
+                      key={attIdx}
+                      className="inline-flex items-center gap-1 rounded-lg bg-cyan-950/80 border border-cyan-500/40 px-2 py-1 text-[11px] text-cyan-300"
+                    >
+                      {att.type === 'IMAGE' ? '📷' : att.type === 'VIDEO' ? '🎥' : '📄'}
+                      <span className="truncate max-w-[120px] font-medium">{att.originalName}</span>
+                      <button
+                        type="button"
+                        onClick={() => setAttachedFiles((prev) => prev.filter((_, i) => i !== attIdx))}
+                        className="ml-1 text-cyan-400 hover:text-white"
+                        title="Remove attachment"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
               <form
                 onSubmit={(e) => {
                   e.preventDefault()
@@ -942,10 +1042,10 @@ export default function AIAssistant() {
                       ? 'Ask about this problem (e.g. Why is this high priority?)...'
                       : activeContext.pageType === 'PROJECT'
                       ? 'Ask project copilot (e.g. What should we do next?)...'
-                      : 'Ask Civic AI a question...'
+                      : 'Ask Civic AI a question or attach evidence...'
                   }
                   className={cn(
-                    'w-full rounded-xl border bg-slate-950 px-4 py-3 pr-20 text-xs text-white placeholder-slate-500 focus:outline-none transition-all',
+                    'w-full rounded-xl border bg-slate-950 px-4 py-3 pr-28 text-xs text-white placeholder-slate-500 focus:outline-none transition-all',
                     isListening
                       ? 'border-red-500/60 ring-2 ring-red-500/20 bg-red-950/10 placeholder-red-400'
                       : 'border-white/10 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500'
@@ -953,6 +1053,22 @@ export default function AIAssistant() {
                 />
 
                 <div className="absolute right-2 flex items-center gap-1">
+                  {/* Attachments Paperclip Button */}
+                  <button
+                    type="button"
+                    onClick={() => attachmentInputRef.current?.click()}
+                    disabled={isUploadingAttachment}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-cyan-400 transition-colors"
+                    title="Attach Photo, Video, or Document"
+                    aria-label="Attach file"
+                  >
+                    {isUploadingAttachment ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                    ) : (
+                      <Paperclip className="h-4 w-4" />
+                    )}
+                  </button>
+
                   {/* Voice Chat Microphone Button */}
                   <button
                     type="button"
@@ -972,7 +1088,7 @@ export default function AIAssistant() {
                   {/* Send Button */}
                   <button
                     type="submit"
-                    disabled={!inputValue.trim() || isTyping}
+                    disabled={(!inputValue.trim() && attachedFiles.length === 0) || isTyping}
                     className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500 text-black shadow-md transition-transform duration-150 hover:bg-cyan-400 active:scale-95 disabled:opacity-40 disabled:hover:bg-cyan-500"
                     aria-label="Send message"
                   >

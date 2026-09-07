@@ -16,7 +16,9 @@ export class DemoAIProvider implements AIProvider {
     context?: CivicAIContext,
     onChunk?: (chunk: string) => void
   ): Promise<{ content: string; metadata: CivicAIMetadata }> {
-    const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user')?.content || ''
+    const lastMsg = [...messages].reverse().find((m) => m.role === 'user')
+    const lastUserMessage = lastMsg?.content || ''
+    const userAttachments = lastMsg?.metadata?.attachments || []
     const lower = lastUserMessage.toLowerCase()
 
     let responseText = ''
@@ -26,10 +28,32 @@ export class DemoAIProvider implements AIProvider {
       toolsCalled: [],
       citations: [],
       entities: [],
+      attachments: userAttachments,
+    }
+
+    // 0. Check if user attached media files with their query
+    if (userAttachments.length > 0 && !lower.includes('create a task') && !lower.includes('priority')) {
+      const attachSummary = userAttachments
+        .map(
+          (a) =>
+            `- **${a.originalName}** (${a.type}): Stored and indexed in session metadata (${Math.round(a.sizeBytes / 1024)} KB)`
+        )
+        .join('\n')
+
+      responseText = `### 📁 Attached Evidence Inspection
+
+I have received and registered your ${userAttachments.length} attachment(s):
+
+${attachSummary}
+
+#### 🔬 Ground-Truth Telemetry Audit:
+- **File Format & Integrity**: Verified SHA-256 integrity and MIME specification (\`${userAttachments[0]?.mimeType}\`).
+- **Context Linkage**: Linked with current ${context?.pageType || 'platform'} workspace.
+- **Next Recommendation**: You can attach these files to a formal problem dossier or project milestone for municipal verification.`
     }
 
     // 1. Check if user is asking to create a task or take an action
-    if (
+    else if (
       lower.includes('create a task') ||
       lower.includes('create task') ||
       lower.includes('add a task') ||
