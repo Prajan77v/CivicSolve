@@ -133,10 +133,13 @@ test.describe('CivicSolve — Photo & Video Evidence System', () => {
     // Submit Problem
     await page.click('button:has-text("Confirm & Run AI Engine")')
 
-    // If duplicate warning modal appears, click Submit as New Independent Challenge
+    // Handle duplicate modal if it appears during duplicate similarity evaluation
     const duplicateModalBtn = page.locator('button:has-text("Submit as New Independent Challenge")')
-    if (await duplicateModalBtn.isVisible({ timeout: 4000 }).catch(() => false)) {
+    try {
+      await duplicateModalBtn.waitFor({ state: 'visible', timeout: 6000 })
       await duplicateModalBtn.click()
+    } catch {
+      // Direct submission path without duplicate prompt
     }
 
     // Wait for submission redirect to /problems/[id]
