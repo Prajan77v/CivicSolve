@@ -34,6 +34,7 @@ model User {
   certificates      Certificate[]
   teamJoinRequests  TeamJoinRequest[]
   appearanceSettings AppearanceSettings?
+  conversations     Conversation[]
 }
 
 model Student {
@@ -560,5 +561,28 @@ model AppearanceSettings {
   motion      String   @default("full") // "full" | "reduced" | "off"
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
+}
+
+model Conversation {
+  id          String                @id @default(cuid())
+  userId      String?
+  user        User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String                @default("Civic AI Session")
+  contextType String?               // PROBLEM | PROJECT | TEAM | COMMAND_CENTER | GENERAL | SOLUTION
+  contextId   String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  messages    ConversationMessage[]
+}
+
+model ConversationMessage {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         String       // USER | ASSISTANT | SYSTEM
+  content        String
+  context        String?      // JSON string of page context (title, id, stats, etc.)
+  metadata       String?      // JSON string of tool calls, citations, suggested actions, mode (REAL_AI / DEMO_AI)
+  createdAt      DateTime     @default(now())
 }
 

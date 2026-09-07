@@ -1,1 +1,3 @@
-export { prisma } from '@/lib/db'
+import { prisma } from '@/lib/db'
+export { prisma }
+export default prisma

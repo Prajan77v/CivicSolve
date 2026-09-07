@@ -60,6 +60,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import EvidenceUploadZone, { UploadedEvidenceItem } from '@/components/evidence/evidence-upload-zone'
+import { ProjectCopilotButton } from '@/components/ai/project-copilot-button'
 
 interface TaskItem {
   id: string
@@ -892,6 +893,8 @@ Timestamp: ${new Date().toISOString()}
           </Link>
 
           <div className="flex items-center gap-2">
+            <ProjectCopilotButton title="Ask Civic AI Copilot" />
+
             <Button
               variant="secondary"
               size="sm"

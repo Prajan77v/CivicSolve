@@ -35,7 +35,66 @@ export interface AIAnalysisResult {
   tags: string[]
 }
 
+export type CivicAIEntity = {
+  type: 'PROBLEM' | 'PROJECT' | 'TEAM' | 'SOLUTION' | 'UNIVERSITY'
+  id: string
+  title: string
+  subtitle?: string
+  badge?: string
+  href: string
+}
+
+export type CivicAIActionType =
+  | 'CREATE_TASK'
+  | 'MARK_MILESTONE_COMPLETE'
+  | 'PUBLISH_CHALLENGE'
+  | 'ASSIGN_MENTOR'
+
+export interface CivicAIAction {
+  actionType: CivicAIActionType
+  status: 'PROPOSED' | 'CONFIRMED' | 'EXECUTED' | 'CANCELLED'
+  label: string
+  description: string
+  params: Record<string, any>
+  requiresConfirmation: boolean
+  executedResult?: string
+}
+
+export interface CivicAIMetadata {
+  mode: 'REAL_AI' | 'DEMO_AI'
+  model?: string
+  citations?: Array<{ label: string; url?: string; count?: number }>
+  action?: CivicAIAction
+  toolsCalled?: string[]
+  entities?: CivicAIEntity[]
+  suggestedPrompts?: string[]
+}
+
+export interface CivicAIChatMessage {
+  id?: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  context?: string
+  metadata?: CivicAIMetadata
+  createdAt?: string
+}
+
+export interface CivicAIContext {
+  pathname: string
+  pageType?: 'PROBLEM' | 'PROJECT' | 'TEAM' | 'COMMAND_CENTER' | 'SOLUTION_LIBRARY' | 'STUDENTS' | 'PROFESSIONALS' | 'LEADERBOARD' | 'GENERAL'
+  entityId?: string
+  entityTitle?: string
+  summary?: Record<string, any>
+}
+
 export interface AIProvider {
+  name: string
+  mode: 'REAL_AI' | 'DEMO_AI'
+  chat(
+    messages: CivicAIChatMessage[],
+    context?: CivicAIContext,
+    onChunk?: (chunk: string) => void
+  ): Promise<{ content: string; metadata: CivicAIMetadata }>
   analyzeProblem(input: ProblemAnalysisInput): Promise<AIAnalysisResult>
   classifyProblem(description: string): Promise<{ domain: string; confidence: number; tags: string[] }>
   detectDuplicates(description: string): Promise<Array<{ title: string; similarity: number }>>

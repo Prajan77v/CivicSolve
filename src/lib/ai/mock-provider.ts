@@ -84,6 +84,20 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export class MockAIProvider implements AIProvider {
+  name = 'Mock AI Engine'
+  mode: 'DEMO_AI' = 'DEMO_AI'
+
+  async chat(
+    messages: any[],
+    context?: any,
+    onChunk?: (chunk: string) => void
+  ): Promise<{ content: string; metadata: any }> {
+    const last = [...messages].reverse().find((m) => m.role === 'user')?.content || ''
+    const content = `Mock AI response to: "${last}"`
+    if (onChunk) onChunk(content)
+    return { content, metadata: { mode: 'DEMO_AI' } }
+  }
+
   async analyzeProblem(input: ProblemAnalysisInput): Promise<AIAnalysisResult> {
     await delay(50)
     const meta = DOMAIN_MAP[input.category] || DOMAIN_MAP.INFRASTRUCTURE

@@ -49,6 +49,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Modal } from '@/components/ui/modal'
 import { cn } from '@/lib/utils'
 import EvidenceGallery, { EvidenceItem } from '@/components/evidence/evidence-gallery'
+import { ProjectCopilotButton } from '@/components/ai/project-copilot-button'
 
 interface LocationData {
   address?: string | null
@@ -542,6 +543,8 @@ export default function ProblemDetailPage() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <ProjectCopilotButton title="Analyze with Civic AI" />
+
             <Button
               variant="outline"
               size="sm"
