@@ -323,6 +323,40 @@ export async function POST(request: Request) {
       },
     })
 
+    // 4. Dispatch Notifications to Submitter Inbox & District Collectorate
+    try {
+      // Submitter Inbox Notification
+      await prisma.notification.create({
+        data: {
+          userId,
+          title: 'Challenge Proposed & AI Analyzed! 🤖',
+          message: `Your proposed challenge "${title.substring(0, 50)}..." has been processed with AI match score ${Math.round(aiResult.confidence * 100)}%. It is now listed on the Civic Explorer and sent to the District Collectorate for review.`,
+          type: 'AI',
+          link: `/problems/${problem.id}`,
+        },
+      })
+
+      // Notify Government Collector users
+      const govUsers = await prisma.user.findMany({
+        where: { role: 'GOVERNMENT' },
+        select: { id: true },
+      })
+
+      for (const gov of govUsers) {
+        await prisma.notification.create({
+          data: {
+            userId: gov.id,
+            title: 'New District Challenge Pending Review 🏛️',
+            message: `A new ${priority || 'MEDIUM'} priority challenge "${title.substring(0, 50)}..." was reported in ${district || 'your division'}. Click to inspect and authorize.`,
+            type: 'WARNING',
+            link: `/problems/${problem.id}`,
+          },
+        })
+      }
+    } catch (notifErr) {
+      console.warn('Notification dispatch error (non-fatal):', notifErr)
+    }
+
     // Fetch complete created problem with relations
     const fullProblem = await prisma.problem.findUnique({
       where: { id: problem.id },
