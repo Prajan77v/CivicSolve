@@ -13,12 +13,42 @@ export { UPLOAD_LIMITS, formatFileSize }
 // Upload directory paths
 export const UPLOAD_DIR = path.join(process.cwd(), 'prisma', 'uploads')
 
-// Ensure upload directory exists
+// Ensure upload directory exists (supports local and Vercel /tmp)
 export function ensureUploadDir(): string {
-  if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true })
+  const targetDirs = process.env.VERCEL
+    ? [path.join('/tmp', 'uploads'), path.join(process.cwd(), 'prisma', 'uploads')]
+    : [path.join(process.cwd(), 'prisma', 'uploads'), path.join('/tmp', 'uploads')]
+
+  for (const dir of targetDirs) {
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+      }
+      // Test write accessibility
+      fs.accessSync(dir, fs.constants.W_OK)
+      return dir
+    } catch (e) {
+      continue
+    }
   }
-  return UPLOAD_DIR
+  return path.join('/tmp', 'uploads')
+}
+
+// Locate existing file across possible storage directories
+export function getUploadedFilePath(filename: string): string | null {
+  const safeFilename = path.basename(filename)
+  const possiblePaths = [
+    path.join('/tmp', 'uploads', safeFilename),
+    path.join(process.cwd(), 'prisma', 'uploads', safeFilename),
+    path.join(process.cwd(), 'public', 'uploads', safeFilename),
+  ]
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      return p
+    }
+  }
+  return null
 }
 
 // Dangerous executable extensions to block

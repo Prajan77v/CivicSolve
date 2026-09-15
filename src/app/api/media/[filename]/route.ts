@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
-import { UPLOAD_DIR } from '@/lib/storage'
+import { UPLOAD_DIR, getUploadedFilePath } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,7 +32,7 @@ export async function GET(
     
     // Sanitize filename to prevent path traversal
     const safeFilename = path.basename(filename)
-    const filePath = path.join(UPLOAD_DIR, safeFilename)
+    const filePath = getUploadedFilePath(safeFilename) || path.join(UPLOAD_DIR, safeFilename)
 
     if (!fs.existsSync(filePath)) {
       return new NextResponse('File Not Found', { status: 404 })
